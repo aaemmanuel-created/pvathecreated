@@ -2,1332 +2,748 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>thecreated.pva</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>thecreated</title>
+<meta name="description" content="thecreated — an attempt at giving God His ROI." />
 <style>
-  :root {
-    --bg: #f4f1ec;
-    --ink: #14130f;
-    --muted: #6b665d;
-    --line: #1413100f;
-    --line-strong: #14131020;
-    --accent: #14130f;
-    --paper: #ffffff;
-    --tag: #14131008;
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { height: 100%; }
-  html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+  /* ============================================================
+     Reset & base
+     ============================================================ */
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; height: 100%; }
   body {
     font-family: Helvetica, "Helvetica Neue", Arial, sans-serif;
-    background: var(--bg);
-    color: var(--ink);
-    font-size: 15px;
-    line-height: 1.5;
-    letter-spacing: -0.005em;
-    overflow-x: hidden;
-  }
-
-  /* Every element forced to Helvetica */
-  button, input, textarea, select, h1, h2, h3, h4, h5, h6, p, a, span, div, li, label {
-    font-family: Helvetica, "Helvetica Neue", Arial, sans-serif;
-  }
-
-  a { color: inherit; text-decoration: none; }
-  button { background: none; border: none; cursor: pointer; color: inherit; }
-
-  /* ---------- VIEW MANAGEMENT ---------- */
-  .view { display: none; min-height: 100vh; }
-  .view.active { display: block; }
-
-  /* ---------- GATE (password + name) ---------- */
-  .gate {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
-    padding: 40px 80px;
-    position: relative;
-  }
-
-  /* dark theme for both gate screens */
-  .view#view-password,
-  .view#view-name {
     background: #000;
     color: #fff;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow: hidden;
+    letter-spacing: 0.01em;
   }
-  .view#view-password .gate-mark,
-  .view#view-password .gate-foot,
-  .view#view-name .gate-mark,
-  .view#view-name .gate-foot {
-    color: rgba(255,255,255,0.55);
-  }
+  button { font-family: inherit; }
+  a { color: inherit; text-decoration: none; }
 
-  .gate-mark {
-    position: absolute;
-    top: 32px;
-    left: 36px;
-    font-size: 11px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-
-  /* center-left invitation sentence — slow fade-in, hold, then fade out */
-  .gate-invite {
-    font-family: Helvetica, "Helvetica Neue", Arial, sans-serif;
-    font-size: 13px;
-    line-height: 1.55;
-    color: rgba(255,255,255,0.82);
-    letter-spacing: 0.005em;
-    text-align: left;
-    max-width: 540px;
-    margin-bottom: 28px;
-    /* invisible until the sequence plays */
-    clip-path: inset(0 100% 0 0);
+  /* ============================================================
+     View system — each view fills the screen, fades between
+     ============================================================ */
+  .view {
+    position: fixed;
+    inset: 0;
     opacity: 0;
-    animation: inviteSequence 11s cubic-bezier(0.32, 0.04, 0.32, 1) 0.5s forwards;
+    pointer-events: none;
+    transition: opacity 0.6s ease;
+    overflow: hidden;
   }
-  .gate-invite b { color: #fff; font-weight: 700; }
-
-  /* very slow reveal LR (0-50%) → hold (50-62%) → very slow fade out (62-100%) */
-  @keyframes inviteSequence {
-    0%   { clip-path: inset(0 100% 0 0); opacity: 0; }
-    5%   { opacity: 1; }
-    50%  { clip-path: inset(0 0 0 0); opacity: 1; }
-    62%  { clip-path: inset(0 0 0 0); opacity: 1; }
-    100% { clip-path: inset(0 0 0 0); opacity: 0; visibility: hidden; }
+  .view.active {
+    opacity: 1;
+    pointer-events: auto;
   }
 
-  .gate-foot {
-    position: absolute;
-    bottom: 32px;
-    left: 36px;
-    right: 36px;
+  /* ============================================================
+     HOMEPAGE
+     ============================================================ */
+  #view-home {
+    background: #000;
     display: flex;
-    justify-content: flex-end;
-    font-size: 10.5px;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--muted);
+    flex-direction: column;
+    height: 100%;
   }
 
-  .gate-card {
-    width: 100%;
-    max-width: 520px;
-    text-align: left;
-  }
-
-  .gate h1 {
-    font-family: Helvetica, "Helvetica Neue", Arial, sans-serif;
-    font-size: clamp(34px, 4.4vw, 52px);
-    font-weight: 400;
-    letter-spacing: -0.025em;
-    line-height: 1;
-    margin-bottom: 22px;
-  }
-
-  .gate .sub {
-    font-size: 11px;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 40px;
-  }
-
-  .gate .prompt {
-    font-size: 12px;
-    color: var(--muted);
-    margin-bottom: 14px;
-    letter-spacing: 0.02em;
-  }
-
-  /* default (light) inputs — still used by the name gate if needed */
-  .gate input[type="password"],
-  .gate input[type="text"] {
-    width: 100%;
-    background: transparent;
-    border: none;
-    border-bottom: 1px solid var(--line-strong);
-    padding: 14px 4px;
-    font-size: 22px;
-    text-align: center;
-    color: var(--ink);
-    outline: none;
-    letter-spacing: 0.04em;
-    transition: border-color 0.2s ease;
-  }
-
-  .gate input::placeholder { color: #a8a39a; font-weight: 300; }
-  .gate input:focus { border-bottom-color: var(--ink); }
-
-  /* ---- glowing cylindrical tile input (password + name on dark gate) ---- */
-  .glow-tile {
-    display: block;
-    width: 100%;
-    max-width: 170px;          /* smaller */
-    margin: 0 auto;            /* centre-aligned within the gate card */
-    background: rgba(255,255,255,0.22);  /* lighter fill inside the cylinder */
-    border: 1px solid rgba(255,255,255,0.55);
-    padding: 7px 14px;
-    font-size: 11px;
-    text-align: center;
-    color: #fff;
-    outline: none;
-    letter-spacing: 0.14em;
-    font-family: Helvetica, "Helvetica Neue", Arial, sans-serif;
-    border-radius: 999px;   /* cylindrical / pill */
-    transition: border-color 0.25s ease, background 0.25s ease;
-    caret-color: #fff;
-    -webkit-text-security: disc;  /* keep masked dots compact */
-  }
-  .glow-tile::placeholder {
-    color: rgba(255,255,255,0.55);
-    letter-spacing: 0.18em;
-    font-weight: 300;
-  }
-  .glow-tile:focus {
-    border-color: #fff;
-    background: rgba(255,255,255,0.32);
-    animation: glowFocus 2.2s ease-in-out infinite;
-  }
-
-  /* name input is text — don't mask */
-  #name-input.glow-tile { -webkit-text-security: none; }
-
-  /* PASSWORD-GATE TILE: starts invisible, bursts in as the sentence fades,
-     then settles into the gentle pulse. */
-  #pw-input.glow-tile {
-    opacity: 0;
-    transform: scale(0.96);
-    animation:
-      tileBurst 3s cubic-bezier(0.16, 0.84, 0.24, 1) 7.5s forwards,
-      gentlePulse 2.8s ease-in-out 10.5s infinite;
-  }
-
-  /* NAME-GATE TILE: gentle pulse immediately, no burst sequence */
-  #name-input.glow-tile {
-    animation: gentlePulse 2.6s ease-in-out infinite;
-  }
-
-  /* keyframes — gentle resting pulse */
-  @keyframes gentlePulse {
-    0%, 100% {
-      box-shadow:
-        0 0 18px rgba(255,255,255,0.12),
-        inset 0 0 14px rgba(255,255,255,0.08);
-      border-color: rgba(255,255,255,0.45);
-    }
-    50% {
-      box-shadow:
-        0 0 48px rgba(255,255,255,0.30),
-        inset 0 0 24px rgba(255,255,255,0.14);
-      border-color: rgba(255,255,255,0.85);
-    }
-  }
-  @keyframes glowFocus {
-    0%, 100% {
-      box-shadow:
-        0 0 28px rgba(255,255,255,0.28),
-        inset 0 0 20px rgba(255,255,255,0.14);
-    }
-    50% {
-      box-shadow:
-        0 0 64px rgba(255,255,255,0.42),
-        inset 0 0 30px rgba(255,255,255,0.20);
-    }
-  }
-
-  /* burst — bright flash of light, then settle to resting */
-  @keyframes tileBurst {
-    0% {
-      opacity: 0;
-      transform: scale(0.94);
-      background: rgba(255,255,255,0.05);
-      border-color: rgba(255,255,255,0.0);
-      box-shadow:
-        0 0 0 rgba(255,255,255,0),
-        inset 0 0 0 rgba(255,255,255,0);
-    }
-    35% {
-      opacity: 1;
-      transform: scale(1.04);
-      background: rgba(255,255,255,0.85);
-      border-color: rgba(255,255,255,1);
-      box-shadow:
-        0 0 160px 20px rgba(255,255,255,0.85),
-        0 0 280px 60px rgba(255,255,255,0.35),
-        inset 0 0 80px rgba(255,255,255,0.7);
-    }
-    55% {
-      transform: scale(1);
-      background: rgba(255,255,255,0.45);
-      box-shadow:
-        0 0 90px rgba(255,255,255,0.55),
-        inset 0 0 40px rgba(255,255,255,0.35);
-    }
-    100% {
-      opacity: 1;
-      transform: scale(1);
-      background: rgba(255,255,255,0.22);
-      border-color: rgba(255,255,255,0.45);
-      box-shadow:
-        0 0 18px rgba(255,255,255,0.12),
-        inset 0 0 14px rgba(255,255,255,0.08);
-    }
-  }
-
-  /* dark-gate buttons */
-  .view#view-password .btn,
-  .view#view-name .btn {
-    background: transparent;
-    color: #fff;
-    border: 1px solid rgba(255,255,255,0.5);
-  }
-  .view#view-password .btn:hover,
-  .view#view-name .btn:hover {
-    background: #fff;
-    color: #000;
-  }
-
-  .gate .actions {
-    margin-top: 22px;
+  .site-header {
     display: flex;
-    justify-content: flex-start;
-    gap: 16px;
-  }
-
-  .btn {
-    display: inline-flex;
+    justify-content: space-between;
     align-items: center;
-    gap: 8px;
-    font-size: 10px;
+    padding: 28px 36px 0;
+    flex-shrink: 0;
+  }
+  .site-brand {
+    font-size: 13px;
+    color: rgba(255,255,255,0.55);
+    letter-spacing: 0.18em;
+    text-transform: lowercase;
+  }
+  .site-meta {
+    font-size: 11px;
+    color: rgba(255,255,255,0.32);
     letter-spacing: 0.22em;
     text-transform: uppercase;
-    padding: 11px 18px;
-    border: 1px solid var(--ink);
-    background: var(--ink);
-    color: var(--bg);
+  }
+
+  /* Card row — mfm.space style, horizontal scroll-snap */
+  .card-row-wrap {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    min-height: 0;
+  }
+  .card-row {
+    display: flex;
+    gap: 28px;
+    padding: 0 28vw 0 6vw;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    width: 100%;
+    -webkit-overflow-scrolling: touch;
+  }
+  .card-row::-webkit-scrollbar { display: none; }
+
+  .thread-card {
+    flex: 0 0 44vw;
+    aspect-ratio: 5 / 6;
+    border-radius: 22px;
+    position: relative;
     cursor: pointer;
-    font-family: Helvetica, "Helvetica Neue", Arial, sans-serif;
-    transition: opacity 0.2s ease, transform 0.2s ease;
+    scroll-snap-align: start;
+    overflow: hidden;
+    transition: transform 0.6s cubic-bezier(0.22, 0.61, 0.36, 1),
+                box-shadow 0.6s ease;
+    opacity: 0;
+    animation: cardEnter 1.6s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
   }
-  .btn:hover { opacity: 0.85; }
-  .btn:active { transform: translateY(1px); }
-
-  .btn.ghost {
-    background: transparent;
-    color: var(--ink);
+  .thread-card:nth-child(1) { animation-delay: 0.3s; }
+  .thread-card:nth-child(2) { animation-delay: 0.55s; }
+  .thread-card:nth-child(3) { animation-delay: 0.8s; }
+  @keyframes cardEnter {
+    from { opacity: 0; transform: translateY(18px) scale(0.985); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
   }
-  .btn.ghost:hover { background: var(--ink); color: var(--bg); }
 
-  .error {
-    margin-top: 14px;
-    font-size: 10.5px;
-    letter-spacing: 0.18em;
+  .thread-card:hover { transform: translateY(-4px) scale(1.012); }
+
+  /* 3D glass gradient bases — layered radial + linear for depth */
+  .thread-card.grounding {
+    background:
+      radial-gradient(ellipse at 28% 22%, rgba(255,255,255,0.32) 0%, rgba(255,255,255,0.05) 22%, transparent 48%),
+      radial-gradient(ellipse at 72% 78%, rgba(0,0,0,0.55) 0%, transparent 55%),
+      linear-gradient(155deg, #c2233a 0%, #8a0e1a 38%, #4a0610 78%, #2a0408 100%);
+    box-shadow:
+      inset 0 0 0 1px rgba(255,255,255,0.08),
+      0 0 0 1px rgba(160,20,40,0.35),
+      0 10px 30px rgba(0,0,0,0.5),
+      0 30px 80px rgba(120,10,30,0.35);
+  }
+  .thread-card.righteous {
+    background:
+      radial-gradient(ellipse at 28% 22%, rgba(255,255,255,0.30) 0%, rgba(255,255,255,0.04) 22%, transparent 48%),
+      radial-gradient(ellipse at 72% 78%, rgba(0,0,0,0.6) 0%, transparent 55%),
+      linear-gradient(155deg, #6b2cb8 0%, #3a1166 40%, #1c0738 78%, #0e021f 100%);
+    box-shadow:
+      inset 0 0 0 1px rgba(255,255,255,0.08),
+      0 0 0 1px rgba(80,30,150,0.4),
+      0 10px 30px rgba(0,0,0,0.5),
+      0 30px 80px rgba(50,15,100,0.35);
+  }
+  .thread-card.lifted {
+    background:
+      radial-gradient(ellipse at 28% 22%, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.4) 22%, transparent 50%),
+      radial-gradient(ellipse at 72% 78%, rgba(120,100,70,0.35) 0%, transparent 60%),
+      linear-gradient(155deg, #fbf6ea 0%, #f0e8d4 40%, #cfc6b3 78%, #b5ac98 100%);
+    box-shadow:
+      inset 0 0 0 1px rgba(255,255,255,0.6),
+      0 0 0 1px rgba(220,210,190,0.6),
+      0 10px 30px rgba(0,0,0,0.4),
+      0 30px 80px rgba(220,210,190,0.2);
+  }
+
+  /* Glass sheen arc — sits on top of every card */
+  .thread-card::before {
+    content: "";
+    position: absolute;
+    top: 6%;
+    left: 6%;
+    right: 30%;
+    height: 36%;
+    border-radius: 50%;
+    background: radial-gradient(ellipse at 30% 30%, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.06) 40%, transparent 65%);
+    pointer-events: none;
+    filter: blur(2px);
+  }
+
+  /* Card label */
+  .card-label {
+    position: absolute;
+    left: 22px;
+    bottom: 18px;
+    font-size: 11px;
+    letter-spacing: 0.28em;
     text-transform: uppercase;
-    color: #8a2a2a;
-    min-height: 14px;
+    color: rgba(255,255,255,0.92);
+    font-weight: 500;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+  }
+  .thread-card.lifted .card-label {
+    color: rgba(0,0,0,0.78);
+    text-shadow: 0 1px 2px rgba(255,255,255,0.25);
+  }
+
+  /* Optional image overlay for GROUNDING — drop a file named
+     grounding.jpg next to index.html and the rule below will use
+     it. Gradient stays behind as a fallback. */
+  .thread-card.grounding .card-image {
+    position: absolute; inset: 0; border-radius: inherit;
+    background-image: url('grounding.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0; /* set to 1 once grounding.jpg is added */
+    transition: opacity 0.6s ease;
+  }
+
+  /* Tagline + thought stream button */
+  .site-footer {
+    padding: 0 36px 36px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    flex-shrink: 0;
+  }
+  .site-tagline {
+    font-size: 13px;
+    color: rgba(255,255,255,0.5);
+    font-style: italic;
+    letter-spacing: 0.04em;
     text-align: center;
+    margin: 0;
+  }
+  .thought-stream-btn {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.22);
+    color: rgba(255,255,255,0.82);
+    padding: 9px 22px;
+    border-radius: 999px;
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.4s ease;
+  }
+  .thought-stream-btn:hover {
+    border-color: rgba(255,255,255,0.55);
+    color: #fff;
+    background: rgba(255,255,255,0.04);
+  }
+
+  /* ============================================================
+     PORTAL ANIMATION
+     The portal layer sits above everything during the transition.
+     A circle clip-path expands from the click point, the colour
+     fills the screen, then hands off to the thread view.
+     ============================================================ */
+  #portal {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    pointer-events: none;
     opacity: 0;
     transition: opacity 0.2s ease;
   }
-  .error.show { opacity: 1; }
-  /* error visible on dark gate */
-  .view#view-password .error,
-  .view#view-name .error { color: #ff9d9d; }
+  #portal.firing {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  #portal-fill {
+    position: absolute;
+    inset: 0;
+    background: #000;
+    clip-path: circle(0px at 50% 50%);
+    transition: clip-path 1.7s cubic-bezier(0.65, 0.05, 0.36, 1);
+  }
+  #portal.firing #portal-fill {
+    clip-path: circle(160% at var(--px, 50%) var(--py, 50%));
+  }
 
-  /* ---------- MAIN APP CHROME ---------- */
-  .nav {
-    position: sticky;
-    top: 0;
-    z-index: 50;
-    background: var(--bg);
-    border-bottom: 1px solid var(--line);
-    padding: 18px 36px;
+  /* ============================================================
+     THREAD PAGES — three of them, each its own colour space
+     ============================================================ */
+  .thread-view {
+    background: #000;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  .thread-view.grounding-bg { background: radial-gradient(ellipse at 30% 25%, #4a0610 0%, #1a0306 60%, #0a0102 100%); color: #fff; }
+  .thread-view.righteous-bg { background: radial-gradient(ellipse at 30% 25%, #1c0738 0%, #0c0220 60%, #050010 100%); color: #fff; }
+  .thread-view.lifted-bg    { background: radial-gradient(ellipse at 30% 25%, #fbf6ea 0%, #ede4cf 65%, #d4cab2 100%); color: #1a1612; }
+
+  .thread-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    backdrop-filter: blur(6px);
+    padding: 28px 36px;
+    flex-shrink: 0;
   }
-
-  .nav .brand {
-    font-size: 13px;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-  }
-  .nav .brand b { font-weight: 700; }
-
-  .nav-links {
-    display: flex;
-    gap: 26px;
-  }
-  .nav-links a {
-    font-size: 11px;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--muted);
+  .back-btn {
+    background: transparent;
+    border: none;
+    color: inherit;
     cursor: pointer;
-    position: relative;
-    padding-bottom: 3px;
-    transition: color 0.2s ease;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    opacity: 0.6;
+    transition: opacity 0.3s ease;
+    padding: 8px 0;
   }
-  .nav-links a:hover, .nav-links a.active { color: var(--ink); }
-  .nav-links a.active::after {
-    content: "";
-    position: absolute;
-    bottom: -2px; left: 0; right: 0;
-    height: 1px;
-    background: var(--ink);
+  .back-btn:hover { opacity: 1; }
+  .thread-name {
+    font-size: 12px;
+    letter-spacing: 0.34em;
+    text-transform: uppercase;
+    opacity: 0.7;
   }
 
-  .nav-meta {
-    font-size: 11px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--muted);
+  /* Thread card stack — horizontal scroll-snap */
+  .thread-stack-wrap {
+    flex: 1;
     display: flex;
     align-items: center;
-    gap: 16px;
+    overflow: hidden;
+    min-height: 0;
   }
-  .signout {
-    cursor: pointer;
-    text-decoration: underline;
-    text-underline-offset: 3px;
+  .thread-stack {
+    display: flex;
+    gap: 28px;
+    padding: 0 12vw;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    width: 100%;
+    -webkit-overflow-scrolling: touch;
   }
+  .thread-stack::-webkit-scrollbar { display: none; }
 
-  /* ---------- HERO ---------- */
-  .hero {
-    padding: 90px 36px 70px;
-    border-bottom: 1px solid var(--line);
-    display: grid;
-    grid-template-columns: 1.4fr 1fr;
-    gap: 80px;
-    align-items: end;
+  .thread-panel {
+    flex: 0 0 70vw;
+    max-width: 640px;
+    min-height: 60vh;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 18px;
+    padding: 44px 44px 38px;
+    scroll-snap-align: center;
+    display: flex;
+    flex-direction: column;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
   }
-
-  .hero .welcome {
-    font-size: 11px;
-    letter-spacing: 0.24em;
+  .thread-view.lifted-bg .thread-panel {
+    background: rgba(255,255,255,0.55);
+    border-color: rgba(0,0,0,0.08);
+  }
+  .panel-eyebrow {
+    font-size: 10px;
+    letter-spacing: 0.32em;
     text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 18px;
+    opacity: 0.55;
+    margin-bottom: 22px;
   }
-
-  .hero h1 {
-    font-size: clamp(56px, 9vw, 132px);
+  .panel-title {
+    font-size: 28px;
+    letter-spacing: 0.04em;
     font-weight: 400;
-    letter-spacing: -0.04em;
-    line-height: 0.92;
+    margin: 0 0 24px;
+    line-height: 1.2;
   }
-  .hero h1 em {
-    font-style: italic;
-    font-weight: 300;
-    color: var(--muted);
+  .panel-body {
+    font-size: 15px;
+    line-height: 1.7;
+    opacity: 0.86;
+    margin: 0;
   }
-
-  .hero .lede {
+  .panel-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .panel-list li {
     font-size: 15px;
     line-height: 1.6;
-    color: var(--muted);
-    max-width: 360px;
-  }
-  .hero .lede strong { color: var(--ink); font-weight: 700; }
-
-  /* ---------- SECTIONS ---------- */
-  section.block {
-    padding: 80px 36px;
-    border-bottom: 1px solid var(--line);
-  }
-
-  .block-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    margin-bottom: 50px;
-  }
-  .block-head .label {
-    font-size: 11px;
-    letter-spacing: 0.24em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-  .block-head h2 {
-    font-size: clamp(34px, 4.6vw, 58px);
-    font-weight: 400;
-    letter-spacing: -0.025em;
-    line-height: 1;
-  }
-  .block-head .count {
-    font-size: 11px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-
-  /* ---- moodboards grid ---- */
-  .moodgrid {
-    display: grid;
-    grid-template-columns: repeat(12, 1fr);
-    gap: 18px;
-  }
-  .mood {
+    padding-left: 18px;
     position: relative;
-    overflow: hidden;
-    background: var(--paper);
-    border: 1px solid var(--line);
-    cursor: pointer;
-    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    opacity: 0.88;
   }
-  .mood:hover { transform: translateY(-3px); box-shadow: 0 14px 30px -18px #14131033; }
-  .mood .swatch { width: 100%; height: 100%; display: block; }
-  .mood .meta {
+  .panel-list li::before {
+    content: "";
     position: absolute;
-    left: 14px; bottom: 12px; right: 14px;
-    display: flex;
-    justify-content: space-between;
-    font-size: 10.5px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
+    left: 0; top: 0.7em;
+    width: 8px; height: 1px;
+    background: currentColor;
+    opacity: 0.6;
+  }
+
+  /* ============================================================
+     THOUGHTS PAGE
+     ============================================================ */
+  #view-thoughts {
+    background: #0a0a0a;
     color: #fff;
-    mix-blend-mode: difference;
+    overflow-y: auto;
+    overflow-x: hidden;
   }
-  .mood.s1 { grid-column: span 5; aspect-ratio: 5 / 4; }
-  .mood.s2 { grid-column: span 4; aspect-ratio: 4 / 5; }
-  .mood.s3 { grid-column: span 3; aspect-ratio: 3 / 4; }
-  .mood.s4 { grid-column: span 4; aspect-ratio: 1 / 1; }
-  .mood.s5 { grid-column: span 4; aspect-ratio: 1 / 1; }
-  .mood.s6 { grid-column: span 4; aspect-ratio: 4 / 3; }
-
-  /* swatch art (pure CSS) */
-  .art-1 { background: radial-gradient(circle at 30% 30%, #d9c8a6 0%, #8a6d3f 60%, #1f1607 100%); }
-  .art-2 { background: linear-gradient(180deg, #2d2a26 0%, #6b594b 55%, #cdb98f 100%); }
-  .art-3 { background: linear-gradient(135deg, #efe7d8, #b9a888 50%, #4f4534); }
-  .art-4 { background:
-      repeating-linear-gradient(45deg, #181613 0 14px, #2a2622 14px 28px); }
-  .art-5 { background: radial-gradient(ellipse at 70% 40%, #f6e6c4, #b58d54 55%, #2b1d0a); }
-  .art-6 { background: linear-gradient(180deg, #cdbfa3 0%, #8a7558 60%, #1d1610 100%); }
-
-  /* ---- scripts list ---- */
-  .scripts {
-    display: flex;
-    flex-direction: column;
-  }
-  .script-row {
-    display: grid;
-    grid-template-columns: 60px 1.4fr 1fr 120px 80px;
-    gap: 24px;
-    align-items: baseline;
-    padding: 26px 0;
-    border-top: 1px solid var(--line);
-    cursor: pointer;
-    transition: background 0.2s ease, padding 0.3s ease;
-  }
-  .script-row:last-child { border-bottom: 1px solid var(--line); }
-  .script-row:hover { padding-left: 12px; padding-right: 12px; background: #14131005; }
-  .script-row .num {
-    font-size: 11px;
-    letter-spacing: 0.18em;
-    color: var(--muted);
-  }
-  .script-row .title {
-    font-size: clamp(22px, 2.4vw, 30px);
-    font-weight: 400;
-    letter-spacing: -0.015em;
-    line-height: 1.1;
-  }
-  .script-row .blurb {
-    font-size: 13px;
-    color: var(--muted);
-    line-height: 1.55;
-  }
-  .script-row .stage {
-    font-size: 10.5px;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--ink);
-    border: 1px solid var(--line-strong);
-    padding: 6px 10px;
-    width: max-content;
-    background: var(--tag);
-  }
-  .script-row .date {
-    font-size: 11px;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--muted);
-    text-align: right;
-  }
-  .script-row.locked .title::after {
-    content: " ◇";
-    color: var(--muted);
-    font-size: 0.6em;
-    vertical-align: middle;
-    margin-left: 8px;
-  }
-
-  /* ---- lyrics ---- */
-  .lyrics-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1px;
-    background: var(--line);
-    border: 1px solid var(--line);
-  }
-  .lyric {
-    background: var(--bg);
-    padding: 40px 36px;
-    cursor: pointer;
-    transition: background 0.25s ease;
-    min-height: 280px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-  .lyric:hover { background: #ece8e0; }
-  .lyric .label {
-    font-size: 10.5px;
-    letter-spacing: 0.24em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 24px;
-  }
-  .lyric h3 {
-    font-size: clamp(26px, 3vw, 36px);
-    font-weight: 400;
-    letter-spacing: -0.02em;
-    line-height: 1.05;
-    margin-bottom: 18px;
-  }
-  .lyric pre {
-    font-family: Helvetica, "Helvetica Neue", Arial, sans-serif;
-    font-size: 13.5px;
-    line-height: 1.65;
-    color: var(--ink);
-    white-space: pre-wrap;
-    word-break: break-word;
-    margin-bottom: 22px;
-    flex: 1;
-  }
-  .lyric .foot {
+  .thoughts-header {
+    padding: 28px 36px 8px;
     display: flex;
     justify-content: space-between;
-    font-size: 10.5px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--muted);
+    align-items: center;
   }
-  .lyric.locked pre {
-    color: var(--muted);
-    -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 60%, transparent 100%);
-            mask-image: linear-gradient(180deg, #000 0%, #000 60%, transparent 100%);
+  .thoughts-title {
+    font-size: 16vw;
+    line-height: 0.95;
+    letter-spacing: -0.04em;
+    font-weight: 400;
+    color: rgba(255,255,255,0.06);
+    margin: 0;
+    padding: 4vh 36px 6vh;
+    text-transform: lowercase;
+    pointer-events: none;
+    user-select: none;
   }
-
-  /* ---- notes / drafts (owner only) ---- */
-  .notes {
+  .thoughts-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 18px;
+    padding: 0 36px 60px;
   }
-  .note {
-    border: 1px solid var(--line);
-    padding: 28px;
-    background: var(--paper);
+  .thought-card {
+    background: #fafaf7;
+    color: #1a1612;
+    border-radius: 14px;
+    padding: 36px 22px;
     min-height: 200px;
     display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    transition: transform 0.25s ease;
-  }
-  .note:hover { transform: translateY(-2px); }
-  .note .top {
-    font-size: 10.5px;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 16px;
-  }
-  .note p {
-    font-size: 14px;
-    line-height: 1.55;
-    color: var(--ink);
-  }
-  .note .stamp {
-    margin-top: 18px;
-    font-size: 10.5px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-
-  /* ---- footer ---- */
-  footer {
-    padding: 60px 36px 40px;
-    display: flex;
-    justify-content: space-between;
-    align-items: end;
-    border-top: 1px solid var(--line);
-  }
-  footer .mark {
-    font-size: clamp(40px, 7vw, 90px);
-    font-weight: 400;
-    letter-spacing: -0.03em;
-    line-height: 0.9;
-  }
-  footer .meta {
-    font-size: 10.5px;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--muted);
-    text-align: right;
-    line-height: 1.9;
-  }
-
-  /* ---- partner banner ---- */
-  .partner-banner {
-    background: var(--ink);
-    color: var(--bg);
-    padding: 14px 36px;
-    font-size: 10.5px;
-    letter-spacing: 0.24em;
-    text-transform: uppercase;
-    text-align: center;
-  }
-
-  /* ---- modal (open script / lyric) ---- */
-  .modal {
-    position: fixed;
-    inset: 0;
-    background: rgba(20, 19, 16, 0.55);
-    display: none;
     align-items: center;
     justify-content: center;
-    z-index: 200;
-    padding: 40px;
-  }
-  .modal.show { display: flex; }
-  .modal .card {
-    background: var(--bg);
-    max-width: 720px;
-    width: 100%;
-    max-height: 80vh;
-    overflow-y: auto;
-    padding: 50px 50px 40px;
-    position: relative;
-    border: 1px solid var(--line-strong);
-  }
-  .modal .card h3 {
-    font-size: clamp(28px, 4vw, 44px);
-    font-weight: 400;
-    letter-spacing: -0.025em;
-    margin-bottom: 8px;
-  }
-  .modal .card .sub {
-    font-size: 11px;
-    letter-spacing: 0.22em;
+    text-align: center;
+    font-size: 13px;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 28px;
+    line-height: 1.5;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.25);
+    transition: transform 0.3s ease;
   }
-  .modal .card pre {
-    font-family: Helvetica, "Helvetica Neue", Arial, sans-serif;
-    white-space: pre-wrap;
-    line-height: 1.7;
-    font-size: 14.5px;
-  }
-  .modal .close {
-    position: absolute;
-    top: 18px; right: 22px;
-    font-size: 11px;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--muted);
-    cursor: pointer;
-  }
-  .modal .close:hover { color: var(--ink); }
-  .modal .locked-note {
-    margin-top: 26px;
-    padding-top: 22px;
-    border-top: 1px solid var(--line);
-    font-size: 11px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
+  .thought-card:hover { transform: translateY(-3px); }
 
-  /* ---- subtle entrance ---- */
-  .fade-in { animation: fade 0.5s ease both; }
-  @keyframes fade {
-    from { opacity: 0; transform: translateY(6px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  /* ---- responsive ---- */
-  @media (max-width: 880px) {
-    .hero { grid-template-columns: 1fr; gap: 36px; padding: 60px 24px; }
-    section.block { padding: 56px 24px; }
-    .nav { padding: 14px 24px; }
-    .nav-links { display: none; }
-    .moodgrid .mood { grid-column: span 12 !important; aspect-ratio: 4 / 3 !important; }
-    .lyrics-grid { grid-template-columns: 1fr; }
-    .script-row { grid-template-columns: 40px 1fr; }
-    .script-row .blurb, .script-row .stage, .script-row .date { display: none; }
-    .notes { grid-template-columns: 1fr; }
-    footer { flex-direction: column; align-items: flex-start; gap: 24px; }
+  /* ============================================================
+     Responsive
+     ============================================================ */
+  @media (max-width: 768px) {
+    .site-header { padding: 22px 22px 0; }
+    .site-meta { display: none; }
+    .card-row { padding: 0 18vw 0 5vw; gap: 20px; }
+    .thread-card { flex-basis: 70vw; }
+    .site-footer { padding: 0 22px 28px; gap: 14px; }
+    .thread-header { padding: 20px 22px; }
+    .thread-stack { padding: 0 6vw; }
+    .thread-panel { padding: 32px 28px; min-height: 65vh; }
+    .panel-title { font-size: 22px; }
+    .thoughts-grid { grid-template-columns: repeat(2, 1fr); padding: 0 22px 48px; gap: 14px; }
+    .thoughts-title { padding: 3vh 22px 4vh; font-size: 24vw; }
   }
 </style>
 </head>
 <body>
 
-<!-- =========================================================== -->
-<!-- 1. PASSWORD GATE                                            -->
-<!-- =========================================================== -->
-<div class="view active" id="view-password">
-  <div class="gate">
-    <div class="gate-mark">thecreated.pva</div>
+<!-- ============================================================
+     HOMEPAGE
+     ============================================================ -->
+<section id="view-home" class="view active">
+  <header class="site-header">
+    <span class="site-brand">thecreated</span>
+    <span class="site-meta">est. 2026</span>
+  </header>
 
-    <div class="gate-card">
-      <p class="gate-invite">
-        If you have this link, <b>Thecreated</b> has invited you to partner on a thread.
-        Enter the password in the space below to continue.
-      </p>
-
-      <input type="password" id="pw-input" class="glow-tile" placeholder="" autocomplete="off" aria-label="Password" />
-      <div class="error" id="pw-error">Incorrect — try again</div>
-    </div>
-
-    <div class="gate-foot">
-      <span>By invitation</span>
-    </div>
-  </div>
-</div>
-
-<!-- =========================================================== -->
-<!-- 2. NAME GATE                                                -->
-<!-- =========================================================== -->
-<div class="view" id="view-name">
-  <div class="gate">
-    <div class="gate-mark">thecreated.pva</div>
-
-    <div class="gate-card">
-      <h1 id="name-headline">Who's there?</h1>
-
-      <input type="text" id="name-input" class="glow-tile" placeholder="Your name" autocomplete="off" />
-      <div class="error" id="name-error">Please enter a name</div>
-
-      <div class="actions">
-        <button class="btn" id="name-submit">Continue</button>
-      </div>
-    </div>
-
-    <div class="gate-foot">
-      <span>Index · 002</span>
-      <span>Press enter</span>
+  <div class="card-row-wrap">
+    <div class="card-row" id="card-row">
+      <article class="thread-card grounding" data-thread="grounding" role="button" tabindex="0" aria-label="Open Grounding">
+        <div class="card-image"></div>
+        <div class="card-label">Grounding</div>
+      </article>
+      <article class="thread-card righteous" data-thread="righteous" role="button" tabindex="0" aria-label="Open Righteous">
+        <div class="card-label">Righteous</div>
+      </article>
+      <article class="thread-card lifted" data-thread="lifted" role="button" tabindex="0" aria-label="Open Lifted">
+        <div class="card-label">Lifted</div>
+      </article>
     </div>
   </div>
-</div>
 
-<!-- =========================================================== -->
-<!-- 3. MAIN APP (owner + partner share this shell)              -->
-<!-- =========================================================== -->
-<div class="view" id="view-main">
-
-  <div class="partner-banner" id="partner-banner" style="display:none;">
-    Partner view — read only · curated thread
-  </div>
-
-  <nav class="nav">
-    <div class="brand"><b>thecreated</b>.pva</div>
-    <div class="nav-links">
-      <a class="active" data-jump="moodboards">Moodboards</a>
-      <a data-jump="scripts">Scripts</a>
-      <a data-jump="lyrics">Lyrics</a>
-      <a data-jump="notes" id="link-notes">Notes</a>
-    </div>
-    <div class="nav-meta">
-      <span id="nav-name">—</span>
-      <span class="signout" id="signout">Sign out</span>
-    </div>
-  </nav>
-
-  <!-- HERO -->
-  <section class="hero fade-in">
-    <div>
-      <div class="welcome" id="welcome-line">Welcome back</div>
-      <h1 id="hero-headline">A thread of <em>work</em>, in progress.</h1>
-    </div>
-    <div>
-      <p class="lede" id="hero-lede">
-        <strong>thecreated</strong> is a working archive — moodboards, scripts, lyrics, and the
-        notes that hold them together. Updated when the work updates.
-      </p>
-    </div>
-  </section>
-
-  <!-- MOODBOARDS -->
-  <section class="block" id="moodboards">
-    <div class="block-head">
-      <div>
-        <div class="label">01 — Visual</div>
-        <h2>Moodboards</h2>
-      </div>
-      <div class="count">06 boards · ongoing</div>
-    </div>
-
-    <div class="moodgrid">
-      <div class="mood s1"><div class="swatch art-1"></div><div class="meta"><span>Board 01</span><span>Amber</span></div></div>
-      <div class="mood s2"><div class="swatch art-2"></div><div class="meta"><span>Board 02</span><span>Dusk</span></div></div>
-      <div class="mood s3"><div class="swatch art-3"></div><div class="meta"><span>Board 03</span><span>Linen</span></div></div>
-      <div class="mood s4"><div class="swatch art-4"></div><div class="meta"><span>Board 04</span><span>Grain</span></div></div>
-      <div class="mood s5"><div class="swatch art-5"></div><div class="meta"><span>Board 05</span><span>Honey</span></div></div>
-      <div class="mood s6"><div class="swatch art-6"></div><div class="meta"><span>Board 06</span><span>Ember</span></div></div>
-    </div>
-  </section>
-
-  <!-- SCRIPTS -->
-  <section class="block" id="scripts">
-    <div class="block-head">
-      <div>
-        <div class="label">02 — Written</div>
-        <h2>Scripts</h2>
-      </div>
-      <div class="count" id="scripts-count">04 works</div>
-    </div>
-
-    <div class="scripts" id="scripts-list">
-      <!-- rows injected by JS so we can lock for partners -->
-    </div>
-  </section>
-
-  <!-- LYRICS -->
-  <section class="block" id="lyrics">
-    <div class="block-head">
-      <div>
-        <div class="label">03 — Sound</div>
-        <h2>Lyrics</h2>
-      </div>
-      <div class="count" id="lyrics-count">04 fragments</div>
-    </div>
-
-    <div class="lyrics-grid" id="lyrics-grid">
-      <!-- cards injected by JS -->
-    </div>
-  </section>
-
-  <!-- NOTES (owner only) -->
-  <section class="block" id="notes">
-    <div class="block-head">
-      <div>
-        <div class="label">04 — Private</div>
-        <h2>Notes</h2>
-      </div>
-      <div class="count">drafts &amp; threads</div>
-    </div>
-
-    <div class="notes">
-      <div class="note">
-        <div>
-          <div class="top">Idea · 0421</div>
-          <p>Stretch the bridge of <em>Honey</em> by four bars — let the drum drop out before the last line. See if it reads as a sigh.</p>
-        </div>
-        <div class="stamp">Updated · May 12</div>
-      </div>
-      <div class="note">
-        <div>
-          <div class="top">Reference</div>
-          <p>Pull a still from the second moodboard — that dusk gradient — for the back cover. Maybe inverted, maybe not.</p>
-        </div>
-        <div class="stamp">Updated · May 09</div>
-      </div>
-      <div class="note">
-        <div>
-          <div class="top">Reminder</div>
-          <p>Send the cut of <em>Quiet Rooms</em> to the studio by Friday. Add the new outro before sending.</p>
-        </div>
-        <div class="stamp">Updated · May 14</div>
-      </div>
-    </div>
-  </section>
-
-  <footer>
-    <div class="mark">thecreated</div>
-    <div class="meta">
-      <div>© 2026 · all rights reserved</div>
-      <div>thecreated.pva</div>
-      <div>by invitation only</div>
-    </div>
+  <footer class="site-footer">
+    <p class="site-tagline">an attempt at giving God His ROI</p>
+    <button class="thought-stream-btn" id="open-thoughts">thecreated thought stream</button>
   </footer>
-</div>
+</section>
 
-<!-- =========================================================== -->
-<!-- MODAL                                                       -->
-<!-- =========================================================== -->
-<div class="modal" id="modal">
-  <div class="card">
-    <span class="close" id="modal-close">Close ✕</span>
-    <h3 id="modal-title">—</h3>
-    <div class="sub" id="modal-sub">—</div>
-    <pre id="modal-body">—</pre>
-    <div class="locked-note" id="modal-locked" style="display:none;">
-      This thread is shared at preview-length only. The full text is in the private archive.
+<!-- ============================================================
+     THREAD VIEWS
+     ============================================================ -->
+<section id="view-grounding" class="view thread-view grounding-bg">
+  <header class="thread-header">
+    <button class="back-btn" data-back>← back</button>
+    <span class="thread-name">Grounding</span>
+  </header>
+  <div class="thread-stack-wrap">
+    <div class="thread-stack">
+      <article class="thread-panel">
+        <div class="panel-eyebrow">01 · Introduction</div>
+        <h2 class="panel-title">What is Grounding</h2>
+        <p class="panel-body">
+          This thread is about adoration and seeking His face. It's about producing
+          a pleasing fragrance to God. This is the posture where we fall on our
+          knees, put our face to the ground and lift our genuine, revelation-backed
+          worship to our Father. This is what it sounds and looks like. It's marked
+          by a colour. Its output has its roots in scripture. For now this is my
+          attempt at explaining the thread. It's being built for His glory and our joy.
+        </p>
+      </article>
+      <article class="thread-panel">
+        <div class="panel-eyebrow">02 · Sounds like</div>
+        <h2 class="panel-title">Grounding sounds like…</h2>
+        <ul class="panel-list">
+          <li>Adoration</li>
+          <li>Yearning</li>
+          <li>Soaking</li>
+          <li>Multiple voices in a vacuum, each on their own frequency</li>
+          <li>Minimal sound — no drums</li>
+          <li>Voice dominant</li>
+          <li>Few keys and synths</li>
+        </ul>
+      </article>
+      <article class="thread-panel">
+        <div class="panel-eyebrow">03 · Prays like</div>
+        <h2 class="panel-title">Grounding prays like…</h2>
+        <ul class="panel-list">
+          <li>Adoration</li>
+          <li>Submission</li>
+          <li>Provision</li>
+        </ul>
+      </article>
     </div>
   </div>
+</section>
+
+<section id="view-righteous" class="view thread-view righteous-bg">
+  <header class="thread-header">
+    <button class="back-btn" data-back>← back</button>
+    <span class="thread-name">Righteous</span>
+  </header>
+  <div class="thread-stack-wrap">
+    <div class="thread-stack">
+      <article class="thread-panel">
+        <div class="panel-eyebrow">01 · Introduction</div>
+        <h2 class="panel-title">What is Righteous</h2>
+        <p class="panel-body">
+          This thread is about working out our righteousness. It's about producing
+          a pleasing fragrance to God through burnt carnality. This is the posture
+          where we endure with joy and love the tension. It's the tension that cuts
+          off the death around us and makes space only for life. In partnership with
+          the only viable partner, the Holy Spirit. This is what it sounds and looks
+          like. It's marked by a colour. Its output has its roots in scripture. For
+          now this is my attempt at explaining the thread. It's being built for His
+          glory and our joy.
+        </p>
+      </article>
+      <article class="thread-panel">
+        <div class="panel-eyebrow">02 · Sounds like</div>
+        <h2 class="panel-title">Righteous sounds like…</h2>
+        <ul class="panel-list">
+          <li>Atmosphere with pattern foundation</li>
+          <li>Pattern is drums or strings</li>
+          <li>High rhythm</li>
+          <li>Structure and system</li>
+          <li>Pattern dominant</li>
+          <li>Repetitive</li>
+          <li>Chants</li>
+        </ul>
+      </article>
+      <article class="thread-panel">
+        <div class="panel-eyebrow">03 · Prays like</div>
+        <h2 class="panel-title">Righteous prays like…</h2>
+        <ul class="panel-list">
+          <li>Submission</li>
+          <li>Provision</li>
+          <li>Forgiveness</li>
+        </ul>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="view-lifted" class="view thread-view lifted-bg">
+  <header class="thread-header">
+    <button class="back-btn" data-back>← back</button>
+    <span class="thread-name">Lifted</span>
+  </header>
+  <div class="thread-stack-wrap">
+    <div class="thread-stack">
+      <article class="thread-panel">
+        <div class="panel-eyebrow">01 · Introduction</div>
+        <h2 class="panel-title">What is Lifted</h2>
+        <p class="panel-body">
+          Coming soon. This thread is being shaped — when the words are ready
+          they will land here. Until then, sit with the colour and the quiet.
+        </p>
+      </article>
+      <article class="thread-panel">
+        <div class="panel-eyebrow">02 · Sounds like</div>
+        <h2 class="panel-title">Lifted sounds like…</h2>
+        <p class="panel-body">To be written.</p>
+      </article>
+      <article class="thread-panel">
+        <div class="panel-eyebrow">03 · Prays like</div>
+        <h2 class="panel-title">Lifted prays like…</h2>
+        <p class="panel-body">To be written.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     THOUGHTS PAGE
+     ============================================================ -->
+<section id="view-thoughts" class="view">
+  <header class="thoughts-header">
+    <button class="back-btn" data-back style="color: rgba(255,255,255,0.7);">← back</button>
+    <span class="site-meta">thought stream</span>
+  </header>
+  <h1 class="thoughts-title">thoughts</h1>
+  <div class="thoughts-grid" id="thoughts-grid">
+    <!-- thoughts injected by JS -->
+  </div>
+</section>
+
+<!-- ============================================================
+     PORTAL OVERLAY — slow meditative pull-through
+     ============================================================ -->
+<div id="portal" aria-hidden="true">
+  <div id="portal-fill"></div>
 </div>
 
 <script>
-  // -------------------------------------------------------------
-  // DATA
-  // -------------------------------------------------------------
-  const PASSWORD = "partnership";
-  const OWNER_NAMES = ["thecreated", "emmanuel"]; // case-insensitive match
-
-  const SCRIPTS = [
-    {
-      no: "01",
-      title: "Quiet Rooms",
-      blurb: "A short film about the spaces we sit in alone — and what they hold.",
-      stage: "Final draft",
-      date: "May 2026",
-      body:
-`INT. KITCHEN — EARLY MORNING
-
-The light is the kind that doesn't ask permission.
-ANA stands at the sink, holding a cup she hasn't filled.
-
-ANA (V.O.)
-I keep thinking about the rooms that
-remember us, even after we've left.
-
-She turns the tap. The sound is louder than the room.
-
-ANA (V.O., cont'd)
-Maybe that's what a home is.
-Not the walls. The remembering.
-
-CUT TO BLACK.`
-    },
-    {
-      no: "02",
-      title: "Loose Thread",
-      blurb: "A two-hander between an older man and the daughter he didn't raise.",
-      stage: "Second pass",
-      date: "Apr 2026",
-      body:
-`INT. DINER — LATE
-
-He doesn't look up when she sits down.
-She doesn't take off her coat.
-
-HE
-You order yet?
-
-SHE
-I wasn't sure I'd stay.
-
-A long beat. He turns the menu over, not reading.
-
-HE
-Stay long enough to eat.
-That's all I'm asking.
-
-She looks at him. Looks at the door.
-She picks up the menu.`
-    },
-    {
-      no: "03",
-      title: "Honey",
-      blurb: "Pilot — a band on the road, a town that doesn't want them, one good night.",
-      stage: "Outline",
-      date: "Mar 2026",
-      body:
-`PILOT — COLD OPEN
-
-The van smells like gasoline and oranges.
-DEX is driving with one hand and eating with the other.
-
-DEX
-You're going to tell them tonight, right?
-
-JUNE (back seat, tuning)
-I'm going to tell them after.
-
-DEX
-After what?
-
-JUNE
-After they like us.
-
-He laughs. The road keeps going.`
-    },
-    {
-      no: "04",
-      title: "The Slow Hour",
-      blurb: "A monologue — for stage. Forty minutes, one chair, one cigarette never lit.",
-      stage: "Notes",
-      date: "Feb 2026",
-      body:
-`I used to think the hardest hour was the first.
-The one where you sit down and the page is white
-and the room is too big for the chair.
-
-It isn't.
-
-The hardest hour is the one in the middle.
-When you've said enough to be in trouble
-but not enough to be understood.`
-    }
-  ];
-
-  const LYRICS = [
-    {
-      title: "Amber",
-      stage: "Verse · chorus",
-      date: "May 2026",
-      body:
-`I left the porch light on for nobody
-A small mercy, a small mistake
-The amber pulled the moths in close
-The way I used to, for your sake
-
-      Chorus:
-      Burn slow, burn slow
-      There's no one coming home tonight
-      Burn slow, burn slow
-      Just keep the kitchen warm and bright`
-    },
-    {
-      title: "Quiet Rooms",
-      stage: "Full draft",
-      date: "Apr 2026",
-      body:
-`There's a chair you used to sit in
-There's a song you used to hum
-And the walls — they hold the hours
-Like a glass holds where it's from
-
-I'm not sad, I'm just remembering
-And remembering is a kind of stay
-Quiet rooms, quiet rooms
-You held me on the hardest day`
-    },
-    {
-      title: "Honey",
-      stage: "Bridge in progress",
-      date: "Mar 2026",
-      body:
-`Tell me something true and slow
-Like the way the morning lands
-Pour the honey, take your time
-There's nothing waiting on our hands
-
-      (bridge — TBD)
-      Maybe we are the long way home
-      Maybe the long way is the song`
-    },
-    {
-      title: "Ember",
-      stage: "Sketch",
-      date: "Feb 2026",
-      body:
-`We were the last fire on the beach
-We were the smoke that wouldn't leave
-I'd light you twice if I could reach
-I'd light you twice and still believe`
-    }
-  ];
-
-  // -------------------------------------------------------------
-  // STATE + ROUTING
-  // -------------------------------------------------------------
-  const $ = (id) => document.getElementById(id);
-  let isOwner = false;
-  let visitorName = "";
-
+  // ----------------------------------------------------------
+  // View routing
+  // ----------------------------------------------------------
+  const views = document.querySelectorAll('.view');
   function showView(id) {
-    document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
-    $(id).classList.add("active");
-    window.scrollTo({ top: 0, behavior: "instant" });
+    views.forEach(v => v.classList.toggle('active', v.id === id));
   }
 
-  // -------------------------------------------------------------
-  // PASSWORD GATE
-  // -------------------------------------------------------------
-  function submitPassword() {
-    const v = $("pw-input").value.trim().toLowerCase();
-    if (v === PASSWORD) {
-      $("pw-error").classList.remove("show");
-      showView("view-name");
-      setTimeout(() => $("name-input").focus(), 60);
-    } else {
-      $("pw-error").classList.add("show");
-      $("pw-input").value = "";
-      $("pw-input").focus();
-    }
-  }
-  $("pw-input").addEventListener("keydown", (e) => { if (e.key === "Enter") submitPassword(); });
+  // ----------------------------------------------------------
+  // Portal animation — pulls visitor through into a thread
+  // ----------------------------------------------------------
+  const portal = document.getElementById('portal');
+  const portalFill = document.getElementById('portal-fill');
 
-  // -------------------------------------------------------------
-  // NAME GATE
-  // -------------------------------------------------------------
-  function submitName() {
-    const raw = $("name-input").value.trim();
-    if (!raw) {
-      $("name-error").classList.add("show");
-      return;
-    }
-    $("name-error").classList.remove("show");
-    visitorName = raw;
+  const threadColour = {
+    grounding: '#3b0509',
+    righteous: '#15052e',
+    lifted:    '#f0e8d4'
+  };
 
-    const lower = raw.toLowerCase();
-    isOwner = OWNER_NAMES.includes(lower);
+  function pullInto(thread, originX, originY) {
+    portalFill.style.background = threadColour[thread] || '#000';
+    portal.style.setProperty('--px', originX + 'px');
+    portal.style.setProperty('--py', originY + 'px');
 
-    renderApp();
-    showView("view-main");
-  }
-  $("name-submit").addEventListener("click", submitName);
-  $("name-input").addEventListener("keydown", (e) => { if (e.key === "Enter") submitName(); });
-
-  // -------------------------------------------------------------
-  // RENDER APP (owner vs partner)
-  // -------------------------------------------------------------
-  function renderApp() {
-    const firstName = visitorName.split(/\s+/)[0];
-    $("nav-name").textContent = firstName;
-
-    if (isOwner) {
-      // Owner experience
-      $("welcome-line").textContent = "Welcome back";
-      $("hero-headline").innerHTML = "A thread of <em>work</em>, in progress.";
-      $("hero-lede").innerHTML =
-        "<strong>thecreated</strong> is your working archive — moodboards, scripts, lyrics, " +
-        "and the notes that hold them together. Updated when the work updates.";
-      $("partner-banner").style.display = "none";
-      $("notes").style.display = "";
-      $("link-notes").style.display = "";
-    } else {
-      // Partner experience
-      $("welcome-line").textContent = "Welcome to Thecreated's threads";
-      $("hero-headline").innerHTML = "A curated <em>thread</em>, shared with you.";
-      $("hero-lede").innerHTML =
-        "Hello <strong>" + escapeHtml(firstName) + "</strong>. This is a read-only preview of " +
-        "<strong>thecreated</strong> — moodboards open, scripts and lyrics in fragments. " +
-        "Sit with it.";
-      $("partner-banner").style.display = "";
-      $("notes").style.display = "none";
-      $("link-notes").style.display = "none";
-    }
-
-    renderScripts();
-    renderLyrics();
-  }
-
-  function renderScripts() {
-    const list = $("scripts-list");
-    list.innerHTML = "";
-    SCRIPTS.forEach((s, i) => {
-      // Partner: only first 2 unlocked, rest locked
-      const locked = !isOwner && i >= 2;
-      const row = document.createElement("div");
-      row.className = "script-row" + (locked ? " locked" : "");
-      row.innerHTML = `
-        <div class="num">${s.no}</div>
-        <div class="title">${s.title}</div>
-        <div class="blurb">${s.blurb}</div>
-        <div><span class="stage">${locked ? "By request" : s.stage}</span></div>
-        <div class="date">${s.date}</div>
-      `;
-      row.addEventListener("click", () => openModal(s.title, s.stage + " · " + s.date, s.body, locked));
-      list.appendChild(row);
+    requestAnimationFrame(() => {
+      portal.classList.add('firing');
     });
-    $("scripts-count").textContent =
-      (SCRIPTS.length.toString().padStart(2, "0")) + " works" + (isOwner ? "" : " · 02 in preview");
+
+    setTimeout(() => {
+      showView('view-' + thread);
+      window.scrollTo(0, 0);
+    }, 1500);
+
+    setTimeout(() => {
+      portal.classList.remove('firing');
+      portalFill.style.transition = 'none';
+      portalFill.getBoundingClientRect(); // reflow
+      portalFill.style.transition = '';
+    }, 2100);
   }
 
-  function renderLyrics() {
-    const grid = $("lyrics-grid");
-    grid.innerHTML = "";
-    LYRICS.forEach((l, i) => {
-      const locked = !isOwner && i >= 1; // partner gets first one in full, rest as preview
-      const card = document.createElement("div");
-      card.className = "lyric" + (locked ? " locked" : "");
-      const text = locked ? previewLyric(l.body) : l.body;
-      card.innerHTML = `
-        <div>
-          <div class="label">Fragment · ${String(i + 1).padStart(2, "0")}</div>
-          <h3>${l.title}</h3>
-          <pre>${escapeHtml(text)}</pre>
-        </div>
-        <div class="foot">
-          <span>${locked ? "Preview" : l.stage}</span>
-          <span>${l.date}</span>
-        </div>
-      `;
-      card.addEventListener("click", () => openModal(l.title, l.stage + " · " + l.date,
-        locked ? previewLyric(l.body) : l.body, locked));
-      grid.appendChild(card);
-    });
-    $("lyrics-count").textContent =
-      (LYRICS.length.toString().padStart(2, "0")) + " fragments" + (isOwner ? "" : " · 01 in full");
-  }
-
-  function previewLyric(body) {
-    const lines = body.split("\n");
-    return lines.slice(0, 4).join("\n") + "\n…";
-  }
-
-  // -------------------------------------------------------------
-  // MODAL
-  // -------------------------------------------------------------
-  function openModal(title, sub, body, locked) {
-    $("modal-title").textContent = title;
-    $("modal-sub").textContent = sub;
-    $("modal-body").textContent = body;
-    $("modal-locked").style.display = locked ? "" : "none";
-    $("modal").classList.add("show");
-  }
-  $("modal-close").addEventListener("click", () => $("modal").classList.remove("show"));
-  $("modal").addEventListener("click", (e) => { if (e.target === $("modal")) $("modal").classList.remove("show"); });
-  document.addEventListener("keydown", (e) => { if (e.key === "Escape") $("modal").classList.remove("show"); });
-
-  // -------------------------------------------------------------
-  // NAV
-  // -------------------------------------------------------------
-  document.querySelectorAll(".nav-links a").forEach(a => {
-    a.addEventListener("click", (e) => {
-      e.preventDefault();
-      const id = a.getAttribute("data-jump");
-      document.querySelectorAll(".nav-links a").forEach(x => x.classList.remove("active"));
-      a.classList.add("active");
-      const el = $(id);
-      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  // ----------------------------------------------------------
+  // Wire up the homepage cards
+  // ----------------------------------------------------------
+  document.querySelectorAll('.thread-card').forEach(card => {
+    const open = () => {
+      const thread = card.dataset.thread;
+      const rect = card.getBoundingClientRect();
+      const ox = rect.left + rect.width / 2;
+      const oy = rect.top + rect.height / 2;
+      pullInto(thread, ox, oy);
+    };
+    card.addEventListener('click', open);
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
     });
   });
 
-  // Sign out
-  $("signout").addEventListener("click", () => {
-    $("pw-input").value = "";
-    $("name-input").value = "";
-    visitorName = "";
-    isOwner = false;
-    showView("view-password");
-    setTimeout(() => $("pw-input").focus(), 60);
+  // ----------------------------------------------------------
+  // Back buttons — return to homepage
+  // ----------------------------------------------------------
+  document.querySelectorAll('[data-back]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      portalFill.style.background = '#000';
+      portal.style.setProperty('--px', '50%');
+      portal.style.setProperty('--py', '50%');
+      portal.classList.add('firing');
+      setTimeout(() => {
+        showView('view-home');
+        window.scrollTo(0, 0);
+      }, 900);
+      setTimeout(() => {
+        portal.classList.remove('firing');
+      }, 1300);
+    });
   });
 
-  // -------------------------------------------------------------
-  // utils
-  // -------------------------------------------------------------
-  function escapeHtml(s) {
-    return s.replace(/[&<>"']/g, (c) => ({
-      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
-    }[c]));
-  }
+  // ----------------------------------------------------------
+  // Thoughts page — open + populate
+  // ----------------------------------------------------------
+  const THOUGHTS = [
+    "Adoration is not performance.",
+    "Fall on the face. Lift the voice.",
+    "The quiet is not empty.",
+    "Burn the carnality. Keep the joy.",
+    "Endurance is its own worship.",
+    "A pleasing fragrance to God.",
+    "Multiple voices, one frequency: His.",
+    "Submission is the doorway.",
+    "Repetition is not boredom — it's the rhythm of remembering.",
+    "Make space only for life.",
+    "Provision follows posture.",
+    "The Holy Spirit is the only viable partner."
+  ];
 
-  // boot — defer focus on the password tile until the burst-in animation finishes
-  // (slow reveal + hold ≈ 7.3s, then burst ≈ 3s → settles ~10.5s)
-  window.addEventListener("load", () => {
-    setTimeout(() => $("pw-input").focus(), 10500);
+  const thoughtsGrid = document.getElementById('thoughts-grid');
+  THOUGHTS.forEach(t => {
+    const div = document.createElement('div');
+    div.className = 'thought-card';
+    div.textContent = t;
+    thoughtsGrid.appendChild(div);
+  });
+
+  document.getElementById('open-thoughts').addEventListener('click', () => {
+    portalFill.style.background = '#0a0a0a';
+    portal.style.setProperty('--px', '50%');
+    portal.style.setProperty('--py', '100%');
+    portal.classList.add('firing');
+    setTimeout(() => {
+      showView('view-thoughts');
+      window.scrollTo(0, 0);
+    }, 1100);
+    setTimeout(() => {
+      portal.classList.remove('firing');
+    }, 1500);
   });
 </script>
 </body>
