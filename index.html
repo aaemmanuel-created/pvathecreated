@@ -79,8 +79,9 @@
   }
   .card-row {
     display: flex;
-    gap: 28px;
-    padding: 0 28vw 0 6vw;
+    gap: 22px;
+    padding: 0 8vw;
+    justify-content: center;
     overflow-x: auto;
     overflow-y: hidden;
     scroll-snap-type: x mandatory;
@@ -92,7 +93,8 @@
   .card-row::-webkit-scrollbar { display: none; }
 
   .thread-card {
-    flex: 0 0 44vw;
+    flex: 0 0 26vw;
+    max-width: 360px;
     aspect-ratio: 5 / 6;
     border-radius: 22px;
     position: relative;
@@ -438,8 +440,8 @@
   @media (max-width: 768px) {
     .site-header { padding: 22px 22px 0; }
     .site-meta { display: none; }
-    .card-row { padding: 0 18vw 0 5vw; gap: 20px; }
-    .thread-card { flex-basis: 70vw; }
+    .card-row { padding: 0 14vw 0 6vw; gap: 18px; justify-content: flex-start; }
+    .thread-card { flex-basis: 56vw; max-width: none; }
     .site-footer { padding: 0 22px 28px; gap: 14px; }
     .thread-header { padding: 20px 22px; }
     .thread-stack { padding: 0 6vw; }
