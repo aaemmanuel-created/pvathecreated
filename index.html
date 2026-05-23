@@ -191,18 +191,26 @@
     filter: blur(4px);
   }
 
-  /* Card label */
+  /* Card label — centered, blended into the glass surface.
+     mix-blend-mode: overlay makes the text take on the texture
+     beneath it, so it reads as etched into the pane rather than
+     printed on top. */
   .card-label {
     position: absolute;
-    left: 22px;
-    bottom: 18px;
-    font-size: 11px;
-    letter-spacing: 0.28em;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 26px;
+    letter-spacing: 0.4em;
     text-transform: uppercase;
-    color: rgba(255,255,255,0.92);
+    color: rgba(255,255,255,0.95);
     font-weight: 500;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.6);
-    z-index: 2;
+    text-align: center;
+    white-space: nowrap;
+    pointer-events: none;
+    mix-blend-mode: overlay;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.18);
+    z-index: 3;
   }
 
   /* Image-backed cards: GROUNDING (purple), RIGHTEOUS (red), LIFTED
@@ -235,11 +243,8 @@
   .thread-card.lifted::before { opacity: 0.18; mix-blend-mode: overlay; }
   .thread-card.lifted::after  { opacity: 0.25; }
 
-  /* LIFTED label sits on a bright surface — dark text reads better */
-  .thread-card.lifted .card-label {
-    color: rgba(0,0,0,0.82);
-    text-shadow: 0 1px 2px rgba(255,255,255,0.35);
-  }
+  /* (LIFTED label inherits the centered blended style — no override
+     needed; mix-blend-mode handles the contrast automatically.) */
 
   /* Thought stream button (used in the action row under the cards) */
   .thought-stream-btn {
@@ -637,6 +642,7 @@
     .site-meta { display: none; }
     .card-row { padding: 0 14vw 0 6vw; gap: 18px; justify-content: flex-start; }
     .thread-card { flex-basis: 56vw; max-width: none; }
+    .card-label { font-size: 18px; letter-spacing: 0.32em; }
     .home-center { gap: 20px; }
     .action-row { gap: 10px; padding: 0 22px; }
     .thread-header { padding: 20px 22px; }
