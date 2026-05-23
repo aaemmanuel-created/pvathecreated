@@ -243,6 +243,174 @@
   }
 
   /* ============================================================
+     PARTNER tab — sits bottom-left of the homepage, leads to a
+     password gate, then the workshop view
+     ============================================================ */
+  .partner-tab {
+    position: absolute;
+    left: 36px;
+    bottom: 36px;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.22);
+    color: rgba(255,255,255,0.72);
+    padding: 8px 18px;
+    border-radius: 999px;
+    font-size: 10px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    font-family: inherit;
+  }
+  .partner-tab:hover {
+    border-color: rgba(255,255,255,0.55);
+    color: #fff;
+    background: rgba(255,255,255,0.04);
+  }
+
+  /* ============================================================
+     PARTNER PASSWORD GATE
+     ============================================================ */
+  #view-partner-gate {
+    background: #000;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  .pg-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 28px 36px;
+    flex-shrink: 0;
+  }
+  .pg-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0 36px;
+    gap: 22px;
+  }
+  .pg-prompt {
+    font-size: 12px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.55);
+    margin: 0;
+    text-align: center;
+  }
+  .pg-input {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.22);
+    border-radius: 999px;
+    color: #fff;
+    padding: 12px 22px;
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    text-align: center;
+    width: min(260px, 80vw);
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.3s ease, background 0.3s ease;
+    caret-color: #fff;
+  }
+  .pg-input:focus {
+    border-color: rgba(255,255,255,0.6);
+    background: rgba(255,255,255,0.06);
+  }
+  .pg-error {
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(255,120,120,0.85);
+    min-height: 14px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .pg-error.show { opacity: 1; }
+
+  /* ============================================================
+     PARTNER WORKSHOP — moodboards / scripts / lyrics
+     ============================================================ */
+  #view-partner-shop {
+    background: #0a0a0a;
+    color: #fff;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  .shop-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 28px 36px;
+  }
+  .shop-title {
+    font-size: 16vw;
+    line-height: 0.95;
+    letter-spacing: -0.04em;
+    font-weight: 400;
+    color: rgba(255,255,255,0.06);
+    margin: 0;
+    padding: 4vh 36px 4vh;
+    text-transform: lowercase;
+    pointer-events: none;
+    user-select: none;
+  }
+  .shop-section {
+    padding: 0 36px 56px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .shop-section-title {
+    font-size: 11px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.55);
+    margin: 0 0 18px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .shop-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+  .shop-item {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 24px 22px;
+    min-height: 160px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.3s ease, border-color 0.3s ease, background 0.3s ease;
+  }
+  .shop-item:hover {
+    transform: translateY(-2px);
+    border-color: rgba(255,255,255,0.18);
+    background: rgba(255,255,255,0.06);
+  }
+  .shop-item-eyebrow {
+    font-size: 10px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+  }
+  .shop-item-title {
+    font-size: 16px;
+    margin: 14px 0 4px;
+    color: rgba(255,255,255,0.95);
+  }
+  .shop-item-note {
+    font-size: 12px;
+    line-height: 1.5;
+    color: rgba(255,255,255,0.55);
+  }
+
+  /* ============================================================
      PORTAL ANIMATION
      The portal layer sits above everything during the transition.
      A circle clip-path expands from the click point, the colour
@@ -461,6 +629,11 @@
     .panel-title { font-size: 22px; }
     .thoughts-grid { grid-template-columns: repeat(2, 1fr); padding: 0 22px 48px; gap: 14px; }
     .thoughts-title { padding: 3vh 22px 4vh; font-size: 24vw; }
+    .partner-tab { left: 22px; bottom: 22px; padding: 7px 14px; font-size: 9px; }
+    .shop-header { padding: 20px 22px; }
+    .shop-section { padding: 0 22px 40px; }
+    .shop-grid { grid-template-columns: 1fr; gap: 12px; }
+    .shop-title { padding: 3vh 22px 4vh; font-size: 24vw; }
   }
 </style>
 </head>
@@ -494,6 +667,123 @@
     <p class="site-tagline">an attempt at giving God His ROI</p>
     <button class="thought-stream-btn" id="open-thoughts">thecreated thought stream</button>
   </footer>
+
+  <button class="partner-tab" id="open-partner">Partner</button>
+</section>
+
+<!-- ============================================================
+     PARTNER PASSWORD GATE
+     ============================================================ -->
+<section id="view-partner-gate" class="view">
+  <header class="pg-header">
+    <button class="back-btn" data-back style="color: rgba(255,255,255,0.7);">← back</button>
+    <span class="site-meta">partner</span>
+  </header>
+  <div class="pg-body">
+    <p class="pg-prompt">enter the password to continue</p>
+    <input
+      type="password"
+      id="partner-pw"
+      class="pg-input"
+      placeholder=""
+      autocomplete="off"
+      spellcheck="false"
+      aria-label="Partner password"
+    />
+    <p class="pg-error" id="partner-error">incorrect — try again</p>
+  </div>
+</section>
+
+<!-- ============================================================
+     PARTNER WORKSHOP — what's being worked on
+     ============================================================ -->
+<section id="view-partner-shop" class="view">
+  <header class="shop-header">
+    <button class="back-btn" data-back style="color: rgba(255,255,255,0.7);">← back</button>
+    <span class="site-meta">in the workshop</span>
+  </header>
+  <h1 class="shop-title">workshop</h1>
+
+  <div class="shop-section">
+    <h2 class="shop-section-title">Moodboards</h2>
+    <div class="shop-grid">
+      <div class="shop-item">
+        <span class="shop-item-eyebrow">01</span>
+        <div>
+          <h3 class="shop-item-title">Grounding — visual palette</h3>
+          <p class="shop-item-note">Deep crimson, soft candlelight, faces turned downward, the room dim. To be filled in.</p>
+        </div>
+      </div>
+      <div class="shop-item">
+        <span class="shop-item-eyebrow">02</span>
+        <div>
+          <h3 class="shop-item-title">Righteous — visual palette</h3>
+          <p class="shop-item-note">Deep violet, hard line, structure, repetition. To be filled in.</p>
+        </div>
+      </div>
+      <div class="shop-item">
+        <span class="shop-item-eyebrow">03</span>
+        <div>
+          <h3 class="shop-item-title">Lifted — visual palette</h3>
+          <p class="shop-item-note">Cream, warm light, open sky, lifted hands. To be filled in.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="shop-section">
+    <h2 class="shop-section-title">Scripts</h2>
+    <div class="shop-grid">
+      <div class="shop-item">
+        <span class="shop-item-eyebrow">DRAFT</span>
+        <div>
+          <h3 class="shop-item-title">Grounding — opening invocation</h3>
+          <p class="shop-item-note">The first words spoken into the room before any sound. Placeholder until the draft is dropped in.</p>
+        </div>
+      </div>
+      <div class="shop-item">
+        <span class="shop-item-eyebrow">DRAFT</span>
+        <div>
+          <h3 class="shop-item-title">Righteous — call &amp; response</h3>
+          <p class="shop-item-note">Chant lines, repeated, building. Placeholder.</p>
+        </div>
+      </div>
+      <div class="shop-item">
+        <span class="shop-item-eyebrow">DRAFT</span>
+        <div>
+          <h3 class="shop-item-title">Lifted — closing benediction</h3>
+          <p class="shop-item-note">Sending the room out. Placeholder.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="shop-section">
+    <h2 class="shop-section-title">Lyrics</h2>
+    <div class="shop-grid">
+      <div class="shop-item">
+        <span class="shop-item-eyebrow">WORKING</span>
+        <div>
+          <h3 class="shop-item-title">Adoration — verse one</h3>
+          <p class="shop-item-note">First pass, rough. Placeholder for the lyric file.</p>
+        </div>
+      </div>
+      <div class="shop-item">
+        <span class="shop-item-eyebrow">WORKING</span>
+        <div>
+          <h3 class="shop-item-title">Endurance — chorus</h3>
+          <p class="shop-item-note">Hook idea. Placeholder.</p>
+        </div>
+      </div>
+      <div class="shop-item">
+        <span class="shop-item-eyebrow">WORKING</span>
+        <div>
+          <h3 class="shop-item-title">Provision — bridge</h3>
+          <p class="shop-item-note">Stub. Placeholder.</p>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>
 
 <!-- ============================================================
@@ -758,6 +1048,72 @@
     setTimeout(() => {
       portal.classList.remove('firing');
     }, 1500);
+  });
+
+  // ----------------------------------------------------------
+  // PARTNER tab — open the password gate, then the workshop
+  // ----------------------------------------------------------
+  const PARTNER_PW = "god'sroi"; // case-insensitive compare below
+
+  document.getElementById('open-partner').addEventListener('click', () => {
+    portalFill.style.background = '#000';
+    portal.style.setProperty('--px', '36px');
+    portal.style.setProperty('--py', '100%');
+    portal.classList.add('firing');
+    setTimeout(() => {
+      showView('view-partner-gate');
+      window.scrollTo(0, 0);
+      // focus the password input after the transition settles
+      setTimeout(() => document.getElementById('partner-pw').focus(), 200);
+    }, 1100);
+    setTimeout(() => {
+      portal.classList.remove('firing');
+    }, 1500);
+  });
+
+  const partnerPwInput = document.getElementById('partner-pw');
+  const partnerError = document.getElementById('partner-error');
+
+  function tryPartnerPassword() {
+    const val = partnerPwInput.value.trim();
+    if (val.toLowerCase() === PARTNER_PW) {
+      partnerError.classList.remove('show');
+      // dim sweep into the workshop
+      portalFill.style.background = '#0a0a0a';
+      portal.style.setProperty('--px', '50%');
+      portal.style.setProperty('--py', '50%');
+      portal.classList.add('firing');
+      setTimeout(() => {
+        showView('view-partner-shop');
+        window.scrollTo(0, 0);
+        partnerPwInput.value = '';
+      }, 1100);
+      setTimeout(() => {
+        portal.classList.remove('firing');
+      }, 1500);
+    } else {
+      partnerError.classList.add('show');
+      partnerPwInput.value = '';
+      // gentle shake
+      partnerPwInput.animate(
+        [
+          { transform: 'translateX(0)' },
+          { transform: 'translateX(-6px)' },
+          { transform: 'translateX(6px)' },
+          { transform: 'translateX(-4px)' },
+          { transform: 'translateX(4px)' },
+          { transform: 'translateX(0)' }
+        ],
+        { duration: 320, easing: 'ease-out' }
+      );
+      setTimeout(() => partnerPwInput.focus(), 100);
+    }
+  }
+
+  partnerPwInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); tryPartnerPassword(); }
+    // hide the error as soon as they start typing again
+    if (partnerError.classList.contains('show')) partnerError.classList.remove('show');
   });
 </script>
 </body>
