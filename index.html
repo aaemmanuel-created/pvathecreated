@@ -205,11 +205,12 @@
     z-index: 2;
   }
 
-  /* Image-backed cards: GROUNDING (purple texture) and RIGHTEOUS
-     (red texture). The image sits below the ::before sheen so the
-     glass highlight still reads. */
+  /* Image-backed cards: GROUNDING (purple), RIGHTEOUS (red), LIFTED
+     (white). The image sits below the ::before sheen so the glass
+     highlight still reads. */
   .thread-card.grounding .card-image,
-  .thread-card.righteous .card-image {
+  .thread-card.righteous .card-image,
+  .thread-card.lifted .card-image {
     position: absolute; inset: 0; border-radius: inherit;
     background-size: cover;
     background-position: center;
@@ -218,9 +219,11 @@
   }
   .thread-card.grounding .card-image { background-image: url('grounding.jpg'); }
   .thread-card.righteous .card-image { background-image: url('righteous.jpg'); }
+  .thread-card.lifted    .card-image { background-image: url('lifted.jpg'); }
 
-  /* Image-backed cards still get the meniscus highlight; just dial
-     down the inner sheen so the photograph reads as the main surface */
+  /* Image-backed cards still get the meniscus highlight; dial down
+     the inner sheen so the photograph reads as the main surface.
+     LIFTED is light so dim the highlights further. */
   .thread-card.grounding::before,
   .thread-card.righteous::before {
     opacity: 0.45;
@@ -228,6 +231,14 @@
   .thread-card.grounding::after,
   .thread-card.righteous::after {
     opacity: 0.55;
+  }
+  .thread-card.lifted::before { opacity: 0.18; mix-blend-mode: overlay; }
+  .thread-card.lifted::after  { opacity: 0.25; }
+
+  /* LIFTED label sits on a bright surface — dark text reads better */
+  .thread-card.lifted .card-label {
+    color: rgba(0,0,0,0.82);
+    text-shadow: 0 1px 2px rgba(255,255,255,0.35);
   }
 
   /* Thought stream button (used in the action row under the cards) */
@@ -659,6 +670,7 @@
         <div class="card-label">Righteous</div>
       </article>
       <article class="thread-card lifted" data-thread="lifted" role="button" tabindex="0" aria-label="Open Lifted">
+        <div class="card-image"></div>
         <div class="card-label">Lifted</div>
       </article>
     </div>
