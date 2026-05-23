@@ -205,17 +205,29 @@
     z-index: 2;
   }
 
-  /* Optional image overlay for GROUNDING — drop a file named
-     grounding.jpg next to index.html and the rule below will use
-     it. Gradient stays behind as a fallback. */
-  .thread-card.grounding .card-image {
+  /* Image-backed cards: GROUNDING (purple texture) and RIGHTEOUS
+     (red texture). The image sits below the ::before sheen so the
+     glass highlight still reads. */
+  .thread-card.grounding .card-image,
+  .thread-card.righteous .card-image {
     position: absolute; inset: 0; border-radius: inherit;
-    background-image: url('grounding.jpg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    opacity: 0; /* set to 1 once grounding.jpg is added */
-    transition: opacity 0.6s ease;
+    z-index: 0;
+  }
+  .thread-card.grounding .card-image { background-image: url('grounding.jpg'); }
+  .thread-card.righteous .card-image { background-image: url('righteous.jpg'); }
+
+  /* Image-backed cards still get the meniscus highlight; just dial
+     down the inner sheen so the photograph reads as the main surface */
+  .thread-card.grounding::before,
+  .thread-card.righteous::before {
+    opacity: 0.45;
+  }
+  .thread-card.grounding::after,
+  .thread-card.righteous::after {
+    opacity: 0.55;
   }
 
   /* Thought stream button (used in the action row under the cards) */
@@ -643,6 +655,7 @@
         <div class="card-label">Grounding</div>
       </article>
       <article class="thread-card righteous" data-thread="righteous" role="button" tabindex="0" aria-label="Open Righteous">
+        <div class="card-image"></div>
         <div class="card-label">Righteous</div>
       </article>
       <article class="thread-card lifted" data-thread="lifted" role="button" tabindex="0" aria-label="Open Lifted">
