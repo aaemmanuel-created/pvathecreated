@@ -5,7 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>thecreated</title>
 <meta name="description" content="thecreated — an attempt at giving God His ROI." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&display=swap" rel="stylesheet" />
 <style>
+  /* Prefer locally-installed Petapon (the one in Canva). If a
+     visitor doesn't have it, fall through to Caveat from Google. */
+  @font-face {
+    font-family: 'Petapon';
+    src: local('Petapon'), local('Pepaton'), local('Petapon Regular');
+    font-display: swap;
+  }
   /* ============================================================
      Reset & base
      ============================================================ */
@@ -103,29 +113,73 @@
   }
   .card-row::-webkit-scrollbar { display: none; }
 
-  .thread-card {
+  /* Each tile + handwritten name sit in a vertical stack. The stack
+     owns the sizing; the card just fills its parent. */
+  .tile-stack {
     flex: 0 0 26vw;
     max-width: 360px;
-    aspect-ratio: 5 / 6;
-    border-radius: 22px;
-    position: relative;
-    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 22px;
     scroll-snap-align: start;
-    overflow: hidden;
-    transition: transform 0.6s cubic-bezier(0.22, 0.61, 0.36, 1),
-                box-shadow 0.6s ease;
     opacity: 0;
     animation: cardEnter 1.6s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
   }
-  .thread-card:nth-child(1) { animation-delay: 0.3s; }
-  .thread-card:nth-child(2) { animation-delay: 0.55s; }
-  .thread-card:nth-child(3) { animation-delay: 0.8s; }
+  .tile-stack:nth-child(1) { animation-delay: 0.3s; }
+  .tile-stack:nth-child(2) { animation-delay: 0.55s; }
+  .tile-stack:nth-child(3) { animation-delay: 0.8s; }
   @keyframes cardEnter {
     from { opacity: 0; transform: translateY(18px) scale(0.985); }
     to   { opacity: 1; transform: translateY(0) scale(1); }
   }
 
-  .thread-card:hover { transform: translateY(-4px) scale(1.012); }
+  .thread-card {
+    width: 100%;
+    aspect-ratio: 5 / 6;
+    border-radius: 22px;
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+    transition: transform 0.55s cubic-bezier(0.22, 0.61, 0.36, 1),
+                box-shadow 0.55s ease;
+  }
+
+  /* Hover the stack → tile lifts, name lights up */
+  .tile-stack:hover .thread-card {
+    transform: translateY(-14px) scale(1.02);
+  }
+
+  /* Handwritten name under each tile. Default dim grey — reads as
+     a near-shadow against the black background. */
+  .tile-name {
+    font-family: 'Petapon', 'Caveat', 'Brush Script MT', cursive;
+    font-size: 30px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.16);
+    text-align: center;
+    margin: 0;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    pointer-events: none;
+    transition: color 0.55s ease, text-shadow 0.55s ease, transform 0.55s ease;
+  }
+  .tile-stack:hover .tile-name {
+    transform: translateY(-2px);
+  }
+  /* Per-tile glow on hover — the name lights up in the tile's hue */
+  .stack-grounding:hover .tile-name {
+    color: #c89bf2;
+    text-shadow: 0 0 22px rgba(180, 120, 230, 0.55), 0 0 6px rgba(180, 120, 230, 0.35);
+  }
+  .stack-righteous:hover .tile-name {
+    color: #f0807a;
+    text-shadow: 0 0 22px rgba(228, 80, 80, 0.55), 0 0 6px rgba(228, 80, 80, 0.35);
+  }
+  .stack-lifted:hover .tile-name {
+    color: #f4dfa3;
+    text-shadow: 0 0 24px rgba(232, 200, 120, 0.6), 0 0 6px rgba(232, 200, 120, 0.4);
+  }
 
   /* Shared 3D glass tile — colourless, translucent, sculpted by light.
      All three cards share this base. Differentiation is via label only. */
@@ -642,8 +696,8 @@
     .site-header { padding: 22px 22px 0; }
     .site-meta { display: none; }
     .card-row { padding: 0 14vw 0 6vw; gap: 18px; justify-content: flex-start; }
-    .thread-card { flex-basis: 56vw; max-width: none; }
-    .card-label { font-size: 22px; letter-spacing: 0.26em; }
+    .tile-stack { flex-basis: 56vw; max-width: none; gap: 16px; }
+    .tile-name { font-size: 24px; }
     .home-center { gap: 20px; }
     .action-row { gap: 10px; padding: 0 22px; }
     .thread-header { padding: 20px 22px; }
@@ -668,15 +722,24 @@
 <section id="view-home" class="view active">
   <div class="home-center">
     <div class="card-row" id="card-row">
-      <article class="thread-card grounding" data-thread="grounding" role="button" tabindex="0" aria-label="Open Grounding">
-        <div class="card-image"></div>
-      </article>
-      <article class="thread-card righteous" data-thread="righteous" role="button" tabindex="0" aria-label="Open Righteous">
-        <div class="card-image"></div>
-      </article>
-      <article class="thread-card lifted" data-thread="lifted" role="button" tabindex="0" aria-label="Open Lifted">
-        <div class="card-image"></div>
-      </article>
+      <div class="tile-stack stack-grounding">
+        <article class="thread-card grounding" data-thread="grounding" role="button" tabindex="0" aria-label="Open Grounding">
+          <div class="card-image"></div>
+        </article>
+        <p class="tile-name">Grounding</p>
+      </div>
+      <div class="tile-stack stack-righteous">
+        <article class="thread-card righteous" data-thread="righteous" role="button" tabindex="0" aria-label="Open Righteous">
+          <div class="card-image"></div>
+        </article>
+        <p class="tile-name">Righteous</p>
+      </div>
+      <div class="tile-stack stack-lifted">
+        <article class="thread-card lifted" data-thread="lifted" role="button" tabindex="0" aria-label="Open Lifted">
+          <div class="card-image"></div>
+        </article>
+        <p class="tile-name">Lifted</p>
+      </div>
     </div>
 
     <div class="action-row">
