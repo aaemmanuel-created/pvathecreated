@@ -393,27 +393,28 @@
     flex: 1;
     display: flex;
     align-items: center;
-    justify-content: center;
-    padding: 0 36px;
+    justify-content: flex-start;
+    padding: 0 8vw;
   }
   .welcome-block {
-    max-width: 620px;
+    max-width: 680px;
     width: 100%;
     text-align: left;
   }
   .welcome-message {
-    font-size: 26px;
-    line-height: 1.5;
-    font-weight: 500;
-    margin: 0 0 22px;
-    letter-spacing: 0.005em;
-    /* Purple → red → white-gold gradient on the text itself */
+    font-size: 32px;
+    line-height: 1.4;
+    font-weight: 600;
+    margin: 0 0 26px;
+    letter-spacing: 0.002em;
+    /* Deep saturated purple → red → bronze-gold so the text reads
+       cleanly on the cream background */
     background: linear-gradient(95deg,
-      #4a1f7a 0%,
-      #6b2cb8 22%,
-      #b03844 50%,
-      #c47840 76%,
-      #b89860 100%);
+      #2a0f4d 0%,
+      #4a1f7a 22%,
+      #7a1024 50%,
+      #944a18 78%,
+      #7a5a1e 100%);
     -webkit-background-clip: text;
             background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -438,7 +439,7 @@
     100% { opacity: 0; transform: translateY(-10px); }
   }
   @media (max-width: 768px) {
-    .welcome-message { font-size: 20px; line-height: 1.55; margin-bottom: 18px; }
+    .welcome-message { font-size: 22px; line-height: 1.5; margin-bottom: 20px; font-weight: 600; }
     .welcome-body { padding: 0 26px; }
   }
 
