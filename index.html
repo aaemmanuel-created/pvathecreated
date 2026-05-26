@@ -383,6 +383,15 @@
     display: flex;
     flex-direction: column;
     height: 100%;
+    cursor: pointer; /* hint that you can tap to skip */
+    transition: background 0.7s ease;
+  }
+  /* When tabs/password are revealed, the room turns pure white but
+     the grain stays. Cursor goes default — no more tap-to-skip. */
+  #view-partner-welcome.tabs-shown,
+  #view-partner-welcome.prompt-shown {
+    background: #ffffff;
+    cursor: default;
   }
   /* Film-grain noise layer — SVG turbulence rendered once, repeated.
      Sits above the bg colour, below content, multiplied so it darkens
@@ -460,6 +469,15 @@
     50%  { opacity: 1; transform: translateY(0); }
     93%  { opacity: 1; transform: translateY(0); }
     100% { opacity: 0; transform: translateY(-4px); }
+  }
+  /* When the user taps to skip ahead, kill the welcome animation
+     and let CSS transition fade the message out fast. */
+  #view-partner-welcome.tabs-shown .welcome-message,
+  #view-partner-welcome.prompt-shown .welcome-message {
+    animation: none !important;
+    opacity: 0;
+    transform: translateY(-4px);
+    transition: opacity 0.45s ease-out, transform 0.45s ease-out;
   }
   /* After the message fades out, three tabs appear. Each is a
      left-aligned text link with an arrow that gradient-fills on
@@ -1458,8 +1476,28 @@
   });
 
   // ----------------------------------------------------------
-  // PARTNER tab — cinematic welcome, then straight to the workshop
+  // PARTNER tab — cinematic welcome → tap to skip → tabs → gate
   // ----------------------------------------------------------
+  let welcomeFastForwardTimer = null;
+
+  function fastForwardWelcome() {
+    const welcomeView = document.getElementById('view-partner-welcome');
+    if (!welcomeView.classList.contains('firing')) return;
+    if (welcomeFastForwardTimer) {
+      clearTimeout(welcomeFastForwardTimer);
+      welcomeFastForwardTimer = null;
+    }
+    welcomeView.classList.remove('firing');
+    welcomeView.classList.add('tabs-shown');
+  }
+
+  // Tap anywhere on the welcome (during the fade phase) to skip to tabs.
+  // Clicks on interactive children (tabs, password input, back btn) pass through.
+  document.getElementById('view-partner-welcome').addEventListener('click', (e) => {
+    if (e.target.closest('.partner-tab-link, .pp-input, .back-btn, .password-prompt, .partner-tabs')) return;
+    fastForwardWelcome();
+  });
+
   document.getElementById('open-partner').addEventListener('click', () => {
     portalFill.style.background = '#000';
     portal.style.setProperty('--px', '50%');
@@ -1481,8 +1519,10 @@
 
     // After the welcome animation completes (14s for the first
     // paragraph, +1.4s stagger for the second), fade in the tabs.
+    // Stored in a var so tap-to-skip can clearTimeout it.
     const PARTNER_WELCOME_MS = 14000 + 1400;
-    setTimeout(() => {
+    welcomeFastForwardTimer = setTimeout(() => {
+      welcomeFastForwardTimer = null;
       // Only proceed if the user is still on the welcome screen
       // (they may have backed out)
       if (!welcomeView.classList.contains('active')) {
