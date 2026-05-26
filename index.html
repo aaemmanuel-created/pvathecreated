@@ -375,6 +375,50 @@
   }
 
   /* ============================================================
+     PARTNER WELCOME — slow fade-in / hold / slow fade-out before
+     handing off to the password gate
+     ============================================================ */
+  #view-partner-welcome {
+    background: #000;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  .welcome-body {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 36px;
+  }
+  .welcome-message {
+    max-width: 620px;
+    font-size: 22px;
+    line-height: 1.65;
+    color: rgba(255,255,255,0.92);
+    text-align: center;
+    letter-spacing: 0.012em;
+    font-weight: 400;
+    margin: 0;
+    opacity: 0;
+  }
+  /* Animation only fires when the view is in its 'firing' state,
+     so re-entering the partner flow restarts the animation cleanly. */
+  #view-partner-welcome.firing .welcome-message {
+    animation: welcomeFade 12s cubic-bezier(0.36, 0.04, 0.32, 1) forwards;
+  }
+  @keyframes welcomeFade {
+    0%   { opacity: 0; transform: translateY(10px); }
+    25%  { opacity: 1; transform: translateY(0); }
+    70%  { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; transform: translateY(-8px); }
+  }
+  @media (max-width: 768px) {
+    .welcome-message { font-size: 18px; line-height: 1.6; }
+    .welcome-body { padding: 0 22px; }
+  }
+
+  /* ============================================================
      PARTNER PASSWORD GATE
      ============================================================ */
   #view-partner-gate {
@@ -840,6 +884,19 @@
 </section>
 
 <!-- ============================================================
+     PARTNER WELCOME — slow fade in/out before the gate
+     ============================================================ -->
+<section id="view-partner-welcome" class="view">
+  <header class="pg-header">
+    <button class="back-btn" data-back style="color: rgba(255,255,255,0.7);">← back</button>
+    <span class="site-meta">partner</span>
+  </header>
+  <div class="welcome-body">
+    <p class="welcome-message">Thank you for accepting to worship with Thecreated. There are a few steps to follow to make sure we make the most of our collaboration.</p>
+  </div>
+</section>
+
+<!-- ============================================================
      PARTNER PASSWORD GATE
      ============================================================ -->
 <section id="view-partner-gate" class="view">
@@ -1251,18 +1308,37 @@
 
   document.getElementById('open-partner').addEventListener('click', () => {
     portalFill.style.background = '#000';
-    portal.style.setProperty('--px', '36px');
+    portal.style.setProperty('--px', '50%');
     portal.style.setProperty('--py', '100%');
     portal.classList.add('firing');
+
+    const welcomeView = document.getElementById('view-partner-welcome');
+
     setTimeout(() => {
-      showView('view-partner-gate');
+      showView('view-partner-welcome');
       window.scrollTo(0, 0);
-      // focus the password input after the transition settles
-      setTimeout(() => document.getElementById('partner-pw').focus(), 200);
+      // Trigger the welcome fade animation
+      welcomeView.classList.add('firing');
     }, 1100);
+
     setTimeout(() => {
       portal.classList.remove('firing');
     }, 1500);
+
+    // After the welcome fade-in/hold/fade-out completes (12s),
+    // hand off to the password gate.
+    const PARTNER_WELCOME_MS = 12000;
+    setTimeout(() => {
+      // Only proceed if the user is still on the welcome screen
+      // (they may have backed out)
+      if (!welcomeView.classList.contains('active')) {
+        welcomeView.classList.remove('firing');
+        return;
+      }
+      welcomeView.classList.remove('firing');
+      showView('view-partner-gate');
+      setTimeout(() => document.getElementById('partner-pw').focus(), 200);
+    }, 1100 + PARTNER_WELCOME_MS);
   });
 
   const partnerPwInput = document.getElementById('partner-pw');
