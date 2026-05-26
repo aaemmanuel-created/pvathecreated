@@ -422,11 +422,11 @@
     text-align: left;
   }
   .welcome-message {
-    font-size: 20px;
-    line-height: 1.55;
-    font-weight: 400;
-    margin: 0 0 18px;
-    letter-spacing: 0.005em;
+    font-size: 16px;
+    line-height: 1.6;
+    font-weight: 300;
+    margin: 0 0 14px;
+    letter-spacing: 0.008em;
     /* Deep saturated purple → red → bronze-gold so the text reads
        cleanly on the cream background */
     background: linear-gradient(95deg,
@@ -443,7 +443,7 @@
   }
   .welcome-message:last-child { margin-bottom: 0; }
 
-  /* Slow fade-in / hold / slow fade-out — runs when the view is
+  /* Slow fade-in / hold / quick fade-out — runs when the view is
      in its 'firing' state. The two paragraphs are stagger-delayed
      so the second one fades in a beat after the first. */
   #view-partner-welcome.firing .welcome-message {
@@ -452,15 +452,126 @@
   #view-partner-welcome.firing .welcome-message:nth-child(2) {
     animation-delay: 1.4s;
   }
+  /* 0-50% (7s):  slow fade in
+     50-93% (6s): hold
+     93-100% (1s): quick fade out */
   @keyframes welcomeFade {
     0%   { opacity: 0; transform: translateY(12px); }
-    30%  { opacity: 1; transform: translateY(0); }
-    72%  { opacity: 1; transform: translateY(0); }
-    100% { opacity: 0; transform: translateY(-10px); }
+    50%  { opacity: 1; transform: translateY(0); }
+    93%  { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; transform: translateY(-4px); }
   }
+  /* After the message fades out, three tabs appear. Each is a
+     left-aligned text link with an arrow that gradient-fills on
+     hover, matching the welcome message palette. */
+  .partner-tabs {
+    margin-top: 18px;
+    display: none;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    opacity: 0;
+  }
+  #view-partner-welcome.tabs-shown .partner-tabs {
+    display: flex;
+    animation: tabsFade 1.8s cubic-bezier(0.32, 0.04, 0.32, 1) forwards;
+  }
+  @keyframes tabsFade {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .partner-tab-link {
+    background: transparent;
+    border: none;
+    padding: 4px 0;
+    font-family: inherit;
+    font-size: 17px;
+    font-weight: 300;
+    letter-spacing: 0.012em;
+    color: rgba(20, 16, 12, 0.55);
+    cursor: pointer;
+    text-align: left;
+    transition: color 0.4s ease, transform 0.4s ease;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+  .partner-tab-link .tab-arrow {
+    opacity: 0.35;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    font-size: 14px;
+  }
+  .partner-tab-link:hover {
+    color: transparent;
+    background: linear-gradient(95deg, #2a0f4d 0%, #4a1f7a 22%, #7a1024 50%, #944a18 78%, #7a5a1e 100%);
+    -webkit-background-clip: text;
+            background-clip: text;
+    -webkit-text-fill-color: transparent;
+    transform: translateX(3px);
+  }
+  .partner-tab-link:hover .tab-arrow {
+    opacity: 1;
+    transform: translateX(4px);
+    color: #7a1024;
+    -webkit-text-fill-color: #7a1024;
+  }
+
+  /* Password prompt — appears inline after a tab is clicked */
+  .password-prompt {
+    margin-top: 18px;
+    display: none;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    opacity: 0;
+  }
+  #view-partner-welcome.prompt-shown .password-prompt {
+    display: flex;
+    animation: tabsFade 0.8s ease-out forwards;
+  }
+  .pp-label {
+    font-size: 13px;
+    font-weight: 300;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(20, 16, 12, 0.55);
+    margin: 0;
+  }
+  .pp-input {
+    background: rgba(255,255,255,0.55);
+    border: 1px solid rgba(20, 16, 12, 0.22);
+    border-radius: 999px;
+    padding: 10px 18px;
+    font-size: 14px;
+    font-weight: 400;
+    font-family: inherit;
+    color: #1a1612;
+    width: 260px;
+    outline: none;
+    caret-color: #1a1612;
+    transition: border-color 0.3s ease, background 0.3s ease;
+  }
+  .pp-input:focus {
+    border-color: rgba(20, 16, 12, 0.55);
+    background: rgba(255,255,255,0.85);
+  }
+  .pp-error {
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(160, 30, 30, 0.85);
+    margin: 0;
+    min-height: 13px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .pp-error.show { opacity: 1; }
+
   @media (max-width: 768px) {
-    .welcome-message { font-size: 17px; line-height: 1.55; margin-bottom: 16px; font-weight: 400; }
+    .welcome-message { font-size: 15px; line-height: 1.6; margin-bottom: 12px; font-weight: 300; }
     .welcome-body { padding: 0 22px; }
+    .partner-tab-link { font-size: 15px; }
+    .pp-input { width: 100%; max-width: 280px; }
   }
 
   /* ============================================================
@@ -940,6 +1051,26 @@
     <div class="welcome-block">
       <p class="welcome-message">Thank you for accepting to worship with Thecreated.</p>
       <p class="welcome-message">There are a few steps to follow to make sure we make the most of our collaboration.</p>
+
+      <div class="partner-tabs" id="partner-tabs">
+        <button class="partner-tab-link" data-tab="overseer">The Overseer <span class="tab-arrow">→</span></button>
+        <button class="partner-tab-link" data-tab="overseer-interlude">The Overseer's Interlude <span class="tab-arrow">→</span></button>
+        <button class="partner-tab-link" data-tab="renew-verse">"What verse are you wearing?" for RENEW by PVA <span class="tab-arrow">→</span></button>
+      </div>
+
+      <div class="password-prompt" id="password-prompt">
+        <p class="pp-label">enter the password to continue</p>
+        <input
+          type="password"
+          id="pp-input"
+          class="pp-input"
+          placeholder=""
+          autocomplete="off"
+          spellcheck="false"
+          aria-label="Partner password"
+        />
+        <p class="pp-error" id="pp-error">incorrect — try again</p>
+      </div>
     </div>
   </div>
 </section>
@@ -1349,8 +1480,7 @@
     }, 1500);
 
     // After the welcome animation completes (14s for the first
-    // paragraph, +1.4s stagger for the second), hand off to the
-    // partner workshop.
+    // paragraph, +1.4s stagger for the second), fade in the tabs.
     const PARTNER_WELCOME_MS = 14000 + 1400;
     setTimeout(() => {
       // Only proceed if the user is still on the welcome screen
@@ -1360,9 +1490,70 @@
         return;
       }
       welcomeView.classList.remove('firing');
-      showView('view-partner-shop');
-      window.scrollTo(0, 0);
+      welcomeView.classList.add('tabs-shown');
     }, 1100 + PARTNER_WELCOME_MS);
+  });
+
+  // ----------------------------------------------------------
+  // Partner tabs — click any tab to bring up the inline password
+  // prompt. Correct password takes the partner into the workshop.
+  // ----------------------------------------------------------
+  const PARTNER_PW = "god'sroi"; // case-insensitive compare
+  let selectedPartnerTab = null;
+
+  document.querySelectorAll('.partner-tab-link').forEach(tab => {
+    tab.addEventListener('click', () => {
+      selectedPartnerTab = tab.dataset.tab;
+      const view = document.getElementById('view-partner-welcome');
+      // Fade tabs out and show password prompt
+      view.classList.remove('tabs-shown');
+      view.classList.add('prompt-shown');
+      setTimeout(() => document.getElementById('pp-input').focus(), 250);
+    });
+  });
+
+  const ppInput = document.getElementById('pp-input');
+  const ppError = document.getElementById('pp-error');
+
+  function tryPartnerPassword() {
+    const val = ppInput.value.trim();
+    if (val.toLowerCase() === PARTNER_PW) {
+      ppError.classList.remove('show');
+      // Portal-sweep into the workshop
+      portalFill.style.background = '#0a0a0a';
+      portal.style.setProperty('--px', '50%');
+      portal.style.setProperty('--py', '50%');
+      portal.classList.add('firing');
+      setTimeout(() => {
+        showView('view-partner-shop');
+        window.scrollTo(0, 0);
+        ppInput.value = '';
+        // Reset the welcome view so the next visit re-runs the animation
+        const view = document.getElementById('view-partner-welcome');
+        view.classList.remove('prompt-shown');
+      }, 1100);
+      setTimeout(() => portal.classList.remove('firing'), 1500);
+    } else {
+      ppError.classList.add('show');
+      ppInput.value = '';
+      ppInput.animate(
+        [
+          { transform: 'translateX(0)' },
+          { transform: 'translateX(-6px)' },
+          { transform: 'translateX(6px)' },
+          { transform: 'translateX(-4px)' },
+          { transform: 'translateX(4px)' },
+          { transform: 'translateX(0)' }
+        ],
+        { duration: 320, easing: 'ease-out' }
+      );
+      setTimeout(() => ppInput.focus(), 100);
+    }
+  }
+
+  ppInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); tryPartnerPassword(); }
+    if (ppError.classList.contains('show')) ppError.classList.remove('show');
   });
 
   // (Password gate removed — partners now flow welcome → workshop.)
