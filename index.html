@@ -7,7 +7,7 @@
 <meta name="description" content="thecreated — an attempt at giving God His ROI." />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Caveat+Brush&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Caveat+Brush&family=Special+Elite&display=swap" rel="stylesheet" />
 <style>
   /* Prefer locally-installed Petapon (the one in Canva). If a
      visitor doesn't have it, fall through to Caveat from Google. */
@@ -431,11 +431,12 @@
     text-align: left;
   }
   .welcome-message {
+    font-family: 'Special Elite', 'Courier Prime', 'Courier New', monospace;
     font-size: 16px;
     line-height: 1.6;
-    font-weight: 300;
+    font-weight: 400;
     margin: 0 0 14px;
-    letter-spacing: 0.008em;
+    letter-spacing: 0.012em;
     /* Deep saturated purple → red → bronze-gold so the text reads
        cleanly on the cream background */
     background: linear-gradient(95deg,
@@ -502,10 +503,10 @@
     background: transparent;
     border: none;
     padding: 4px 0;
-    font-family: inherit;
-    font-size: 19px;
+    font-family: 'Special Elite', 'Courier Prime', 'Courier New', monospace;
+    font-size: 18px;
     font-weight: 400;
-    letter-spacing: 0.01em;
+    letter-spacing: 0.015em;
     color: rgba(20, 16, 12, 0.92);
     cursor: pointer;
     text-align: left;
@@ -753,83 +754,46 @@
     padding: 0 36px;
   }
   .thread-tab {
-    background: rgba(255,255,255,0.03);
-    border: 1.5px solid rgba(255,255,255,0.2);
-    color: rgba(255,255,255,0.9);
-    padding: 16px 38px;
-    border-radius: 999px;
-    font-size: 13px;
-    font-weight: 500;
-    letter-spacing: 0.24em;
-    text-transform: uppercase;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.10);
+    color: rgba(255,255,255,0.32);
+    padding: 18px 36px;
+    border-radius: 14px; /* rounded rectangle — not a pill */
+    font-family: 'Special Elite', 'Courier Prime', 'Courier New', monospace;
+    font-size: 15px;
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    text-transform: none;
     cursor: pointer;
-    font-family: inherit;
-    transition: all 0.5s ease;
-    backdrop-filter: blur(2px);
-    -webkit-backdrop-filter: blur(2px);
+    transition: color 0.4s ease, border-color 0.4s ease, transform 0.4s ease;
   }
-  /* Each tab glows in its colour, brighter on hover */
-  .thread-tab-grounding {
-    border-color: rgba(180, 120, 230, 0.55);
-    box-shadow: 0 0 22px rgba(140, 60, 200, 0.35), inset 0 0 14px rgba(140, 60, 200, 0.18);
-  }
-  .thread-tab-grounding:hover {
-    border-color: rgba(210, 160, 250, 0.95);
-    color: #f0e2ff;
-    background: rgba(140, 60, 200, 0.14);
-    box-shadow: 0 0 44px rgba(170, 100, 230, 0.65), inset 0 0 18px rgba(170, 100, 230, 0.32);
-    transform: translateY(-2px);
-  }
-  .thread-tab-righteous {
-    border-color: rgba(228, 80, 80, 0.55);
-    box-shadow: 0 0 22px rgba(200, 60, 60, 0.35), inset 0 0 14px rgba(200, 60, 60, 0.18);
-  }
-  .thread-tab-righteous:hover {
-    border-color: rgba(245, 110, 110, 0.95);
-    color: #ffe3e3;
-    background: rgba(200, 60, 60, 0.14);
-    box-shadow: 0 0 44px rgba(228, 80, 80, 0.65), inset 0 0 18px rgba(228, 80, 80, 0.32);
-    transform: translateY(-2px);
-  }
-  .thread-tab-lifted {
-    border-color: rgba(232, 200, 130, 0.55);
-    box-shadow: 0 0 22px rgba(220, 180, 110, 0.35), inset 0 0 14px rgba(220, 180, 110, 0.18);
-  }
-  .thread-tab-lifted:hover {
-    border-color: rgba(245, 220, 160, 0.98);
-    color: #fff4d8;
-    background: rgba(220, 180, 110, 0.14);
-    box-shadow: 0 0 44px rgba(240, 200, 130, 0.7), inset 0 0 18px rgba(240, 200, 130, 0.32);
+  .thread-tab:hover {
+    color: rgba(255,255,255,0.88);
+    border-color: rgba(255,255,255,0.32);
     transform: translateY(-2px);
   }
 
   /* ============================================================
-     PORTAL ANIMATION
-     The portal layer sits above everything during the transition.
-     A circle clip-path expands from the click point, the colour
-     fills the screen, then hands off to the thread view.
+     PORTAL — quick white flash transition between views
      ============================================================ */
   #portal {
     position: fixed;
     inset: 0;
     z-index: 50;
     pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.2s ease;
   }
   #portal.firing {
-    opacity: 1;
     pointer-events: auto;
   }
   #portal-fill {
     position: absolute;
     inset: 0;
-    background: #000;
-    clip-path: circle(0px at 50% 50%);
-    transition: clip-path 1.7s cubic-bezier(0.65, 0.05, 0.36, 1);
+    background: #ffffff;
+    opacity: 0;
+    transition: opacity 0.22s ease-out;
   }
   #portal.firing #portal-fill {
-    clip-path: circle(160% at var(--px, 50%) var(--py, 50%));
+    opacity: 1;
   }
 
   /* ============================================================
@@ -1355,50 +1319,39 @@
   }
 
   // ----------------------------------------------------------
-  // Portal animation — pulls visitor through into a thread
+  // White-flash transition between views.
+  // Quick opacity 0 → 1 → 0 on the portal layer.
   // ----------------------------------------------------------
   const portal = document.getElementById('portal');
   const portalFill = document.getElementById('portal-fill');
 
-  const threadColour = {
-    grounding: '#3b0509',
-    righteous: '#15052e',
-    lifted:    '#f0e8d4'
-  };
-
-  function pullInto(thread, originX, originY) {
-    portalFill.style.background = threadColour[thread] || '#000';
-    portal.style.setProperty('--px', originX + 'px');
-    portal.style.setProperty('--py', originY + 'px');
-
-    requestAnimationFrame(() => {
-      portal.classList.add('firing');
-    });
-
+  // Quick white-flash transition: opacity 0 → 1 → 0.
+  // Pass an optional callback to fire at the white peak (when
+  // the screen is fully covered) — that's when we swap views.
+  function flashTo(midCallback) {
+    portal.classList.add('firing');
     setTimeout(() => {
-      showView('view-' + thread);
-      window.scrollTo(0, 0);
-    }, 1500);
-
+      if (typeof midCallback === 'function') midCallback();
+    }, 240); // matches the 0.22s opacity-in
     setTimeout(() => {
       portal.classList.remove('firing');
-      portalFill.style.transition = 'none';
-      portalFill.getBoundingClientRect(); // reflow
-      portalFill.style.transition = '';
-    }, 2100);
+    }, 540); // hold ~80ms at white, then fade out
+  }
+
+  // Legacy name kept for the homepage card + thread tabs:
+  // shows the view named `view-<thread>` at the flash peak.
+  function pullInto(thread) {
+    flashTo(() => {
+      showView('view-' + thread);
+      window.scrollTo(0, 0);
+    });
   }
 
   // ----------------------------------------------------------
   // Wire up the homepage cards
   // ----------------------------------------------------------
   document.querySelectorAll('.thread-card').forEach(card => {
-    const open = () => {
-      const thread = card.dataset.thread;
-      const rect = card.getBoundingClientRect();
-      const ox = rect.left + rect.width / 2;
-      const oy = rect.top + rect.height / 2;
-      pullInto(thread, ox, oy);
-    };
+    const open = () => pullInto(card.dataset.thread);
     card.addEventListener('click', open);
     card.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
@@ -1410,9 +1363,7 @@
   // ----------------------------------------------------------
   document.querySelectorAll('.thread-tab').forEach(tab => {
     tab.addEventListener('click', () => {
-      const thread = tab.dataset.threadTab;
-      const rect = tab.getBoundingClientRect();
-      pullInto(thread, rect.left + rect.width / 2, rect.top + rect.height / 2);
+      pullInto(tab.dataset.threadTab);
     });
   });
 
@@ -1421,17 +1372,10 @@
   // ----------------------------------------------------------
   document.querySelectorAll('[data-back]').forEach(btn => {
     btn.addEventListener('click', () => {
-      portalFill.style.background = '#000';
-      portal.style.setProperty('--px', '50%');
-      portal.style.setProperty('--py', '50%');
-      portal.classList.add('firing');
-      setTimeout(() => {
+      flashTo(() => {
         showView('view-home');
         window.scrollTo(0, 0);
-      }, 900);
-      setTimeout(() => {
-        portal.classList.remove('firing');
-      }, 1300);
+      });
     });
   });
 
@@ -1462,17 +1406,10 @@
   });
 
   document.getElementById('open-thoughts').addEventListener('click', () => {
-    portalFill.style.background = '#0a0a0a';
-    portal.style.setProperty('--px', '50%');
-    portal.style.setProperty('--py', '100%');
-    portal.classList.add('firing');
-    setTimeout(() => {
+    flashTo(() => {
       showView('view-thoughts');
       window.scrollTo(0, 0);
-    }, 1100);
-    setTimeout(() => {
-      portal.classList.remove('firing');
-    }, 1500);
+    });
   });
 
   // ----------------------------------------------------------
@@ -1499,23 +1436,14 @@
   });
 
   document.getElementById('open-partner').addEventListener('click', () => {
-    portalFill.style.background = '#000';
-    portal.style.setProperty('--px', '50%');
-    portal.style.setProperty('--py', '100%');
-    portal.classList.add('firing');
-
     const welcomeView = document.getElementById('view-partner-welcome');
 
-    setTimeout(() => {
+    flashTo(() => {
       showView('view-partner-welcome');
       window.scrollTo(0, 0);
-      // Trigger the welcome fade animation
+      // Trigger the slow welcome message fade animation
       welcomeView.classList.add('firing');
-    }, 1100);
-
-    setTimeout(() => {
-      portal.classList.remove('firing');
-    }, 1500);
+    });
 
     // After the welcome animation completes (14s for the first
     // paragraph, +1.4s stagger for the second), fade in the tabs.
@@ -1531,7 +1459,7 @@
       }
       welcomeView.classList.remove('firing');
       welcomeView.classList.add('tabs-shown');
-    }, 1100 + PARTNER_WELCOME_MS);
+    }, 240 + PARTNER_WELCOME_MS);
   });
 
   // ----------------------------------------------------------
@@ -1559,20 +1487,14 @@
     const val = ppInput.value.trim();
     if (val.toLowerCase() === PARTNER_PW) {
       ppError.classList.remove('show');
-      // Portal-sweep into the workshop
-      portalFill.style.background = '#0a0a0a';
-      portal.style.setProperty('--px', '50%');
-      portal.style.setProperty('--py', '50%');
-      portal.classList.add('firing');
-      setTimeout(() => {
+      flashTo(() => {
         showView('view-partner-shop');
         window.scrollTo(0, 0);
         ppInput.value = '';
         // Reset the welcome view so the next visit re-runs the animation
         const view = document.getElementById('view-partner-welcome');
         view.classList.remove('prompt-shown');
-      }, 1100);
-      setTimeout(() => portal.classList.remove('firing'), 1500);
+      });
     } else {
       ppError.classList.add('show');
       ppInput.value = '';
