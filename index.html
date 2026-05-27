@@ -427,45 +427,62 @@
     padding: 18px 36px;
     flex-shrink: 0;
   }
+  /* Very thin shiny strip. No visible indicator pill — users swipe
+     along (or click anywhere on) the whole strip to switch threads. */
   .thread-strip {
     position: relative;
-    height: 8px;
-    margin: 0 6vw 28px;
-    border-radius: 4px;
+    height: 3px;
+    margin: 0 6vw 36px;
+    border-radius: 999px;
     cursor: pointer;
     flex-shrink: 0;
+    overflow: hidden;
+    touch-action: pan-y;
   }
   .strip-bar {
     position: absolute;
     inset: 0;
     background: linear-gradient(95deg,
-      #6b2cb8 0%,
-      #4a1f7a 22%,
-      #b03844 50%,
-      #c47840 78%,
-      #b89860 100%);
-    border-radius: 4px;
-    opacity: 0.45;
+      #7a3acc 0%,
+      #5a2390 18%,
+      #c93f48 48%,
+      #d28042 76%,
+      #ecc97e 100%);
+    border-radius: inherit;
   }
-  .strip-indicator {
+  .strip-bar::before {
+    /* top-edge specular highlight — gives the shiny/metallic feel */
+    content: "";
     position: absolute;
-    top: -4px;
-    width: 33.33%;
-    height: 16px;
-    border-radius: 8px;
-    border: 1.5px solid rgba(255,255,255,0.85);
-    background: var(--ind-color, rgba(180, 90, 220, 0.55));
-    box-shadow: 0 0 24px var(--ind-color, rgba(180,90,220,0.7));
-    transition: left 0.7s cubic-bezier(0.32, 0.04, 0.32, 1),
-                background 0.7s ease,
-                box-shadow 0.7s ease;
-    left: 0;
+    top: 0; left: 0; right: 0;
+    height: 55%;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.65), transparent);
+    border-radius: inherit;
     pointer-events: none;
+  }
+  .strip-shimmer {
+    /* slow-moving bright pass — gloss travelling across the strip */
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 22%;
+    background: linear-gradient(95deg,
+      transparent 0%,
+      rgba(255,255,255,0.8) 50%,
+      transparent 100%);
+    border-radius: inherit;
+    pointer-events: none;
+    mix-blend-mode: screen;
+    animation: stripShimmer 7s ease-in-out infinite;
+  }
+  @keyframes stripShimmer {
+    0%   { transform: translateX(-30%); opacity: 0.5; }
+    50%  { transform: translateX(420%); opacity: 1; }
+    100% { transform: translateX(-30%); opacity: 0.5; }
   }
   .strip-zone {
     position: absolute;
-    top: -8px;
-    bottom: -8px;
+    top: -14px;
+    bottom: -14px;
     width: 33.33%;
     background: transparent;
     border: none;
@@ -475,6 +492,31 @@
   .strip-zone[data-color="purple"] { left: 0; }
   .strip-zone[data-color="red"]    { left: 33.33%; }
   .strip-zone[data-color="gold"]   { left: 66.66%; }
+
+  /* Hint message shown briefly when the painting collapses */
+  .strip-hint {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Special Elite', 'Courier Prime', monospace;
+    font-size: 14px;
+    letter-spacing: 0.2em;
+    color: rgba(255,255,255,0.75);
+    text-align: center;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.7s ease;
+    z-index: 5;
+    text-transform: lowercase;
+    white-space: nowrap;
+  }
+  #view-strip.show-hint    .strip-hint { opacity: 1; }
+  #view-strip.show-content .strip-hint { opacity: 0; }
+
+  /* Content fades in only after the hint */
+  #view-strip .strip-content { opacity: 0; transition: opacity 0.9s ease; }
+  #view-strip.show-content .strip-content { opacity: 1; }
 
   .strip-content {
     flex: 1;
@@ -1315,8 +1357,6 @@
         </article>
       </div>
     </div>
-    <!-- Slow shadow tint that fills the screen, cycles purple/red/gold -->
-    <div class="shadow-tint" id="shadow-tint" data-color="purple"></div>
 
     <div class="action-row">
       <button class="partner-tab" id="open-partner">Partner</button>
@@ -1464,11 +1504,13 @@
 
   <div class="thread-strip" id="thread-strip" role="tablist" aria-label="Threads">
     <div class="strip-bar"></div>
-    <div class="strip-indicator" id="strip-indicator"></div>
+    <div class="strip-shimmer"></div>
     <button class="strip-zone" data-color="purple" role="tab" aria-label="Grounding"></button>
     <button class="strip-zone" data-color="red"    role="tab" aria-label="Righteous"></button>
     <button class="strip-zone" data-color="gold"   role="tab" aria-label="Lifted"></button>
   </div>
+
+  <div class="strip-hint" id="strip-hint">swipe between grounding, righteous and lifted</div>
 
   <div class="strip-content" id="strip-content">
 
@@ -1780,67 +1822,84 @@
   });
 
   // ----------------------------------------------------------
-  // HOMEPAGE BLENDED TILE — click → STRIP view
+  // HOMEPAGE BLENDED TILE — click → STRIP view (with hint pause)
   // ----------------------------------------------------------
   document.getElementById('immersive-tile').addEventListener('click', () => {
+    const stripV = document.getElementById('view-strip');
     flashTo(() => {
       showView('view-strip');
-      setStripColor('purple');
       window.scrollTo(0, 0);
+      // Reset to first thread, no content visible yet
+      stripV.classList.remove('show-content');
+      stripV.classList.add('show-hint');
+      setStripColor('purple');
     });
+    // After the white flash settles + brief hold, fade hint out and
+    // the GROUNDING content tiles fade in.
+    setTimeout(() => {
+      stripV.classList.remove('show-hint');
+      stripV.classList.add('show-content');
+    }, 2400);
   });
 
   // ----------------------------------------------------------
-  // STRIP VIEW — click any zone (or click anywhere on the bar
-  // by x-position) to switch the thread + colour
+  // STRIP VIEW — swipe / click anywhere on the bar to switch
   // ----------------------------------------------------------
   const stripView = document.getElementById('view-strip');
   const threadStrip = document.getElementById('thread-strip');
-  const stripIndicator = document.getElementById('strip-indicator');
-  const stripZones = stripView.querySelectorAll('.strip-zone');
   const stripThreads = stripView.querySelectorAll('.strip-thread');
-
-  const COLOR_TINTS = {
-    purple: 'rgba(180, 90, 220, 0.7)',
-    red:    'rgba(228, 80, 80, 0.7)',
-    gold:   'rgba(240, 200, 130, 0.75)',
-  };
   let stripActiveColor = 'purple';
 
   function setStripColor(color) {
+    if (color === stripActiveColor) return;
     stripActiveColor = color;
-    const idx = COLORS.indexOf(color);
-    stripIndicator.style.left = (idx * 33.33) + '%';
-    stripIndicator.style.setProperty('--ind-color', COLOR_TINTS[color]);
     stripThreads.forEach(t => {
       const match = t.dataset.color === color;
       t.classList.toggle('is-active', match);
-      // restart fade animation by re-triggering the class
+      // Restart the fade-in animation
       if (match) {
         t.style.animation = 'none';
         t.getBoundingClientRect();
         t.style.animation = '';
       }
     });
-    syncShadowTint();
   }
 
-  stripZones.forEach(z => {
-    z.addEventListener('click', (e) => {
-      e.stopPropagation();
-      setStripColor(z.dataset.color);
-    });
+  function colorFromX(clientX) {
+    const rect = threadStrip.getBoundingClientRect();
+    const pct = (clientX - rect.left) / rect.width;
+    const idx = Math.min(2, Math.max(0, Math.floor(pct * 3)));
+    return COLORS[idx];
+  }
+
+  // Click → set by x position
+  threadStrip.addEventListener('click', (e) => {
+    setStripColor(colorFromX(e.clientX));
   });
 
-  // Click anywhere along the bar (between/around zones) → snap to
-  // the closest segment by x-position
-  threadStrip.addEventListener('click', (e) => {
-    if (e.target.closest('.strip-zone')) return;
-    const rect = threadStrip.getBoundingClientRect();
-    const pct = (e.clientX - rect.left) / rect.width;
-    const idx = Math.min(2, Math.max(0, Math.floor(pct * 3)));
-    setStripColor(COLORS[idx]);
+  // Touch swipe along the strip
+  let stripTouchX = null;
+  threadStrip.addEventListener('touchstart', (e) => {
+    stripTouchX = e.touches[0].clientX;
+    setStripColor(colorFromX(stripTouchX));
+  }, { passive: true });
+  threadStrip.addEventListener('touchmove', (e) => {
+    if (stripTouchX == null) return;
+    setStripColor(colorFromX(e.touches[0].clientX));
+  }, { passive: true });
+  threadStrip.addEventListener('touchend', () => { stripTouchX = null; });
+
+  // Mouse drag along the strip (desktop)
+  let stripDragging = false;
+  threadStrip.addEventListener('mousedown', (e) => {
+    stripDragging = true;
+    setStripColor(colorFromX(e.clientX));
   });
+  document.addEventListener('mousemove', (e) => {
+    if (!stripDragging) return;
+    setStripColor(colorFromX(e.clientX));
+  });
+  document.addEventListener('mouseup', () => { stripDragging = false; });
 
   // ----------------------------------------------------------
   // SWIPE VIEW — three surfaces with dots + swipe + wheel
@@ -1864,7 +1923,6 @@
       el.classList.toggle('is-active', c === color);
     });
     swipeDots.forEach(d => d.classList.toggle('is-active', d.dataset.color === color));
-    syncShadowTint();
   }
 
   function shiftSwipeColor(delta) {
@@ -1908,55 +1966,8 @@
     pullInto(COLOR_TO_THREAD[swipeTile.dataset.active]);
   });
 
-  // ----------------------------------------------------------
-  // SHADOW TINT — slow colour wash filling the screen
-  // - On homepage: cycles purple → red → gold every 9 seconds
-  // - On swipe view: follows the active surface colour
-  // ----------------------------------------------------------
-  const shadowTint = document.getElementById('shadow-tint');
-  const homeView = document.getElementById('view-home');
-  const swipeView = document.getElementById('view-swipe');
-  let homepageCycleTimer = null;
-  let homepageCycleIndex = 0;
-
-  function syncShadowTint() {
-    const onHome  = homeView.classList.contains('active');
-    const onSwipe = swipeView.classList.contains('active');
-    const onStrip = stripView.classList.contains('active');
-    shadowTint.classList.toggle('is-on', onHome || onSwipe || onStrip);
-
-    if (onSwipe) {
-      shadowTint.dataset.color = swipeTile.dataset.active;
-    }
-    if (onStrip) {
-      shadowTint.dataset.color = stripActiveColor;
-    }
-
-    // Slow colour cycle runs only on the homepage
-    if (onHome) {
-      if (!homepageCycleTimer) {
-        shadowTint.dataset.color = COLORS[homepageCycleIndex];
-        homepageCycleTimer = setInterval(() => {
-          homepageCycleIndex = (homepageCycleIndex + 1) % COLORS.length;
-          shadowTint.dataset.color = COLORS[homepageCycleIndex];
-        }, 9000);
-      }
-    } else if (homepageCycleTimer) {
-      clearInterval(homepageCycleTimer);
-      homepageCycleTimer = null;
-    }
-  }
-
-  syncShadowTint();
-  new MutationObserver(syncShadowTint).observe(homeView, {
-    attributes: true, attributeFilter: ['class']
-  });
-  new MutationObserver(syncShadowTint).observe(swipeView, {
-    attributes: true, attributeFilter: ['class']
-  });
-  new MutationObserver(syncShadowTint).observe(stripView, {
-    attributes: true, attributeFilter: ['class']
-  });
+  // (Shadow tint removed — the painting stands alone on the
+  // homepage with no halo. Strip view sits on plain black.)
 
   // ----------------------------------------------------------
   // Threads menu — each glowing pill portals into its thread
