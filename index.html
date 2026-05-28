@@ -412,14 +412,16 @@
     background-position: center;
   }
 
-  /* Morphing state — use transform-based animation for smooth GPU
-     compositing instead of width/height (which thrashes layout). */
+  /* Morphing state — "sucked in" feel.
+     Ease-in curve: slow start, accelerating collapse → the painting
+     looks pulled inward like a vacuum. Transform + opacity only so
+     it stays GPU-composited. */
   .immersive-tile.morphing {
     transition:
-      transform 2.0s cubic-bezier(0.4, 0.0, 0.18, 1),
-      border-radius 2.0s cubic-bezier(0.4, 0.0, 0.18, 1),
-      box-shadow 1.4s ease,
-      opacity 0.9s ease-out;
+      transform 1.7s cubic-bezier(0.55, 0.08, 0.85, 0.3),
+      border-radius 1.7s cubic-bezier(0.55, 0.08, 0.85, 0.3),
+      box-shadow 1.0s ease,
+      opacity 0.45s ease 1.25s;
     will-change: transform, opacity, border-radius;
   }
   .immersive-tile.morph-target {
@@ -445,12 +447,11 @@
     padding: 18px 36px;
     flex-shrink: 0;
   }
-  /* Shiny strip with pointy edges (tapered ends via clip-path).
-     Centred on both axes. No visible indicator pill — users swipe
-     or click along its length to switch threads. */
+  /* Lens-shaped strip — two curved arcs meeting at sharp points.
+     Centred on both axes. Swipe / click anywhere along to switch. */
   .thread-strip {
     position: relative;
-    height: 7px;
+    height: 14px;
     width: 280px;
     max-width: 70vw;
     margin: 0 auto;
@@ -458,10 +459,12 @@
     flex-shrink: 0;
     touch-action: pan-y;
   }
-  /* Shared pointy mask for the visible strip layers */
+  /* Shared lens mask for the visible strip layers — defined as an
+     SVG clipPath at the top of <body>. */
   .strip-bar,
   .strip-shimmer {
-    clip-path: polygon(0 50%, 5% 0, 95% 0, 100% 50%, 95% 100%, 5% 100%);
+    -webkit-clip-path: url(#lens-clip);
+            clip-path: url(#lens-clip);
   }
   .strip-bar {
     position: absolute;
@@ -1411,6 +1414,15 @@
 </head>
 <body>
 
+<!-- SVG defs: lens / pointy-oval clip path used by the strip -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <clipPath id="lens-clip" clipPathUnits="objectBoundingBox">
+      <path d="M 0,0.5 Q 0.5,0 1,0.5 Q 0.5,1 0,0.5 Z" />
+    </clipPath>
+  </defs>
+</svg>
+
 <!-- ============================================================
      HOMEPAGE
      ============================================================ -->
@@ -1916,14 +1928,25 @@
   document.getElementById('immersive-tile').addEventListener('click', () => {
     const tile = document.getElementById('immersive-tile');
     const stripV = document.getElementById('view-strip');
+    const actionRow = document.querySelector('#view-home .action-row');
     if (tile.classList.contains('morphing')) return; // guard against double-fire
+
+    // Fade the PARTNER + THOUGHT pills out first
+    if (actionRow) {
+      actionRow.style.transition = 'opacity 0.45s ease';
+      actionRow.style.opacity = '0';
+    }
+    setTimeout(() => beginPaintingMorph(tile, stripV), 480);
+  });
+
+  function beginPaintingMorph(tile, stripV) {
 
     // Capture current viewport rect of the painting
     const rect = tile.getBoundingClientRect();
 
-    // Target pointy-strip dimensions (must match .thread-strip CSS)
+    // Target lens-strip dimensions (must match .thread-strip CSS)
     const targetWidth  = Math.min(280, window.innerWidth * 0.7);
-    const targetHeight = 7;
+    const targetHeight = 14;
     // Strip is centred vertically in the viewport
     const targetTop    = (window.innerHeight - targetHeight) / 2;
     const targetLeft   = (window.innerWidth  - targetWidth)  / 2;
@@ -1976,7 +1999,7 @@
       stripV.classList.remove('show-hint');
       stripV.classList.add('show-content');
     }, 1700 + 2200);
-  });
+  }
 
   // ----------------------------------------------------------
   // STRIP VIEW — swipe / click anywhere on the bar to switch
@@ -2122,6 +2145,12 @@
       flashTo(() => {
         showView('view-home');
         window.scrollTo(0, 0);
+        // Restore the PARTNER + THOUGHT pills (they were faded on click)
+        const actionRow = document.querySelector('#view-home .action-row');
+        if (actionRow) {
+          actionRow.style.transition = 'opacity 0.6s ease';
+          actionRow.style.opacity = '1';
+        }
       });
     });
   });
