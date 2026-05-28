@@ -413,16 +413,17 @@
   }
 
   /* Morphing state — when the painting collapses into the strip,
-     all the spatial + cosmetic properties animate together. */
+     all the spatial + cosmetic properties animate together.
+     Smooth easing curve that eases in and out gently. */
   .immersive-tile.morphing {
     transition:
-      top 1.05s cubic-bezier(0.65, 0, 0.35, 1),
-      left 1.05s cubic-bezier(0.65, 0, 0.35, 1),
-      width 1.05s cubic-bezier(0.65, 0, 0.35, 1),
-      height 1.05s cubic-bezier(0.65, 0, 0.35, 1),
-      border-radius 1.05s cubic-bezier(0.65, 0, 0.35, 1),
-      box-shadow 0.9s ease,
-      opacity 0.5s ease;
+      top 1.9s cubic-bezier(0.42, 0.0, 0.22, 1),
+      left 1.9s cubic-bezier(0.42, 0.0, 0.22, 1),
+      width 1.9s cubic-bezier(0.42, 0.0, 0.22, 1),
+      height 1.9s cubic-bezier(0.42, 0.0, 0.22, 1),
+      border-radius 1.9s cubic-bezier(0.42, 0.0, 0.22, 1),
+      box-shadow 1.6s cubic-bezier(0.42, 0.0, 0.22, 1),
+      opacity 0.9s ease-out;
   }
   .immersive-tile.morph-target {
     border-radius: 999px !important;
@@ -1907,30 +1908,31 @@
     tile.style.width = targetWidth + 'px';
     tile.style.height = '3px';
 
-    // After the morph completes, switch to the real strip view and
-    // start the hint/content reveal. The morphed tile fades out so
-    // the actual strip behind it takes over seamlessly.
+    // Start the strip-view crossfade a touch BEFORE the morph
+    // completes so the handoff is invisible — the morphed tile and
+    // the real strip overlap in position while one fades out and
+    // the other fades in.
     setTimeout(() => {
-      tile.style.opacity = '0';
       showView('view-strip');
       window.scrollTo(0, 0);
       stripV.classList.remove('show-content');
       stripV.classList.add('show-hint');
       setStripColor('purple');
-    }, 1100);
+      tile.style.opacity = '0';
+    }, 1600);
 
-    // Clean up inline styles after the fade-out completes so a
+    // After the morph fully resolves, clean up inline styles so a
     // return to the homepage finds the tile fresh.
     setTimeout(() => {
       tile.classList.remove('morphing', 'morph-target');
       tile.style.cssText = '';
-    }, 1700);
+    }, 2700);
 
-    // Hint shows, holds ~2s, then content tiles fade in
+    // Hint shows, holds ~2.2s, then content tiles fade in
     setTimeout(() => {
       stripV.classList.remove('show-hint');
       stripV.classList.add('show-content');
-    }, 1100 + 2300);
+    }, 1600 + 2200);
   });
 
   // ----------------------------------------------------------
