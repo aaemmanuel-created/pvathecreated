@@ -722,13 +722,12 @@
      PARTNER WELCOME — grainy off-white room, gradient text
      ============================================================ */
   #view-partner-welcome {
-    background: #f6f0e3; /* warm off-white */
+    background: #ffffff; /* pure white, grainy via ::before */
     color: #1a1612;
     display: flex;
     flex-direction: column;
     height: 100%;
     cursor: pointer; /* hint that you can tap to skip */
-    transition: background 0.7s ease;
   }
   /* When tabs/password are revealed, the room turns pure white but
      the grain stays. Cursor goes default — no more tap-to-skip. */
@@ -824,6 +823,35 @@
     transform: translateY(-4px);
     transition: opacity 0.45s ease-out, transform 0.45s ease-out;
   }
+  /* Continue button — appears after the welcome message fades.
+     Click it to reveal the tabs. */
+  .partner-continue {
+    align-self: flex-start;
+    margin-top: 26px;
+    background: transparent;
+    border: 1px solid rgba(20, 16, 12, 0.45);
+    color: rgba(20, 16, 12, 0.92);
+    padding: 11px 26px;
+    border-radius: 999px;
+    font-family: Helvetica, "Helvetica Neue", Arial, sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    cursor: pointer;
+    display: none;
+    opacity: 0;
+    transition: background 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+  }
+  #view-partner-welcome.continue-shown .partner-continue {
+    display: inline-block;
+    animation: tabsFade 0.9s ease forwards;
+  }
+  .partner-continue:hover {
+    background: rgba(20, 16, 12, 0.06);
+    border-color: rgba(20, 16, 12, 0.75);
+  }
+
   /* After the message fades out, three tabs appear. Each is a
      left-aligned text link with an arrow that gradient-fills on
      hover, matching the welcome message palette. */
@@ -1377,6 +1405,8 @@
     <div class="welcome-block">
       <p class="welcome-message">Thank you for accepting to worship with Thecreated.</p>
       <p class="welcome-message">There are a few steps to follow to make sure we make the most of our collaboration.</p>
+
+      <button class="partner-continue" id="partner-continue">Continue</button>
 
       <div class="partner-tabs" id="partner-tabs">
         <button class="partner-tab-link" data-tab="overseer">The Overseer <span class="tab-arrow">→</span></button>
@@ -2036,13 +2066,13 @@
       welcomeFastForwardTimer = null;
     }
     welcomeView.classList.remove('firing');
-    welcomeView.classList.add('tabs-shown');
+    welcomeView.classList.add('continue-shown');
   }
 
-  // Tap anywhere on the welcome (during the fade phase) to skip to tabs.
-  // Clicks on interactive children (tabs, password input, back btn) pass through.
+  // Tap anywhere on the welcome (during the fade phase) to skip to
+  // the Continue button. Clicks on interactive children pass through.
   document.getElementById('view-partner-welcome').addEventListener('click', (e) => {
-    if (e.target.closest('.partner-tab-link, .pp-input, .back-btn, .password-prompt, .partner-tabs')) return;
+    if (e.target.closest('.partner-tab-link, .pp-input, .back-btn, .password-prompt, .partner-tabs, .partner-continue')) return;
     fastForwardWelcome();
   });
 
@@ -2057,20 +2087,26 @@
     });
 
     // After the welcome animation completes (14s for the first
-    // paragraph, +1.4s stagger for the second), fade in the tabs.
-    // Stored in a var so tap-to-skip can clearTimeout it.
+    // paragraph, +1.4s stagger for the second), show the Continue
+    // button. The user clicks it to reveal the tabs.
     const PARTNER_WELCOME_MS = 14000 + 1400;
     welcomeFastForwardTimer = setTimeout(() => {
       welcomeFastForwardTimer = null;
-      // Only proceed if the user is still on the welcome screen
-      // (they may have backed out)
       if (!welcomeView.classList.contains('active')) {
         welcomeView.classList.remove('firing');
         return;
       }
       welcomeView.classList.remove('firing');
-      welcomeView.classList.add('tabs-shown');
+      welcomeView.classList.add('continue-shown');
     }, 240 + PARTNER_WELCOME_MS);
+  });
+
+  // Click Continue → reveal the tabs
+  document.getElementById('partner-continue').addEventListener('click', (e) => {
+    e.stopPropagation();
+    const view = document.getElementById('view-partner-welcome');
+    view.classList.remove('continue-shown');
+    view.classList.add('tabs-shown');
   });
 
   // ----------------------------------------------------------
