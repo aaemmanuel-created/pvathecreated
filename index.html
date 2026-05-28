@@ -445,20 +445,23 @@
     padding: 18px 36px;
     flex-shrink: 0;
   }
-  /* Very thin shiny oval strip — centred, narrower than the page.
-     No visible indicator pill; users swipe along (or click anywhere
-     on) the whole strip to switch threads. */
+  /* Shiny strip with pointy edges (tapered ends via clip-path).
+     Centred on both axes. No visible indicator pill — users swipe
+     or click along its length to switch threads. */
   .thread-strip {
     position: relative;
-    height: 5px;
+    height: 7px;
     width: 280px;
-    max-width: 60vw;
-    margin: 0 auto 36px;
-    border-radius: 999px;
+    max-width: 70vw;
+    margin: 0 auto;
     cursor: pointer;
     flex-shrink: 0;
-    overflow: hidden;
     touch-action: pan-y;
+  }
+  /* Shared pointy mask for the visible strip layers */
+  .strip-bar,
+  .strip-shimmer {
+    clip-path: polygon(0 50%, 5% 0, 95% 0, 100% 50%, 95% 100%, 5% 100%);
   }
   .strip-bar {
     position: absolute;
@@ -469,7 +472,6 @@
       #c93f48 48%,
       #d28042 76%,
       #ecc97e 100%);
-    border-radius: inherit;
   }
   .strip-bar::before {
     /* top-edge specular highlight — gives the shiny/metallic feel */
@@ -478,7 +480,6 @@
     top: 0; left: 0; right: 0;
     height: 55%;
     background: linear-gradient(to bottom, rgba(255,255,255,0.65), transparent);
-    border-radius: inherit;
     pointer-events: none;
   }
   .strip-shimmer {
@@ -490,7 +491,6 @@
       transparent 0%,
       rgba(255,255,255,0.8) 50%,
       transparent 100%);
-    border-radius: inherit;
     pointer-events: none;
     mix-blend-mode: screen;
     animation: stripShimmer 7s ease-in-out infinite;
@@ -539,19 +539,36 @@
   #view-strip .strip-content { opacity: 0; transition: opacity 0.9s ease; }
   #view-strip.show-content .strip-content { opacity: 1; }
 
-  .strip-content {
+  /* Stage holds: above-tiles | strip | below-tiles, vertically
+     centred so the strip sits in the middle of the page. */
+  .strip-stage {
     flex: 1;
-    padding: 32px 6vw 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 6vw;
+    gap: 22px;
+    width: 100%;
     max-width: 920px;
     margin: 0 auto;
+  }
+  .strip-above,
+  .strip-below {
     width: 100%;
     position: relative;
   }
-  .strip-thread {
+  .strip-above { display: flex; justify-content: center; }
+  /* Position threads on top of each other so swapping doesn't
+     reflow the layout — only the active one is visible. */
+  .strip-above .strip-thread,
+  .strip-below .strip-thread {
     display: none;
+    width: 100%;
     opacity: 0;
   }
-  .strip-thread.is-active {
+  .strip-above .strip-thread.is-active,
+  .strip-below .strip-thread.is-active {
     display: block;
     animation: stripFadeIn 0.7s cubic-bezier(0.32, 0.04, 0.32, 1) forwards;
   }
@@ -1553,89 +1570,109 @@
     <button class="back-btn" data-back>← back</button>
   </header>
 
-  <div class="thread-strip" id="thread-strip" role="tablist" aria-label="Threads">
-    <div class="strip-bar"></div>
-    <div class="strip-shimmer"></div>
-    <button class="strip-zone" data-color="purple" role="tab" aria-label="Grounding"></button>
-    <button class="strip-zone" data-color="red"    role="tab" aria-label="Righteous"></button>
-    <button class="strip-zone" data-color="gold"   role="tab" aria-label="Lifted"></button>
-  </div>
-
   <div class="strip-hint" id="strip-hint">swipe between grounding, righteous and lifted</div>
 
-  <div class="strip-content" id="strip-content">
+  <div class="strip-stage">
 
-    <article class="strip-thread is-active" data-color="purple">
-      <h2 class="strip-thread-name">Grounding</h2>
-      <div class="strip-tile">
-        <h3>Introduction</h3>
-        <p>This thread is about adoration and seeking His face. It's about producing a pleasing fragrance to God. This is the posture where we fall on our knees, put our face to the ground and lift our genuine, revelation-backed worship to our Father. It's marked by a colour. Its output has its roots in scripture. It's being built for His glory and our joy.</p>
-      </div>
-      <div class="strip-tile">
-        <h3>Sounds like</h3>
-        <ul>
-          <li>Adoration</li>
-          <li>Yearning</li>
-          <li>Soaking</li>
-          <li>Multiple voices in a vacuum, each on their own frequency</li>
-          <li>Minimal sound — no drums</li>
-          <li>Voice dominant</li>
-          <li>Few keys and synths</li>
-        </ul>
-      </div>
-      <div class="strip-tile">
-        <h3>Prays like</h3>
-        <ul>
-          <li>Adoration</li>
-          <li>Submission</li>
-          <li>Provision</li>
-        </ul>
-      </div>
-    </article>
+    <!-- ABOVE the strip: title + intro tile per thread -->
+    <div class="strip-above">
 
-    <article class="strip-thread" data-color="red">
-      <h2 class="strip-thread-name">Righteous</h2>
-      <div class="strip-tile">
-        <h3>Introduction</h3>
-        <p>This thread is about working out our righteousness. It's about producing a pleasing fragrance to God through burnt carnality. This is the posture where we endure with joy and love the tension. It's the tension that cuts off the death around us and makes space only for life. In partnership with the only viable partner, the Holy Spirit. It's being built for His glory and our joy.</p>
-      </div>
-      <div class="strip-tile">
-        <h3>Sounds like</h3>
-        <ul>
-          <li>Atmosphere with pattern foundation</li>
-          <li>Pattern is drums or strings</li>
-          <li>High rhythm</li>
-          <li>Structure and system</li>
-          <li>Pattern dominant</li>
-          <li>Repetitive</li>
-          <li>Chants</li>
-        </ul>
-      </div>
-      <div class="strip-tile">
-        <h3>Prays like</h3>
-        <ul>
-          <li>Submission</li>
-          <li>Provision</li>
-          <li>Forgiveness</li>
-        </ul>
-      </div>
-    </article>
+      <article class="strip-thread is-active" data-color="purple">
+        <h2 class="strip-thread-name">Grounding</h2>
+        <div class="strip-tile">
+          <h3>Introduction</h3>
+          <p>This thread is about adoration and seeking His face. It's about producing a pleasing fragrance to God. This is the posture where we fall on our knees, put our face to the ground and lift our genuine, revelation-backed worship to our Father. It's being built for His glory and our joy.</p>
+        </div>
+      </article>
 
-    <article class="strip-thread" data-color="gold">
-      <h2 class="strip-thread-name">Lifted</h2>
-      <div class="strip-tile">
-        <h3>Introduction</h3>
-        <p>Coming soon. This thread is being shaped — when the words are ready they will land here. Until then, sit with the colour and the quiet.</p>
-      </div>
-      <div class="strip-tile">
-        <h3>Sounds like</h3>
-        <p>To be written.</p>
-      </div>
-      <div class="strip-tile">
-        <h3>Prays like</h3>
-        <p>To be written.</p>
-      </div>
-    </article>
+      <article class="strip-thread" data-color="red">
+        <h2 class="strip-thread-name">Righteous</h2>
+        <div class="strip-tile">
+          <h3>Introduction</h3>
+          <p>This thread is about working out our righteousness — producing a pleasing fragrance to God through burnt carnality. The posture where we endure with joy and love the tension. The tension that cuts off the death around us and makes space only for life.</p>
+        </div>
+      </article>
+
+      <article class="strip-thread" data-color="gold">
+        <h2 class="strip-thread-name">Lifted</h2>
+        <div class="strip-tile">
+          <h3>Introduction</h3>
+          <p>Coming soon. This thread is being shaped — when the words are ready they will land here. Until then, sit with the colour and the quiet.</p>
+        </div>
+      </article>
+
+    </div>
+
+    <!-- The shared strip sits between above + below -->
+    <div class="thread-strip" id="thread-strip" role="tablist" aria-label="Threads">
+      <div class="strip-bar"></div>
+      <div class="strip-shimmer"></div>
+      <button class="strip-zone" data-color="purple" role="tab" aria-label="Grounding"></button>
+      <button class="strip-zone" data-color="red"    role="tab" aria-label="Righteous"></button>
+      <button class="strip-zone" data-color="gold"   role="tab" aria-label="Lifted"></button>
+    </div>
+
+    <!-- BELOW the strip: sounds-like + prays-like tiles -->
+    <div class="strip-below">
+
+      <article class="strip-thread is-active" data-color="purple">
+        <div class="strip-tile">
+          <h3>Sounds like</h3>
+          <ul>
+            <li>Adoration</li>
+            <li>Yearning</li>
+            <li>Soaking</li>
+            <li>Multiple voices in a vacuum, each on their own frequency</li>
+            <li>Minimal sound — no drums</li>
+            <li>Voice dominant</li>
+            <li>Few keys and synths</li>
+          </ul>
+        </div>
+        <div class="strip-tile">
+          <h3>Prays like</h3>
+          <ul>
+            <li>Adoration</li>
+            <li>Submission</li>
+            <li>Provision</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="strip-thread" data-color="red">
+        <div class="strip-tile">
+          <h3>Sounds like</h3>
+          <ul>
+            <li>Atmosphere with pattern foundation</li>
+            <li>Pattern is drums or strings</li>
+            <li>High rhythm</li>
+            <li>Structure and system</li>
+            <li>Pattern dominant</li>
+            <li>Repetitive</li>
+            <li>Chants</li>
+          </ul>
+        </div>
+        <div class="strip-tile">
+          <h3>Prays like</h3>
+          <ul>
+            <li>Submission</li>
+            <li>Provision</li>
+            <li>Forgiveness</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="strip-thread" data-color="gold">
+        <div class="strip-tile">
+          <h3>Sounds like</h3>
+          <p>To be written.</p>
+        </div>
+        <div class="strip-tile">
+          <h3>Prays like</h3>
+          <p>To be written.</p>
+        </div>
+      </article>
+
+    </div>
 
   </div>
 </section>
@@ -1884,11 +1921,12 @@
     // Capture current viewport rect of the painting
     const rect = tile.getBoundingClientRect();
 
-    // Target oval-strip dimensions (must match .thread-strip CSS)
-    const targetWidth  = Math.min(280, window.innerWidth * 0.6);
-    const targetHeight = 5;
-    const targetTop    = 60; // .strip-header height + spacing
-    const targetLeft   = (window.innerWidth - targetWidth) / 2;
+    // Target pointy-strip dimensions (must match .thread-strip CSS)
+    const targetWidth  = Math.min(280, window.innerWidth * 0.7);
+    const targetHeight = 7;
+    // Strip is centred vertically in the viewport
+    const targetTop    = (window.innerHeight - targetHeight) / 2;
+    const targetLeft   = (window.innerWidth  - targetWidth)  / 2;
 
     // Compute scale + translate from current rect to target rect.
     // Using transform-only animation = GPU-composited, no layout
