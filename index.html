@@ -412,25 +412,20 @@
     background-position: center;
   }
 
-  /* Morphing state — when the painting collapses into the strip,
-     all the spatial + cosmetic properties animate together.
-     Smooth easing curve that eases in and out gently. */
+  /* Morphing state — use transform-based animation for smooth GPU
+     compositing instead of width/height (which thrashes layout). */
   .immersive-tile.morphing {
     transition:
-      top 1.9s cubic-bezier(0.42, 0.0, 0.22, 1),
-      left 1.9s cubic-bezier(0.42, 0.0, 0.22, 1),
-      width 1.9s cubic-bezier(0.42, 0.0, 0.22, 1),
-      height 1.9s cubic-bezier(0.42, 0.0, 0.22, 1),
-      border-radius 1.9s cubic-bezier(0.42, 0.0, 0.22, 1),
-      box-shadow 1.6s cubic-bezier(0.42, 0.0, 0.22, 1),
+      transform 2.0s cubic-bezier(0.4, 0.0, 0.18, 1),
+      border-radius 2.0s cubic-bezier(0.4, 0.0, 0.18, 1),
+      box-shadow 1.4s ease,
       opacity 0.9s ease-out;
+    will-change: transform, opacity, border-radius;
   }
   .immersive-tile.morph-target {
     border-radius: 999px !important;
     box-shadow: none !important;
   }
-  /* The blended texture shrinks with the tile but background-size
-     stays cover so the gradient compresses into a clean shiny strip. */
   .immersive-tile.morph-target .blended-surface {
     background-size: 100% 100%;
   }
@@ -450,12 +445,15 @@
     padding: 18px 36px;
     flex-shrink: 0;
   }
-  /* Very thin shiny strip. No visible indicator pill — users swipe
-     along (or click anywhere on) the whole strip to switch threads. */
+  /* Very thin shiny oval strip — centred, narrower than the page.
+     No visible indicator pill; users swipe along (or click anywhere
+     on) the whole strip to switch threads. */
   .thread-strip {
     position: relative;
-    height: 3px;
-    margin: 0 6vw 36px;
+    height: 5px;
+    width: 280px;
+    max-width: 60vw;
+    margin: 0 auto 36px;
     border-radius: 999px;
     cursor: pointer;
     flex-shrink: 0;
@@ -1883,35 +1881,43 @@
     const stripV = document.getElementById('view-strip');
     if (tile.classList.contains('morphing')) return; // guard against double-fire
 
-    // Capture current viewport position so we can pin and animate
+    // Capture current viewport rect of the painting
     const rect = tile.getBoundingClientRect();
-    const sideMargin = Math.round(window.innerWidth * 0.06);
-    const targetWidth = window.innerWidth - 2 * sideMargin;
-    const targetTop = 60; // matches strip-header padding + spacing
 
-    // Lock the tile at its current position so we can animate to a
-    // fixed target without flex-layout fighting us.
+    // Target oval-strip dimensions (must match .thread-strip CSS)
+    const targetWidth  = Math.min(280, window.innerWidth * 0.6);
+    const targetHeight = 5;
+    const targetTop    = 60; // .strip-header height + spacing
+    const targetLeft   = (window.innerWidth - targetWidth) / 2;
+
+    // Compute scale + translate from current rect to target rect.
+    // Using transform-only animation = GPU-composited, no layout
+    // reflow on each frame → much smoother than animating size.
+    const sx = targetWidth  / rect.width;
+    const sy = targetHeight / rect.height;
+    const tx = (targetLeft + targetWidth/2)  - (rect.left + rect.width/2);
+    const ty = (targetTop  + targetHeight/2) - (rect.top  + rect.height/2);
+
+    // Pin the tile at its current visual position; size stays the
+    // same — only the transform changes during the morph.
     tile.classList.add('morphing');
     tile.style.position = 'fixed';
-    tile.style.top = rect.top + 'px';
-    tile.style.left = rect.left + 'px';
-    tile.style.width = rect.width + 'px';
+    tile.style.top    = rect.top + 'px';
+    tile.style.left   = rect.left + 'px';
+    tile.style.width  = rect.width + 'px';
     tile.style.height = rect.height + 'px';
     tile.style.margin = '0';
     tile.style.zIndex = '60';
-    // Force reflow so the next set of style changes animates
-    void tile.offsetWidth;
-    // Apply the strip-target rect → CSS class kicks the transition
-    tile.classList.add('morph-target');
-    tile.style.top = targetTop + 'px';
-    tile.style.left = sideMargin + 'px';
-    tile.style.width = targetWidth + 'px';
-    tile.style.height = '3px';
+    tile.style.transformOrigin = 'center center';
+    tile.style.transform = 'translate(0,0) scale(1,1)';
+    void tile.offsetWidth; // reflow
 
-    // Start the strip-view crossfade a touch BEFORE the morph
-    // completes so the handoff is invisible — the morphed tile and
-    // the real strip overlap in position while one fades out and
-    // the other fades in.
+    // Kick the animation: transform + border-radius transition.
+    tile.classList.add('morph-target');
+    tile.style.transform = `translate(${tx}px, ${ty}px) scale(${sx}, ${sy})`;
+
+    // Strip-view crossfade starts a touch before the morph finishes
+    // so the swap from morphed tile → real strip is invisible.
     setTimeout(() => {
       showView('view-strip');
       window.scrollTo(0, 0);
@@ -1919,20 +1925,19 @@
       stripV.classList.add('show-hint');
       setStripColor('purple');
       tile.style.opacity = '0';
-    }, 1600);
+    }, 1700);
 
-    // After the morph fully resolves, clean up inline styles so a
-    // return to the homepage finds the tile fresh.
+    // Cleanup so a return to the homepage finds the tile fresh
     setTimeout(() => {
       tile.classList.remove('morphing', 'morph-target');
       tile.style.cssText = '';
-    }, 2700);
+    }, 2800);
 
-    // Hint shows, holds ~2.2s, then content tiles fade in
+    // Hint hold + content fade in
     setTimeout(() => {
       stripV.classList.remove('show-hint');
       stripV.classList.add('show-content');
-    }, 1600 + 2200);
+    }, 1700 + 2200);
   });
 
   // ----------------------------------------------------------
