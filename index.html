@@ -205,6 +205,25 @@
     flex-wrap: wrap;
     justify-content: center;
   }
+  /* Homepage tagline — a single quiet line below the pills.
+     Light Helvetica, low opacity so it whispers without competing
+     with the painting. */
+  .home-tagline {
+    margin: 22px auto 0;
+    font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 13px;
+    font-weight: 300;
+    letter-spacing: 0.04em;
+    color: rgba(255, 255, 255, 0.45);
+    text-align: center;
+    line-height: 1.4;
+  }
+  .home-tagline .tm {
+    font-size: 0.65em;
+    vertical-align: super;
+    margin-left: 1px;
+    letter-spacing: 0;
+  }
   .card-row {
     display: flex;
     gap: 22px;
@@ -586,7 +605,8 @@
     flex-direction: column;
     height: 100%;
     overflow-y: auto;
-    position: relative;
+    /* Don't override .view's position:fixed — doing so makes the
+       strip flow after view-home and renders below the viewport. */
     isolation: isolate;
   }
   /* Black backdrop with grain + scattered thread-colour flecks.
@@ -1565,7 +1585,8 @@
     -webkit-overflow-scrolling: touch;
     scroll-behavior: auto; /* never animate scrollTop resets */
     overscroll-behavior: contain;
-    position: relative;
+    /* Inherit .view's position:fixed — overriding it to relative
+       breaks the viewport anchoring and pushes content out of view. */
     isolation: isolate;
   }
   .project-view .back-btn { color: rgba(12, 10, 8, 0.78); }
@@ -1875,6 +1896,47 @@
     .project-header { margin-bottom: 36px; }
     .project-section-title { padding: 18px 4px; }
     .project-list li { padding-left: 26px; }
+  }
+
+  /* Project footer — discreet next-action links that stop the page
+     from feeling like a dead end. Sits below the accordion. */
+  .project-footer {
+    margin: 48px 0 0;
+    padding: 28px 0 0;
+    border-top: 1px solid rgba(12, 10, 8, 0.12);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    align-items: flex-start;
+  }
+  .project-link {
+    background: transparent;
+    border: none;
+    padding: 4px 0;
+    font-family: 'Courier Prime', 'Courier New', monospace;
+    font-size: clamp(12px, 1.8vw, 14px);
+    font-weight: 400;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(12, 10, 8, 0.72);
+    cursor: pointer;
+    text-align: left;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 10px;
+    transition: color 0.3s ease, transform 0.3s cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+  .project-link .arrow {
+    opacity: 0.6;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+  .project-link:hover {
+    color: #0c0a08;
+    transform: translateX(3px);
+  }
+  .project-link:hover .arrow {
+    opacity: 1;
+    transform: translateX(3px);
   }
   .shop-header {
     display: flex;
@@ -2281,6 +2343,7 @@
       <button class="partner-tab" id="open-partner">Partner</button>
       <button class="thought-stream-btn" id="open-thoughts">Thought</button>
     </div>
+    <p class="home-tagline">powered by pvaOS<span class="tm">&#8482;</span></p>
   </div>
 </section>
 
@@ -2548,6 +2611,11 @@ Lord you are Holy, Holy, Holy</p>
         </div>
       </div>
     </section>
+
+    <footer class="project-footer">
+      <button class="project-link" data-go="threads">Sit with the threads <span class="arrow">→</span></button>
+      <button class="project-link" data-go="projects">Other projects <span class="arrow">→</span></button>
+    </footer>
   </div>
 </section>
 
@@ -2682,167 +2750,9 @@ Lord you are Holy, Holy, Holy</p>
   </div>
 </section>
 
-<!-- ============================================================
-     SWIPE VIEW — three swipeable colour surfaces, dot nav,
-     shadow tint follows the active surface
-     ============================================================ -->
-<section id="view-swipe" class="view">
-  <header class="thread-header">
-    <button class="back-btn" data-back>← back</button>
-    <span class="thread-name"></span>
-  </header>
-  <div class="swipe-stage">
-    <article class="immersive-tile swipe-tile" id="swipe-tile" data-active="purple" role="region" aria-label="Swipe through threads">
-      <div class="tile-surface tile-purple is-active"></div>
-      <div class="tile-surface tile-red"></div>
-      <div class="tile-surface tile-gold"></div>
-      <div class="tile-nav" id="tile-nav">
-        <button class="tile-dot is-active" data-color="purple" aria-label="Grounding"></button>
-        <button class="tile-dot" data-color="red" aria-label="Righteous"></button>
-        <button class="tile-dot" data-color="gold" aria-label="Lifted"></button>
-      </div>
-    </article>
-  </div>
-</section>
+<!-- (Removed: legacy view-swipe and view-threads-menu — no longer reachable) -->
 
-<!-- ============================================================
-     THREADS MENU — opened from the unified tile
-     ============================================================ -->
-<section id="view-threads-menu" class="view">
-  <header class="thread-header">
-    <button class="back-btn" data-back>← back</button>
-    <span class="thread-name">threads</span>
-  </header>
-  <div class="threads-menu-body">
-    <button class="thread-tab thread-tab-grounding" data-thread-tab="grounding">Grounding</button>
-    <button class="thread-tab thread-tab-righteous" data-thread-tab="righteous">Righteous</button>
-    <button class="thread-tab thread-tab-lifted" data-thread-tab="lifted">Lifted</button>
-  </div>
-</section>
-
-<!-- ============================================================
-     THREAD VIEWS
-     ============================================================ -->
-<section id="view-grounding" class="view thread-view grounding-bg">
-  <header class="thread-header">
-    <button class="back-btn" data-back>← back</button>
-    <span class="thread-name">Grounding</span>
-  </header>
-  <div class="thread-stack-wrap">
-    <div class="thread-stack">
-      <article class="thread-panel">
-        <div class="panel-eyebrow">01 · Introduction</div>
-        <h2 class="panel-title">What is Grounding</h2>
-        <p class="panel-body">
-          This thread is about adoration and seeking His face. It's about producing
-          a pleasing fragrance to God. This is the posture where we fall on our
-          knees, put our face to the ground and lift our genuine, revelation-backed
-          worship to our Father. This is what it sounds and looks like. It's marked
-          by a colour. Its output has its roots in scripture. For now this is my
-          attempt at explaining the thread. It's being built for His glory and our joy.
-        </p>
-      </article>
-      <article class="thread-panel">
-        <div class="panel-eyebrow">02 · Sounds like</div>
-        <h2 class="panel-title">Grounding sounds like…</h2>
-        <ul class="panel-list">
-          <li>Adoration</li>
-          <li>Yearning</li>
-          <li>Soaking</li>
-          <li>Multiple voices in a vacuum, each on their own frequency</li>
-          <li>Minimal sound — no drums</li>
-          <li>Voice dominant</li>
-          <li>Few keys and synths</li>
-        </ul>
-      </article>
-      <article class="thread-panel">
-        <div class="panel-eyebrow">03 · Prays like</div>
-        <h2 class="panel-title">Grounding prays like…</h2>
-        <ul class="panel-list">
-          <li>Adoration</li>
-          <li>Submission</li>
-          <li>Provision</li>
-        </ul>
-      </article>
-    </div>
-  </div>
-</section>
-
-<section id="view-righteous" class="view thread-view righteous-bg">
-  <header class="thread-header">
-    <button class="back-btn" data-back>← back</button>
-    <span class="thread-name">Righteous</span>
-  </header>
-  <div class="thread-stack-wrap">
-    <div class="thread-stack">
-      <article class="thread-panel">
-        <div class="panel-eyebrow">01 · Introduction</div>
-        <h2 class="panel-title">What is Righteous</h2>
-        <p class="panel-body">
-          This thread is about working out our righteousness. It's about producing
-          a pleasing fragrance to God through burnt carnality. This is the posture
-          where we endure with joy and love the tension. It's the tension that cuts
-          off the death around us and makes space only for life. In partnership with
-          the only viable partner, the Holy Spirit. This is what it sounds and looks
-          like. It's marked by a colour. Its output has its roots in scripture. For
-          now this is my attempt at explaining the thread. It's being built for His
-          glory and our joy.
-        </p>
-      </article>
-      <article class="thread-panel">
-        <div class="panel-eyebrow">02 · Sounds like</div>
-        <h2 class="panel-title">Righteous sounds like…</h2>
-        <ul class="panel-list">
-          <li>Atmosphere with pattern foundation</li>
-          <li>Pattern is drums or strings</li>
-          <li>High rhythm</li>
-          <li>Structure and system</li>
-          <li>Pattern dominant</li>
-          <li>Repetitive</li>
-          <li>Chants</li>
-        </ul>
-      </article>
-      <article class="thread-panel">
-        <div class="panel-eyebrow">03 · Prays like</div>
-        <h2 class="panel-title">Righteous prays like…</h2>
-        <ul class="panel-list">
-          <li>Submission</li>
-          <li>Provision</li>
-          <li>Forgiveness</li>
-        </ul>
-      </article>
-    </div>
-  </div>
-</section>
-
-<section id="view-lifted" class="view thread-view lifted-bg">
-  <header class="thread-header">
-    <button class="back-btn" data-back>← back</button>
-    <span class="thread-name">Lifted</span>
-  </header>
-  <div class="thread-stack-wrap">
-    <div class="thread-stack">
-      <article class="thread-panel">
-        <div class="panel-eyebrow">01 · Introduction</div>
-        <h2 class="panel-title">What is Lifted</h2>
-        <p class="panel-body">
-          Coming soon. This thread is being shaped — when the words are ready
-          they will land here. Until then, sit with the colour and the quiet.
-        </p>
-      </article>
-      <article class="thread-panel">
-        <div class="panel-eyebrow">02 · Sounds like</div>
-        <h2 class="panel-title">Lifted sounds like…</h2>
-        <p class="panel-body">To be written.</p>
-      </article>
-      <article class="thread-panel">
-        <div class="panel-eyebrow">03 · Prays like</div>
-        <h2 class="panel-title">Lifted prays like…</h2>
-        <p class="panel-body">To be written.</p>
-      </article>
-    </div>
-  </div>
-</section>
+<!-- (Removed: legacy per-thread views — the strip view handles all three threads now) -->
 
 <!-- ============================================================
      THOUGHTS PAGE
@@ -2879,11 +2789,6 @@ Lord you are Holy, Holy, Holy</p>
     'view-project-overseer':  '#overseer',
     'view-strip':             '#threads',
     'view-thoughts':          '#thoughts',
-    'view-swipe':             '#swipe',
-    'view-threads-menu':      '#menu',
-    'view-grounding':         '#grounding',
-    'view-righteous':         '#righteous',
-    'view-lifted':            '#lifted',
   };
   // Protected pages require the partner password — refreshing
   // on them bounces back to the project list to re-authenticate.
@@ -2953,25 +2858,8 @@ Lord you are Holy, Holy, Holy</p>
     transitionTo(midCallback, mode);
   }
 
-  // Legacy name kept for the homepage card + thread tabs:
-  // shows the view named `view-<thread>` at the flash peak.
-  function pullInto(thread) {
-    flashTo(() => {
-      showView('view-' + thread);
-      window.scrollTo(0, 0);
-    });
-  }
-
-  // ----------------------------------------------------------
-  // Wire up the homepage cards
-  // ----------------------------------------------------------
-  document.querySelectorAll('.thread-card').forEach(card => {
-    const open = () => pullInto(card.dataset.thread);
-    card.addEventListener('click', open);
-    card.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
-    });
-  });
+  // (Removed: legacy pullInto + .thread-card wiring — the homepage
+  // uses the blended painting morph, not per-thread cards.)
 
   // ----------------------------------------------------------
   // HOMEPAGE BLENDED TILE — morph the painting into the strip,
@@ -3145,82 +3033,10 @@ Lord you are Holy, Holy, Holy</p>
   });
   document.addEventListener('mouseup', () => { stripDragging = false; });
 
-  // ----------------------------------------------------------
-  // SWIPE VIEW — three surfaces with dots + swipe + wheel
-  // ----------------------------------------------------------
+  // Thread colour identifiers — used by setStripColor's directional
+  // swipe logic. (The other swipe/menu views these once powered have
+  // been retired in favour of the strip view.)
   const COLORS = ['purple', 'red', 'gold'];
-  const COLOR_TO_THREAD = { purple: 'grounding', red: 'righteous', gold: 'lifted' };
-  let activeSwipeColorIndex = 0;
-
-  const swipeTile = document.getElementById('swipe-tile');
-  const swipeSurfaces = {
-    purple: swipeTile.querySelector('.tile-surface.tile-purple'),
-    red:    swipeTile.querySelector('.tile-surface.tile-red'),
-    gold:   swipeTile.querySelector('.tile-surface.tile-gold'),
-  };
-  const swipeDots = swipeTile.querySelectorAll('.tile-dot');
-
-  function setActiveSwipeColor(color) {
-    activeSwipeColorIndex = COLORS.indexOf(color);
-    swipeTile.dataset.active = color;
-    Object.entries(swipeSurfaces).forEach(([c, el]) => {
-      el.classList.toggle('is-active', c === color);
-    });
-    swipeDots.forEach(d => d.classList.toggle('is-active', d.dataset.color === color));
-  }
-
-  function shiftSwipeColor(delta) {
-    const next = (activeSwipeColorIndex + delta + COLORS.length) % COLORS.length;
-    setActiveSwipeColor(COLORS[next]);
-  }
-
-  swipeDots.forEach(dot => {
-    dot.addEventListener('click', (e) => {
-      e.stopPropagation();
-      setActiveSwipeColor(dot.dataset.color);
-    });
-  });
-
-  // Swipe gestures
-  let swipeStartX = null;
-  swipeTile.addEventListener('touchstart', (e) => {
-    swipeStartX = e.touches[0].clientX;
-  }, { passive: true });
-  swipeTile.addEventListener('touchend', (e) => {
-    if (swipeStartX == null) return;
-    const dx = e.changedTouches[0].clientX - swipeStartX;
-    if (Math.abs(dx) > 50) shiftSwipeColor(dx > 0 ? -1 : 1);
-    swipeStartX = null;
-  });
-
-  // Two-finger horizontal scroll / trackpad
-  let wheelLock = false;
-  swipeTile.addEventListener('wheel', (e) => {
-    if (Math.abs(e.deltaX) < Math.abs(e.deltaY)) return;
-    e.preventDefault();
-    if (wheelLock) return;
-    wheelLock = true;
-    shiftSwipeColor(e.deltaX > 0 ? 1 : -1);
-    setTimeout(() => { wheelLock = false; }, 450);
-  }, { passive: false });
-
-  // Double-click the swipe tile → portal into the active thread
-  swipeTile.addEventListener('dblclick', (e) => {
-    if (e.target.closest('.tile-dot, .tile-nav')) return;
-    pullInto(COLOR_TO_THREAD[swipeTile.dataset.active]);
-  });
-
-  // (Shadow tint removed — the painting stands alone on the
-  // homepage with no halo. Strip view sits on plain black.)
-
-  // ----------------------------------------------------------
-  // Threads menu — each glowing pill portals into its thread
-  // ----------------------------------------------------------
-  document.querySelectorAll('.thread-tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-      pullInto(tab.dataset.threadTab);
-    });
-  });
 
   // ----------------------------------------------------------
   // Project page accordions — click a section title to toggle.
@@ -3233,6 +3049,34 @@ Lord you are Holy, Holy, Holy</p>
       if (!section) return;
       const isOpen = section.classList.toggle('is-open');
       btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+  });
+
+  // ----------------------------------------------------------
+  // Project page footer links — cross-navigation
+  // ----------------------------------------------------------
+  document.querySelectorAll('.project-link[data-go]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const dest = btn.dataset.go;
+      if (dest === 'threads') {
+        // Jump to the strip view in its content-shown state
+        flashTo(() => {
+          showView('view-strip');
+          window.scrollTo(0, 0);
+          const stripV = document.getElementById('view-strip');
+          stripV.classList.remove('show-hint');
+          stripV.classList.add('show-content');
+        }, 'wash');
+      } else if (dest === 'projects') {
+        // Back to the project list
+        flashTo(() => {
+          showView('view-partner-welcome');
+          window.scrollTo(0, 0);
+          const welcomeView = document.getElementById('view-partner-welcome');
+          welcomeView.classList.remove('firing', 'continue-shown', 'prompt-shown');
+          welcomeView.classList.add('tabs-shown');
+        }, 'settle');
+      }
     });
   });
 
@@ -3341,6 +3185,9 @@ Lord you are Holy, Holy, Holy</p>
     }
     welcomeView.classList.remove('firing');
     welcomeView.classList.add('continue-shown');
+    // User has now seen (or chose to skip) the welcome — don't show it
+    // again this session
+    markWelcomeSeen();
   }
 
   // Tap anywhere on the welcome (during the fade phase) to skip to
@@ -3350,16 +3197,38 @@ Lord you are Holy, Holy, Holy</p>
     fastForwardWelcome();
   });
 
+  // Track whether the welcome ceremony has been shown this session.
+  // First visit gets the full animation; subsequent visits skip
+  // straight to the project list.
+  const WELCOME_SEEN_KEY = 'pvathecreated:welcomeSeen';
+  function hasSeenWelcomeThisSession() {
+    try { return sessionStorage.getItem(WELCOME_SEEN_KEY) === '1'; }
+    catch (_) { return false; }
+  }
+  function markWelcomeSeen() {
+    try { sessionStorage.setItem(WELCOME_SEEN_KEY, '1'); } catch (_) {}
+  }
+
   document.getElementById('open-partner').addEventListener('click', () => {
     const welcomeView = document.getElementById('view-partner-welcome');
+    const skip = hasSeenWelcomeThisSession();
 
     // Cream paper rising up onto the desk
     flashTo(() => {
       showView('view-partner-welcome');
       window.scrollTo(0, 0);
-      // Trigger the slow welcome message fade animation
-      welcomeView.classList.add('firing');
+      if (skip) {
+        // Returning visitor — go directly to the project list,
+        // no welcome message animation, no Continue button.
+        welcomeView.classList.remove('firing', 'continue-shown', 'prompt-shown');
+        welcomeView.classList.add('tabs-shown');
+      } else {
+        // First visit this session — full ceremony
+        welcomeView.classList.add('firing');
+      }
     }, 'lift');
+
+    if (skip) return; // skip the timer that schedules Continue button
 
     // After the welcome animation completes (5.5s for the first
     // paragraph, +0.45s stagger for the second), show the Continue
@@ -3382,6 +3251,7 @@ Lord you are Holy, Holy, Holy</p>
     const view = document.getElementById('view-partner-welcome');
     view.classList.remove('continue-shown');
     view.classList.add('tabs-shown');
+    markWelcomeSeen();
   });
 
   // ----------------------------------------------------------
