@@ -3375,6 +3375,31 @@ Lord you are Holy, Holy, Holy</p>
   };
   let selectedPartnerTab = null;
 
+  // Track which projects have been authenticated. Stored in
+  // sessionStorage so a page refresh keeps the user signed in,
+  // but closing the tab signs them out.
+  const AUTH_KEY = 'pvathecreated:auth';
+  function getAuthedTabs() {
+    try {
+      const raw = sessionStorage.getItem(AUTH_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch (_) { return []; }
+  }
+  function markTabAuthed(tab) {
+    try {
+      const set = new Set(getAuthedTabs());
+      set.add(tab);
+      sessionStorage.setItem(AUTH_KEY, JSON.stringify(Array.from(set)));
+    } catch (_) {}
+  }
+  function isViewAuthed(viewId) {
+    const authed = new Set(getAuthedTabs());
+    // A view is authed if ANY tab that routes to it has been authed
+    return Object.entries(PARTNER_VIEWS)
+      .filter(([_, v]) => v === viewId)
+      .some(([tab, _]) => authed.has(tab));
+  }
+
   document.querySelectorAll('.partner-tab-link').forEach(tab => {
     tab.addEventListener('click', () => {
       selectedPartnerTab = tab.dataset.tab;
@@ -3395,6 +3420,9 @@ Lord you are Holy, Holy, Holy</p>
     // Case-sensitive compare (e.g. HOUSE PVA uses pvaOStm with a capital O)
     if (expected && val === expected) {
       ppError.classList.remove('show');
+      // Persist auth for this session so refresh doesn't kick the
+      // user back to the password prompt.
+      markTabAuthed(selectedPartnerTab);
       // Dismiss the mobile keyboard before transitioning. On iOS
       // the keyboard takes ~200ms to fully retract, and the visual
       // viewport doesn't restore until it has. If we transition
@@ -3495,22 +3523,33 @@ Lord you are Holy, Holy, Holy</p>
     const target = reverse[hash];
     if (!target || target === 'view-home') return;
 
-    // Protected pages can't be accessed directly via hash — kick
-    // the user back to the project list to re-enter the password.
+    // Protected pages — show directly IF the user has authed this
+    // session, otherwise bounce to the project list to enter
+    // the password.
     if (PROTECTED_VIEWS.includes(target)) {
+      if (isViewAuthed(target)) {
+        showView(target);
+        return;
+      }
       showView('view-partner-welcome');
       const welcomeView = document.getElementById('view-partner-welcome');
-      // Skip the welcome animation, land directly on the tab list
       welcomeView.classList.remove('firing', 'continue-shown', 'prompt-shown');
       welcomeView.classList.add('tabs-shown');
-      // Replace the URL so the protected hash isn't sitting in the
-      // address bar (and a subsequent refresh re-runs this branch)
       try { history.replaceState(null, '', '#partner'); } catch (_) {}
       return;
     }
 
-    // For the strip view, jump straight to its content state
-    // (no painting morph since the user refreshed directly into it)
+    // Partner welcome — land directly on the project list (skip the
+    // welcome animation since the user is refreshing, not arriving)
+    if (target === 'view-partner-welcome') {
+      showView('view-partner-welcome');
+      const welcomeView = document.getElementById('view-partner-welcome');
+      welcomeView.classList.remove('firing', 'continue-shown', 'prompt-shown');
+      welcomeView.classList.add('tabs-shown');
+      return;
+    }
+
+    // Strip view — jump straight to content state (no painting morph)
     if (target === 'view-strip') {
       showView('view-strip');
       const stripV = document.getElementById('view-strip');
