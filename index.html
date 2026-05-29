@@ -7,7 +7,7 @@
 <meta name="description" content="thecreated — an attempt at giving God His ROI." />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Caveat+Brush&family=Special+Elite&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Caveat+Brush&family=Special+Elite&display=swap" rel="stylesheet" />
 <style>
   /* Prefer locally-installed Petapon (the one in Canva). If a
      visitor doesn't have it, fall through to Caveat from Google. */
@@ -403,13 +403,96 @@
       rgba(35, 25, 5, 0) 100%);
   }
 
-  /* Homepage variant: blended tile shows all three textures at once */
+  /* Homepage variant: blended tile shows all three textures at once.
+     SLOW HEARTBEAT pulse — long, contemplative lub-dub rhythm that
+     radiates outward from the centre. The painted surface itself
+     also RIPPLES via an animated SVG displacement filter so it
+     looks like there are slow waves moving underneath the material. */
+  .blended-tile {
+    position: relative;
+  }
   .blended-tile .blended-surface {
     position: absolute;
-    inset: 0;
+    inset: -3%; /* oversize so scale never exposes the frame */
     background-image: url('unified.jpg');
     background-size: cover;
     background-position: center;
+    transform-origin: 50% 50%;
+    /* Very slow heartbeat — ~7.5 bpm. Cubic-bezier with low control
+       points gives soft, rounded peaks rather than staccato attacks. */
+    animation: paintingHeartbeat 8.0s cubic-bezier(0.45, 0, 0.35, 1) infinite;
+    will-change: transform, filter;
+    transform: translateZ(0); /* force GPU layer for smoother filter compositing */
+    /* Wave ripple underneath the material */
+    filter: url(#paint-ripple);
+    -webkit-filter: url(#paint-ripple);
+  }
+  /* Slow, soft lub-dub: two gentle peaks rounded with denser keyframes
+     so the interpolation is silky, then a long contemplative rest. */
+  @keyframes paintingHeartbeat {
+    0%    { transform: scale(1.0000); }
+    3%    { transform: scale(1.0060); }   /* easing into LUB */
+    6%    { transform: scale(1.0150); }   /* LUB peak */
+    9%    { transform: scale(1.0080); }
+    12%   { transform: scale(1.0030); }   /* gentle recoil */
+    15%   { transform: scale(1.0090); }   /* easing into DUB */
+    18%   { transform: scale(1.0125); }   /* DUB peak */
+    22%   { transform: scale(1.0050); }
+    28%   { transform: scale(1.0000); }   /* settle */
+    100%  { transform: scale(1.0000); }   /* long rest */
+  }
+  /* Reverberation ring — a centred radial glow that expands outward
+     and fades on each beat, making the pulse feel like a wave
+     travelling out from the heart of the painting. */
+  .blended-tile::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 4;
+    background: radial-gradient(circle at 50% 50%,
+      rgba(255, 255, 255, 0.00) 28%,
+      rgba(255, 230, 210, 0.12) 50%,
+      rgba(255, 200, 180, 0.00) 78%);
+    opacity: 0;
+    transform: scale(0.7);
+    transform-origin: 50% 50%;
+    animation: paintingReverb 8.0s cubic-bezier(0.45, 0, 0.35, 1) infinite;
+    mix-blend-mode: screen;
+    will-change: opacity, transform;
+  }
+  @keyframes paintingReverb {
+    0%    { opacity: 0;    transform: scale(0.70); }
+    3%    { opacity: 0.12; transform: scale(0.85); }
+    6%    { opacity: 0.32; transform: scale(1.00); }  /* LUB flash peak */
+    10%   { opacity: 0.18; transform: scale(1.15); }
+    14%   { opacity: 0.10; transform: scale(1.22); }
+    18%   { opacity: 0.22; transform: scale(1.30); }  /* DUB flash peak */
+    24%   { opacity: 0.08; transform: scale(1.40); }
+    32%   { opacity: 0;    transform: scale(1.50); }  /* dissipates */
+    100%  { opacity: 0;    transform: scale(1.50); }
+  }
+  /* Pause everything (including the ripple filter) once the morph
+     begins so the suction transition stays clean. */
+  .immersive-tile.morphing .blended-surface,
+  .immersive-tile.morph-target .blended-surface {
+    animation: none;
+    filter: none;
+    -webkit-filter: none;
+  }
+  .immersive-tile.morphing.blended-tile::after,
+  .immersive-tile.morph-target.blended-tile::after {
+    animation: none;
+    opacity: 0;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .blended-tile .blended-surface {
+      animation: none;
+      filter: none;
+      -webkit-filter: none;
+    }
+    .blended-tile::after { animation: none; opacity: 0; }
   }
 
   /* Morphing state — "sucked in" feel.
@@ -436,13 +519,37 @@
      STRIP VIEW — top colour strip + content tiles for active thread
      ============================================================ */
   #view-strip {
-    background: #000;
+    background: #000; /* pure black — deepest possible */
     color: #fff;
     display: flex;
     flex-direction: column;
     height: 100%;
     overflow-y: auto;
+    position: relative;
+    isolation: isolate;
   }
+  /* Black backdrop with grain + scattered thread-colour flecks.
+     Two layers:
+       ::before — fine SVG turbulence grain over pure black (constant)
+       ::after  — sparse colour specks placed around the viewport;
+                  the colour shifts per active thread.
+     The strip itself stays the brightest source on screen. */
+  #view-strip::before {
+    /* Grain texture — fractal noise from an inline SVG data URI.
+       Kept very subtle so the black underneath stays deep. */
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-color: #000;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.35 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    background-size: 240px 240px;
+    opacity: 0.07;
+    mix-blend-mode: screen;
+  }
+  /* Push the real content above the grainy backdrop */
+  #view-strip > * { position: relative; z-index: 1; }
   .strip-header {
     padding: 18px 36px;
     flex-shrink: 0;
@@ -542,26 +649,49 @@
   #view-strip .strip-content { opacity: 0; transition: opacity 0.9s ease; }
   #view-strip.show-content .strip-content { opacity: 1; }
 
-  /* Stage holds: above-tiles | strip | below-tiles, vertically
-     centred so the strip sits in the middle of the page. */
+  /* Stage holds: above-tiles | strip | below-tiles. The strip is
+     anchored to the vertical centre via absolute positioning so it
+     NEVER moves when thread content above/below changes height. */
   .strip-stage {
+    position: relative;
     flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 24px 6vw;
-    gap: 22px;
     width: 100%;
     max-width: 920px;
     margin: 0 auto;
+    padding: 24px 6vw;
+    box-sizing: border-box;
+    min-height: 0;
+  }
+  .strip-stage .thread-strip {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
+    z-index: 3;
   }
   .strip-above,
   .strip-below {
-    width: 100%;
-    position: relative;
+    position: absolute;
+    left: 6vw;
+    right: 6vw;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
   }
-  .strip-above { display: flex; justify-content: center; }
+  .strip-above::-webkit-scrollbar,
+  .strip-below::-webkit-scrollbar { display: none; }
+  .strip-above {
+    top: 24px;
+    bottom: calc(50% + 40px); /* leave space above the strip */
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+  }
+  .strip-below {
+    top: calc(50% + 40px);    /* leave space below the strip */
+    bottom: 24px;
+  }
   /* Position threads on top of each other so swapping doesn't
      reflow the layout — only the active one is visible. */
   .strip-above .strip-thread,
@@ -579,14 +709,34 @@
     from { opacity: 0; transform: translateY(10px); }
     to   { opacity: 1; transform: translateY(0); }
   }
+  /* Modern thread title — Helvetica ultra-thin, tracked out wide,
+     subtle gradient fill so it feels cool rather than flat. */
   .strip-thread-name {
-    font-family: 'Special Elite', monospace;
-    font-size: 22px;
-    font-weight: 400;
-    letter-spacing: 0.16em;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 34px;
+    font-weight: 100;
+    letter-spacing: 0.42em;
     text-transform: uppercase;
-    color: rgba(255,255,255,0.85);
-    margin: 0 0 26px;
+    text-align: center;
+    margin: 0 0 22px;
+    line-height: 1;
+    padding-left: 0.42em; /* optical balance for letter-spacing */
+    background: linear-gradient(180deg,
+      rgba(255,255,255,0.98) 0%,
+      rgba(255,255,255,0.62) 100%);
+    -webkit-background-clip: text;
+            background-clip: text;
+    -webkit-text-fill-color: transparent;
+            color: transparent;
+    text-shadow: 0 0 26px rgba(255,255,255,0.08);
+  }
+  @media (max-width: 768px) {
+    .strip-thread-name {
+      font-size: 26px;
+      letter-spacing: 0.36em;
+      padding-left: 0.36em;
+      margin-bottom: 18px;
+    }
   }
   .strip-tile {
     background: rgba(255,255,255,0.04);
@@ -596,21 +746,81 @@
     margin: 0 0 18px;
     opacity: 0;
     animation: tileFadeIn 0.8s ease forwards;
+    transition:
+      background-color 1.0s ease,
+      border-color 1.0s ease,
+      box-shadow 1.0s ease;
   }
-  .strip-thread.is-active .strip-tile:nth-child(2) { animation-delay: 0.15s; }
-  .strip-thread.is-active .strip-tile:nth-child(3) { animation-delay: 0.3s; }
-  .strip-thread.is-active .strip-tile:nth-child(4) { animation-delay: 0.45s; }
+  /* Tiles carry the thread colour — tinted bg, coloured border, soft
+     outer glow. The colour washes change with the active thread. */
+  #view-strip.thread-purple .strip-tile {
+    background:
+      linear-gradient(180deg, rgba(168,96,240,0.10), rgba(82,38,156,0.04)),
+      rgba(255,255,255,0.02);
+    border-color: rgba(168, 96, 240, 0.32);
+    box-shadow:
+      0 0 0 1px rgba(168, 96, 240, 0.08),
+      0 18px 50px -10px rgba(122, 58, 204, 0.32),
+      inset 0 1px 0 rgba(255,255,255,0.05);
+  }
+  #view-strip.thread-red .strip-tile {
+    background:
+      linear-gradient(180deg, rgba(255,124,90,0.10), rgba(168,38,42,0.04)),
+      rgba(255,255,255,0.02);
+    border-color: rgba(220, 70, 60, 0.32);
+    box-shadow:
+      0 0 0 1px rgba(220, 70, 60, 0.08),
+      0 18px 50px -10px rgba(201, 63, 72, 0.32),
+      inset 0 1px 0 rgba(255,255,255,0.05);
+  }
+  #view-strip.thread-gold .strip-tile {
+    background:
+      linear-gradient(180deg, rgba(255,235,180,0.10), rgba(212,168,92,0.04)),
+      rgba(255,255,255,0.02);
+    border-color: rgba(236, 201, 126, 0.34);
+    box-shadow:
+      0 0 0 1px rgba(236, 201, 126, 0.10),
+      0 18px 50px -10px rgba(236, 201, 126, 0.30),
+      inset 0 1px 0 rgba(255,255,255,0.06);
+  }
+  /* The small h3 eyebrow on each tile picks up the thread colour too */
+  #view-strip.thread-purple .strip-tile h3 { color: rgba(206, 168, 248, 0.85); }
+  #view-strip.thread-red    .strip-tile h3 { color: rgba(255, 168, 150, 0.85); }
+  #view-strip.thread-gold   .strip-tile h3 { color: rgba(248, 220, 160, 0.88); }
+
+  /* Cinematic cascade — the FIRST tile holds the screen alone for
+     a beat, then the rest fade in one by one. Slow, deliberate. */
+  .strip-thread.is-active .strip-tile:nth-child(1) { animation-delay: 0.10s; }
+  .strip-thread.is-active .strip-tile:nth-child(2) { animation-delay: 1.20s; }
+  .strip-thread.is-active .strip-tile:nth-child(3) { animation-delay: 1.55s; }
+  .strip-thread.is-active .strip-tile:nth-child(4) { animation-delay: 1.90s; }
+  .strip-thread.is-active .strip-tile:nth-child(5) { animation-delay: 2.25s; }
   @keyframes tileFadeIn {
     from { opacity: 0; transform: translateY(8px); }
     to   { opacity: 1; transform: translateY(0); }
   }
+
+  /* Eyebrow — small upper-case label with a thin trailing line */
   .strip-tile h3 {
-    font-size: 11px;
-    letter-spacing: 0.28em;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.34em;
     text-transform: uppercase;
     color: rgba(255,255,255,0.55);
-    margin: 0 0 14px;
-    font-weight: 400;
+    margin: 0 0 16px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .strip-tile h3::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg,
+      currentColor 0%,
+      rgba(255,255,255,0) 100%);
+    opacity: 0.35;
   }
   .strip-tile p {
     color: rgba(255,255,255,0.88);
@@ -619,35 +829,128 @@
     font-weight: 300;
     margin: 0;
   }
+  /* Introduction lede — slightly larger, drop cap on first letter */
+  .strip-tile-intro p {
+    font-size: 17px;
+    line-height: 1.75;
+    color: rgba(255,255,255,0.92);
+  }
+  .strip-tile-intro p::first-letter {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 3.4em;
+    font-weight: 300;
+    float: left;
+    line-height: 0.85;
+    margin: 4px 12px 0 -2px;
+    color: rgba(255,255,255,0.95);
+    font-style: italic;
+  }
+  #view-strip.thread-purple .strip-tile-intro p::first-letter { color: rgba(206, 168, 248, 0.95); }
+  #view-strip.thread-red    .strip-tile-intro p::first-letter { color: rgba(255, 168, 150, 0.95); }
+  #view-strip.thread-gold   .strip-tile-intro p::first-letter { color: rgba(248, 220, 160, 0.95); }
+
+  /* Scripture tile — serif italic blockquote with thread-coloured
+     left bar. Quiet, anchored, distinct from the body tiles. */
+  .strip-tile-scripture {
+    padding: 26px 28px 22px 32px;
+    position: relative;
+  }
+  .strip-tile-scripture::before {
+    content: "";
+    position: absolute;
+    left: 14px; top: 22px; bottom: 22px;
+    width: 2px;
+    border-radius: 1px;
+    background: currentColor;
+    opacity: 0.55;
+  }
+  #view-strip.thread-purple .strip-tile-scripture { color: rgba(206, 168, 248, 0.9); }
+  #view-strip.thread-red    .strip-tile-scripture { color: rgba(255, 168, 150, 0.9); }
+  #view-strip.thread-gold   .strip-tile-scripture { color: rgba(248, 220, 160, 0.9); }
+  .strip-tile-scripture blockquote {
+    margin: 0;
+    padding: 0;
+  }
+  .strip-tile-scripture blockquote p {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 19px;
+    font-style: italic;
+    line-height: 1.55;
+    font-weight: 400;
+    color: rgba(255,255,255,0.95);
+    margin: 0 0 14px;
+  }
+  .strip-tile-scripture cite {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-style: normal;
+    font-size: 10px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.55);
+    font-weight: 500;
+  }
+
+  /* Posture tile — single quiet italic line, centred, minimal frame */
+  .strip-tile-posture {
+    padding: 22px 28px;
+    text-align: center;
+  }
+  .strip-tile-posture p {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-style: italic;
+    font-size: 16px;
+    font-weight: 300;
+    line-height: 1.6;
+    color: rgba(255,255,255,0.78);
+    letter-spacing: 0.02em;
+  }
+  .strip-tile-posture::before,
+  .strip-tile-posture::after {
+    content: "·";
+    display: block;
+    color: rgba(255,255,255,0.35);
+    font-size: 14px;
+    line-height: 1;
+    margin: 0 0 10px;
+  }
+  .strip-tile-posture::after {
+    margin: 10px 0 0;
+  }
+
   .strip-tile ul {
     margin: 0;
     padding: 0;
     list-style: none;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 9px;
   }
   .strip-tile li {
     color: rgba(255,255,255,0.88);
     line-height: 1.5;
     font-size: 15px;
     font-weight: 300;
-    padding-left: 16px;
+    padding-left: 18px;
     position: relative;
   }
+  /* Bullet inherits thread colour */
   .strip-tile li::before {
     content: "";
     position: absolute;
     left: 0; top: 0.7em;
-    width: 8px; height: 1px;
-    background: rgba(255,255,255,0.45);
+    width: 10px; height: 1px;
+    background: currentColor;
+    opacity: 0.6;
   }
+  #view-strip.thread-purple .strip-tile li { color: rgba(232, 215, 252, 0.92); }
+  #view-strip.thread-red    .strip-tile li { color: rgba(255, 218, 208, 0.92); }
+  #view-strip.thread-gold   .strip-tile li { color: rgba(252, 236, 200, 0.92); }
   @media (max-width: 768px) {
     .strip-header { padding: 14px 22px; }
-    .thread-strip { margin: 0 5vw 22px; }
     .strip-content { padding: 22px 5vw 48px; }
     .strip-tile { padding: 20px 22px; }
-    .strip-thread-name { font-size: 18px; margin-bottom: 22px; }
+    .strip-above { left: 5vw; right: 5vw; }
+    .strip-below { left: 5vw; right: 5vw; }
   }
 
   /* Swipe view layout — single tile centred with breathing room */
@@ -778,8 +1081,8 @@
     cursor: default;
   }
   /* Film-grain noise layer — SVG turbulence rendered once, repeated.
-     Sits above the bg colour, below content, multiplied so it darkens
-     the cream just enough to feel like coarse paper. */
+     Sits above the bg colour, below content, multiplied so it adds
+     fine paper texture without darkening the white too much. */
   #view-partner-welcome::before {
     content: "";
     position: absolute;
@@ -837,22 +1140,21 @@
   }
   .welcome-message:last-child { margin-bottom: 0; }
 
-  /* Slow fade-in / hold / quick fade-out — runs when the view is
-     in its 'firing' state. The two paragraphs are stagger-delayed
-     so the second one fades in a beat after the first. */
+  /* Asymmetric fade — slow, deliberate fade-IN, then a quick exit.
+     Total cycle 5.5s, stagger 0.45s for the second paragraph. */
   #view-partner-welcome.firing .welcome-message {
-    animation: welcomeFade 14s cubic-bezier(0.42, 0.04, 0.32, 1) forwards;
+    animation: welcomeFade 5.5s cubic-bezier(0.32, 0.04, 0.32, 1) forwards;
   }
   #view-partner-welcome.firing .welcome-message:nth-child(2) {
-    animation-delay: 1.4s;
+    animation-delay: 0.45s;
   }
-  /* 0-50% (7s):  slow fade in
-     50-93% (6s): hold
-     93-100% (1s): quick fade out */
+  /* 0-50%  (~2.75s): slow fade in
+     50-91% (~2.25s): hold
+     91-100% (~0.5s): quick fade out */
   @keyframes welcomeFade {
-    0%   { opacity: 0; transform: translateY(12px); }
+    0%   { opacity: 0; transform: translateY(14px); }
     50%  { opacity: 1; transform: translateY(0); }
-    93%  { opacity: 1; transform: translateY(0); }
+    91%  { opacity: 1; transform: translateY(0); }
     100% { opacity: 0; transform: translateY(-4px); }
   }
   /* When the user taps to skip ahead, kill the welcome animation
@@ -912,6 +1214,29 @@
     from { opacity: 0; transform: translateY(8px); }
     to   { opacity: 1; transform: translateY(0); }
   }
+  /* Small instruction line above the project list — Helvetica,
+     sentence case, lifted above the list for breathing room.
+     Coloured with the same purple→red→bronze gradient as the
+     welcome messages so it reads as part of the same voice. */
+  .partner-tabs-header {
+    font-family: Helvetica, "Helvetica Neue", Arial, sans-serif;
+    font-size: 14px;
+    font-weight: 300;
+    letter-spacing: 0.01em;
+    text-transform: none;
+    margin: 0 0 22px;
+    padding: 0;
+    background: linear-gradient(95deg,
+      #2a0f4d 0%,
+      #4a1f7a 22%,
+      #7a1024 50%,
+      #944a18 78%,
+      #7a5a1e 100%);
+    -webkit-background-clip: text;
+            background-clip: text;
+    -webkit-text-fill-color: transparent;
+            color: transparent;
+  }
   .partner-tab-link {
     background: transparent;
     border: none;
@@ -920,32 +1245,44 @@
     font-size: 18px;
     font-weight: 400;
     letter-spacing: 0.015em;
-    color: rgba(20, 16, 12, 0.92);
+    color: #000;
     cursor: pointer;
     text-align: left;
-    transition: color 0.4s ease, transform 0.4s ease;
+    transition: color 0.4s ease,
+                transform 0.4s ease,
+                text-shadow 0.25s ease;
     display: inline-flex;
     align-items: baseline;
     gap: 10px;
   }
   .partner-tab-link .tab-arrow {
-    opacity: 0.7;
-    transition: opacity 0.4s ease, transform 0.4s ease;
+    opacity: 0.85;
+    color: #000;
+    transition: opacity 0.4s ease, transform 0.4s ease, color 0.4s ease;
     font-size: 15px;
   }
-  .partner-tab-link:hover {
-    color: transparent;
-    background: linear-gradient(95deg, #2a0f4d 0%, #4a1f7a 22%, #7a1024 50%, #944a18 78%, #7a5a1e 100%);
-    -webkit-background-clip: text;
-            background-clip: text;
-    -webkit-text-fill-color: transparent;
+  .partner-tab-link:hover,
+  .partner-tab-link:active,
+  .partner-tab-link:focus-visible {
+    /* Stay deep black on hover/select — no gradient fill — and
+       bolden via a tight text-shadow so Special Elite (which has
+       no native bold cut) reads weightier. */
+    color: #000;
+    -webkit-text-fill-color: #000;
+    background: transparent;
     transform: translateX(3px);
+    font-weight: 700;
+    text-shadow: 0.4px 0 0 #000, -0.4px 0 0 #000;
+    outline: none;
   }
-  .partner-tab-link:hover .tab-arrow {
+  .partner-tab-link:hover .tab-arrow,
+  .partner-tab-link:active .tab-arrow,
+  .partner-tab-link:focus-visible .tab-arrow {
     opacity: 1;
     transform: translateX(4px);
-    color: #7a1024;
-    -webkit-text-fill-color: #7a1024;
+    color: #000;
+    -webkit-text-fill-color: #000;
+    text-shadow: 0.4px 0 0 #000, -0.4px 0 0 #000;
   }
 
   /* Password prompt — appears inline after a tab is clicked */
@@ -1077,6 +1414,213 @@
     color: #fff;
     overflow-y: auto;
     overflow-x: hidden;
+  }
+
+  /* ============================================================
+     PROJECT VIEW — dedicated page per project (e.g. The Overseer)
+     White grainy backdrop, black TYPEWRITER body (Special Elite).
+     Sections are collapsible accordions — click the heading to open.
+     ============================================================ */
+  .project-view {
+    background: #ffffff;
+    color: #0c0a08;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow-y: auto;
+    position: relative;
+    isolation: isolate;
+  }
+  .project-view::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.92' numOctaves='2' stitchTiles='stitch' seed='3'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.55 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    background-size: 220px 220px;
+    opacity: 0.5;
+    mix-blend-mode: multiply;
+    z-index: 1;
+  }
+  .project-view > * { position: relative; z-index: 2; }
+  .project-view .back-btn { color: rgba(12, 10, 8, 0.78); }
+  .project-view .back-btn:hover { color: rgba(12, 10, 8, 1); }
+  .project-view .site-meta {
+    color: rgba(12, 10, 8, 0.55);
+    font-family: 'Special Elite', 'Courier Prime', monospace;
+  }
+
+  .project-body {
+    max-width: 760px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 32px 8vw 96px;
+    box-sizing: border-box;
+  }
+  /* Project masthead — title big, thread name smaller, both typewriter. */
+  .project-header {
+    margin: 18px 0 48px;
+    text-align: left;
+  }
+  .project-title {
+    font-family: 'Special Elite', 'Courier Prime', monospace;
+    font-size: clamp(36px, 6.5vw, 56px);
+    font-weight: 400;
+    line-height: 1.0;
+    letter-spacing: 0.04em;
+    margin: 0 0 10px;
+    color: #0c0a08;
+    text-transform: uppercase;
+  }
+  .project-thread {
+    font-family: 'Special Elite', 'Courier Prime', monospace;
+    font-size: clamp(15px, 2.4vw, 18px);
+    font-weight: 400;
+    margin: 0;
+    color: rgba(12, 10, 8, 0.65);
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+  }
+
+  /* Section — collapsible accordion */
+  .project-section {
+    margin: 0;
+    border-top: 1.5px solid rgba(12, 10, 8, 0.18);
+  }
+  .project-section:last-child {
+    border-bottom: 1.5px solid rgba(12, 10, 8, 0.18);
+  }
+  /* Heading is a button, takes full width, click anywhere to toggle */
+  .project-section-title {
+    appearance: none;
+    -webkit-appearance: none;
+    background: transparent;
+    border: none;
+    width: 100%;
+    margin: 0;
+    padding: 22px 4px 22px 0;
+    font-family: 'Special Elite', 'Courier Prime', monospace;
+    font-size: clamp(16px, 2.6vw, 20px);
+    font-weight: 400;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #0c0a08;
+    cursor: pointer;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    transition: color 0.3s ease;
+  }
+  .project-section-title:hover {
+    color: rgba(12, 10, 8, 0.7);
+  }
+  .project-section-chevron {
+    font-family: 'Special Elite', 'Courier Prime', monospace;
+    font-size: 1.1em;
+    line-height: 1;
+    color: rgba(12, 10, 8, 0.55);
+    transition: transform 0.45s cubic-bezier(0.32, 0.04, 0.32, 1),
+                color 0.3s ease;
+    display: inline-block;
+  }
+  .project-section.is-open .project-section-chevron {
+    transform: rotate(45deg); /* "+" rotates into "×" */
+    color: rgba(12, 10, 8, 0.85);
+  }
+
+  /* Collapsible body — uses the grid-template-rows 0fr ↔ 1fr trick
+     so the height animates smoothly without JS measuring. */
+  .project-section-body {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.6s cubic-bezier(0.32, 0.04, 0.32, 1);
+    overflow: hidden;
+  }
+  .project-section.is-open .project-section-body {
+    grid-template-rows: 1fr;
+  }
+  .project-section-inner {
+    overflow: hidden;
+    min-height: 0;
+    /* Inner padding holds the breathing room when open */
+    padding: 0 4px 26px;
+  }
+
+  /* Body lists — numbered or bulleted, typewriter */
+  .project-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .project-list li {
+    font-family: 'Special Elite', 'Courier Prime', monospace;
+    font-size: clamp(13px, 1.9vw, 15px);
+    line-height: 1.7;
+    color: #0c0a08;
+    padding: 0 0 0 30px;
+    margin: 0 0 14px;
+    position: relative;
+    font-weight: 400;
+  }
+  .project-list li:last-child { margin-bottom: 0; }
+  .project-list.numbered {
+    counter-reset: project-li;
+  }
+  .project-list.numbered li {
+    counter-increment: project-li;
+  }
+  .project-list.numbered li::before {
+    content: counter(project-li) ".";
+    position: absolute;
+    left: 4px;
+    top: 0;
+    font-family: 'Special Elite', 'Courier Prime', monospace;
+    color: rgba(12, 10, 8, 0.75);
+  }
+  .project-list.bullets li::before {
+    content: "—";
+    position: absolute;
+    left: 4px;
+    top: 0;
+    color: rgba(12, 10, 8, 0.7);
+  }
+  .project-list li strong {
+    font-weight: 700;
+    color: #0c0a08;
+    letter-spacing: 0.04em;
+  }
+
+  /* Lyrics — stanzas separated by breathing room, lines stacked */
+  .project-lyrics {
+    margin: 0;
+  }
+  .lyric-stanza {
+    font-family: 'Special Elite', 'Courier Prime', monospace;
+    font-size: clamp(13px, 1.9vw, 15px);
+    line-height: 1.85;
+    color: #0c0a08;
+    margin: 0 0 22px;
+    font-weight: 400;
+    white-space: pre-line; /* preserve newlines inside each stanza */
+  }
+  .lyric-stanza:last-child { margin-bottom: 0; }
+  .lyric-note {
+    color: rgba(12, 10, 8, 0.55);
+    font-style: italic;
+  }
+  .lyric-call {
+    color: rgba(12, 10, 8, 0.85);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+
+  @media (max-width: 768px) {
+    .project-body { padding: 24px 7vw 80px; }
+    .project-header { margin-bottom: 36px; }
+    .project-section-title { padding: 18px 4px; }
+    .project-list li { padding-left: 26px; }
   }
   .shop-header {
     display: flex;
@@ -1414,12 +1958,64 @@
 </head>
 <body>
 
-<!-- SVG defs: lens / pointy-oval clip path used by the strip -->
+<!-- SVG defs: lens / pointy-oval clip path used by the strip,
+     plus the painting ripple filter (animated displacement map). -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
     <clipPath id="lens-clip" clipPathUnits="objectBoundingBox">
       <path d="M 0,0.5 Q 0.5,0 1,0.5 Q 0.5,1 0,0.5 Z" />
     </clipPath>
+
+    <!-- Painting ripple — fractal noise pumped through a displacement
+         map. Animated very slowly across many keyframes so the waves
+         roll smoothly through the surface rather than visibly stepping. -->
+    <filter id="paint-ripple" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence
+        type="fractalNoise"
+        baseFrequency="0.012 0.014"
+        numOctaves="2"
+        seed="3"
+        stitchTiles="stitch"
+        result="turb">
+        <!-- 24-second cycle. Multiple intermediate values give the
+             interpolation enough points to feel continuous. -->
+        <animate
+          attributeName="baseFrequency"
+          dur="24s"
+          values="0.010 0.013;
+                  0.012 0.014;
+                  0.014 0.012;
+                  0.013 0.010;
+                  0.012 0.014;
+                  0.010 0.013"
+          repeatCount="indefinite"
+          calcMode="spline"
+          keySplines="0.42 0 0.58 1;
+                      0.42 0 0.58 1;
+                      0.42 0 0.58 1;
+                      0.42 0 0.58 1;
+                      0.42 0 0.58 1" />
+      </feTurbulence>
+      <feDisplacementMap
+        in="SourceGraphic"
+        in2="turb"
+        scale="10"
+        xChannelSelector="R"
+        yChannelSelector="G">
+        <!-- Displacement intensity breathes very slowly between
+             gentle (8px) and a touch deeper (13px). -->
+        <animate
+          attributeName="scale"
+          dur="24s"
+          values="8; 11; 13; 11; 8"
+          repeatCount="indefinite"
+          calcMode="spline"
+          keySplines="0.42 0 0.58 1;
+                      0.42 0 0.58 1;
+                      0.42 0 0.58 1;
+                      0.42 0 0.58 1" />
+      </feDisplacementMap>
+    </filter>
   </defs>
 </svg>
 
@@ -1453,15 +2049,17 @@
   </header>
   <div class="welcome-body">
     <div class="welcome-block">
-      <p class="welcome-message">Thank you for accepting to worship with Thecreated.</p>
+      <p class="welcome-message">Thank you for choosing to worship with us.</p>
       <p class="welcome-message">There are a few steps to follow to make sure we make the most of our collaboration.</p>
 
       <button class="partner-continue" id="partner-continue">Continue</button>
 
       <div class="partner-tabs" id="partner-tabs">
+        <p class="partner-tabs-header">Please select the project you are partnering on</p>
         <button class="partner-tab-link" data-tab="overseer">The Overseer <span class="tab-arrow">→</span></button>
         <button class="partner-tab-link" data-tab="overseer-interlude">The Overseer's Interlude <span class="tab-arrow">→</span></button>
         <button class="partner-tab-link" data-tab="renew-verse">"What verse are you wearing?" for RENEW by PVA <span class="tab-arrow">→</span></button>
+        <button class="partner-tab-link" data-tab="house-pva">HOUSE PVA <span class="tab-arrow">→</span></button>
       </div>
 
       <div class="password-prompt" id="password-prompt">
@@ -1574,6 +2172,134 @@
 </section>
 
 <!-- ============================================================
+     PROJECT — THE OVERSEER (Grounding)
+     ============================================================ -->
+<section id="view-project-overseer" class="view project-view">
+  <header class="pg-header">
+    <button class="back-btn" data-back>← back</button>
+    <span class="site-meta">project</span>
+  </header>
+
+  <div class="project-body">
+    <header class="project-header">
+      <h1 class="project-title">The Overseer</h1>
+      <p class="project-thread">Grounding</p>
+    </header>
+
+    <section class="project-section">
+      <button class="project-section-title" type="button" aria-expanded="false">
+        <span>Overview</span>
+        <span class="project-section-chevron" aria-hidden="true">+</span>
+      </button>
+      <div class="project-section-body">
+        <div class="project-section-inner">
+          <ol class="project-list numbered">
+            <li><strong>Scripture:</strong> Psalm 135:1-3 ESV, Psalm 55:22, Acts 2:25-28</li>
+            <li><strong>Inspo:</strong> Welcome Him (live) by Jesus Image; Fold by Sutra; Yielded (live) by Jordan G Welch; appeal: at your feet by Jordan G Welch; Gang over Luv by Brent Faiyaz; Trust by Brent Faiyaz; Waiting Room by Marika; Moon by Kanye West; alottmusic on ig</li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section class="project-section">
+      <button class="project-section-title" type="button" aria-expanded="false">
+        <span>Structure</span>
+        <span class="project-section-chevron" aria-hidden="true">+</span>
+      </button>
+      <div class="project-section-body">
+        <div class="project-section-inner">
+          <ul class="project-list bullets">
+            <li>start with pad that gets louder (Welcome Him inspo)</li>
+            <li>a far off praise cry vocal leads in the vocal ensemble (fold, appeal, gang over luv inspo)</li>
+            <li>vocal solos with Mike Dean style epic bass and chords (moon inspo)</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="project-section">
+      <button class="project-section-title" type="button" aria-expanded="false">
+        <span>Lyrics</span>
+        <span class="project-section-chevron" aria-hidden="true">+</span>
+      </button>
+      <div class="project-section-body">
+        <div class="project-section-inner">
+        <div class="project-lyrics">
+        <p class="lyric-stanza">Hallelujah
+Hallelujah
+Hallelujah <span class="lyric-note">(voice mesh)</span></p>
+
+        <p class="lyric-stanza">I'll sing your praise
+I'll praise your name
+Your name is great
+Lord you're over my soul
+Overseeing my soul <span class="lyric-note">(2x)</span></p>
+
+        <p class="lyric-stanza">You can do no wrong
+If I'm found busy
+You say lay low
+Love overflow
+Jesus you're bleedin
+You paid it all</p>
+
+        <p class="lyric-stanza">Like wash off
+Like wash out
+Like wash all <span class="lyric-note">(2x)</span></p>
+
+        <p class="lyric-stanza">I'll sing your praise
+I'll praise your name
+Your name is great
+Lord you're over my soul
+Overseeing my soul <span class="lyric-note">(2x)</span></p>
+
+        <p class="lyric-stanza">Nights that you stayed
+All while I laid awake
+Thinking over you I know I won't stay the same <span class="lyric-note">(Marika BV)</span>
+I give it all to you
+I know my hearts in it's place <span class="lyric-note">(Marika BV)</span>
+You're guiding my ways</p>
+
+        <p class="lyric-stanza">In the last days <span class="lyric-call">[HALLELUJAH]</span>
+I'll see you glorified
+Fied
+Fied
+In the last days
+I'll see you glorified
+Fied
+Fied
+In the last days
+I'll see you glorified
+Fied
+Fied</p>
+
+        <p class="lyric-stanza">Lord you are Holy, Holy, Holy <span class="lyric-call">[HALLELUJAH]</span>
+Lord you are Holy, Holy, Holy
+Lord you are Holy, Holy, Holy</p>
+        </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="project-section">
+      <button class="project-section-title" type="button" aria-expanded="false">
+        <span>Credits</span>
+        <span class="project-section-chevron" aria-hidden="true">+</span>
+      </button>
+      <div class="project-section-body">
+        <div class="project-section-inner">
+          <ol class="project-list numbered">
+            <li><strong>Written by:</strong> Emmanuel 'Thecreated' Anie-Akwetey, Dean 'Deano' Dobson</li>
+            <li><strong>Performed by:</strong> Emmanuel 'Thecreated' Anie-Akwetey, Dean 'Deano' Dobson, Marika 'Marika' Bastien</li>
+            <li><strong>Produced by:</strong> Simon Kobina 'Korby' Nyamekye Imbrah</li>
+            <li><strong>Mixed and Mastered by:</strong> ?</li>
+          </ol>
+        </div>
+      </div>
+    </section>
+  </div>
+</section>
+
+<!-- ============================================================
      STRIP VIEW — homepage tile becomes a thin colour strip at
      the top; content for the active colour fades in below
      ============================================================ -->
@@ -1590,24 +2316,33 @@
     <div class="strip-above">
 
       <article class="strip-thread is-active" data-color="purple">
-        <h2 class="strip-thread-name">Grounding</h2>
-        <div class="strip-tile">
+        <div class="strip-tile strip-tile-scripture">
+          <blockquote>
+            <p>My heart says of you, "Seek his face!" Your face, Lord, I will seek.</p>
+            <cite>Psalm 27 : 8</cite>
+          </blockquote>
+        </div>
+        <div class="strip-tile strip-tile-intro">
           <h3>Introduction</h3>
           <p>This thread is about adoration and seeking His face. It's about producing a pleasing fragrance to God. This is the posture where we fall on our knees, put our face to the ground and lift our genuine, revelation-backed worship to our Father. It's being built for His glory and our joy.</p>
         </div>
       </article>
 
       <article class="strip-thread" data-color="red">
-        <h2 class="strip-thread-name">Righteous</h2>
-        <div class="strip-tile">
+        <div class="strip-tile strip-tile-scripture">
+          <blockquote>
+            <p>Offer your bodies as a living sacrifice, holy and pleasing to God — this is your true and proper worship.</p>
+            <cite>Romans 12 : 1</cite>
+          </blockquote>
+        </div>
+        <div class="strip-tile strip-tile-intro">
           <h3>Introduction</h3>
           <p>This thread is about working out our righteousness — producing a pleasing fragrance to God through burnt carnality. The posture where we endure with joy and love the tension. The tension that cuts off the death around us and makes space only for life.</p>
         </div>
       </article>
 
       <article class="strip-thread" data-color="gold">
-        <h2 class="strip-thread-name">Lifted</h2>
-        <div class="strip-tile">
+        <div class="strip-tile strip-tile-intro">
           <h3>Introduction</h3>
           <p>Coming soon. This thread is being shaped — when the words are ready they will land here. Until then, sit with the colour and the quiet.</p>
         </div>
@@ -1648,6 +2383,9 @@
             <li>Provision</li>
           </ul>
         </div>
+        <div class="strip-tile strip-tile-posture">
+          <p>On my knees. Face to the ground. Voice low.</p>
+        </div>
       </article>
 
       <article class="strip-thread" data-color="red">
@@ -1670,6 +2408,9 @@
             <li>Provision</li>
             <li>Forgiveness</li>
           </ul>
+        </div>
+        <div class="strip-tile strip-tile-posture">
+          <p>Standing in the tension. Hands open. Refusing to flinch.</p>
         </div>
       </article>
 
@@ -2012,6 +2753,9 @@
   function setStripColor(color) {
     if (color === stripActiveColor) return;
     stripActiveColor = color;
+    // Swap the per-thread shadow tint on the view container
+    stripView.classList.remove('thread-purple', 'thread-red', 'thread-gold');
+    stripView.classList.add('thread-' + color);
     stripThreads.forEach(t => {
       const match = t.dataset.color === color;
       t.classList.toggle('is-active', match);
@@ -2023,6 +2767,8 @@
       }
     });
   }
+  // Set the initial shadow tint to purple (Grounding) on load
+  stripView.classList.add('thread-purple');
 
   function colorFromX(clientX) {
     const rect = threadStrip.getBoundingClientRect();
@@ -2138,6 +2884,20 @@
   });
 
   // ----------------------------------------------------------
+  // Project page accordions — click a section title to toggle.
+  // Uses the grid-template-rows 0fr ↔ 1fr trick for smooth height
+  // animation without measuring scrollHeight in JS.
+  // ----------------------------------------------------------
+  document.querySelectorAll('.project-section-title').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const section = btn.closest('.project-section');
+      if (!section) return;
+      const isOpen = section.classList.toggle('is-open');
+      btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+  });
+
+  // ----------------------------------------------------------
   // Back buttons — return to homepage
   // ----------------------------------------------------------
   document.querySelectorAll('[data-back]').forEach(btn => {
@@ -2221,10 +2981,10 @@
       welcomeView.classList.add('firing');
     });
 
-    // After the welcome animation completes (14s for the first
-    // paragraph, +1.4s stagger for the second), show the Continue
+    // After the welcome animation completes (5.5s for the first
+    // paragraph, +0.45s stagger for the second), show the Continue
     // button. The user clicks it to reveal the tabs.
-    const PARTNER_WELCOME_MS = 14000 + 1400;
+    const PARTNER_WELCOME_MS = 5500 + 450;
     welcomeFastForwardTimer = setTimeout(() => {
       welcomeFastForwardTimer = null;
       if (!welcomeView.classList.contains('active')) {
@@ -2246,9 +3006,21 @@
 
   // ----------------------------------------------------------
   // Partner tabs — click any tab to bring up the inline password
-  // prompt. Correct password takes the partner into the workshop.
+  // prompt. Each project has its own password (case-sensitive)
+  // and routes to its own destination view.
   // ----------------------------------------------------------
-  const PARTNER_PW = "god'sroi"; // case-insensitive compare
+  const PARTNER_PASSWORDS = {
+    'overseer':           'bleeding',
+    'overseer-interlude': 'yearning',
+    'renew-verse':        'mindrenewal',
+    'house-pva':          'pvaOStm',
+  };
+  const PARTNER_VIEWS = {
+    'overseer':           'view-project-overseer',
+    'overseer-interlude': 'view-partner-shop',
+    'renew-verse':        'view-partner-shop',
+    'house-pva':          'view-partner-shop',
+  };
   let selectedPartnerTab = null;
 
   document.querySelectorAll('.partner-tab-link').forEach(tab => {
@@ -2267,10 +3039,13 @@
 
   function tryPartnerPassword() {
     const val = ppInput.value.trim();
-    if (val.toLowerCase() === PARTNER_PW) {
+    const expected = PARTNER_PASSWORDS[selectedPartnerTab];
+    // Case-sensitive compare (e.g. HOUSE PVA uses pvaOStm with a capital O)
+    if (expected && val === expected) {
       ppError.classList.remove('show');
+      const destView = PARTNER_VIEWS[selectedPartnerTab] || 'view-partner-shop';
       flashTo(() => {
-        showView('view-partner-shop');
+        showView(destView);
         window.scrollTo(0, 0);
         ppInput.value = '';
         // Reset the welcome view so the next visit re-runs the animation
