@@ -2842,8 +2842,37 @@ Lord you are Holy, Holy, Holy</p>
   // View routing
   // ----------------------------------------------------------
   const views = document.querySelectorAll('.view');
+  // Maps each view id to a URL hash so refresh keeps the user on
+  // the same page. Empty string means root (no hash).
+  const VIEW_HASHES = {
+    'view-home':              '',
+    'view-partner-welcome':   '#partner',
+    'view-partner-shop':      '#workshop',
+    'view-project-overseer':  '#overseer',
+    'view-strip':             '#threads',
+    'view-thoughts':          '#thoughts',
+    'view-swipe':             '#swipe',
+    'view-threads-menu':      '#menu',
+    'view-grounding':         '#grounding',
+    'view-righteous':         '#righteous',
+    'view-lifted':            '#lifted',
+  };
+  // Protected pages require the partner password — refreshing
+  // on them bounces back to the project list to re-authenticate.
+  const PROTECTED_VIEWS = ['view-partner-shop', 'view-project-overseer'];
+
   function showView(id) {
     views.forEach(v => v.classList.toggle('active', v.id === id));
+    // Reflect the active view in the URL so a refresh restores it
+    const hash = VIEW_HASHES[id];
+    if (hash !== undefined) {
+      const target = hash || window.location.pathname;
+      try {
+        if (target !== window.location.hash) {
+          history.replaceState(null, '', target);
+        }
+      } catch (_) {}
+    }
   }
 
   // ----------------------------------------------------------
@@ -3447,6 +3476,52 @@ Lord you are Holy, Holy, Holy</p>
   });
 
   // (Password gate removed — partners now flow welcome → workshop.)
+
+  // ----------------------------------------------------------
+  // Restore view from URL hash on page load — so refreshing
+  // keeps the user on the page they were on (instead of
+  // dumping them back to the homepage).
+  // ----------------------------------------------------------
+  (function restoreFromHash() {
+    const hash = window.location.hash || '';
+    if (!hash) return; // empty hash = stay on home
+
+    // Build reverse lookup (hash → view id)
+    const reverse = {};
+    Object.entries(VIEW_HASHES).forEach(([view, h]) => {
+      if (h) reverse[h] = view;
+    });
+
+    const target = reverse[hash];
+    if (!target || target === 'view-home') return;
+
+    // Protected pages can't be accessed directly via hash — kick
+    // the user back to the project list to re-enter the password.
+    if (PROTECTED_VIEWS.includes(target)) {
+      showView('view-partner-welcome');
+      const welcomeView = document.getElementById('view-partner-welcome');
+      // Skip the welcome animation, land directly on the tab list
+      welcomeView.classList.remove('firing', 'continue-shown', 'prompt-shown');
+      welcomeView.classList.add('tabs-shown');
+      // Replace the URL so the protected hash isn't sitting in the
+      // address bar (and a subsequent refresh re-runs this branch)
+      try { history.replaceState(null, '', '#partner'); } catch (_) {}
+      return;
+    }
+
+    // For the strip view, jump straight to its content state
+    // (no painting morph since the user refreshed directly into it)
+    if (target === 'view-strip') {
+      showView('view-strip');
+      const stripV = document.getElementById('view-strip');
+      stripV.classList.remove('show-hint');
+      stripV.classList.add('show-content');
+      return;
+    }
+
+    // Public views — just show them directly
+    showView(target);
+  })();
 </script>
 </body>
 </html>
