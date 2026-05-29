@@ -1081,10 +1081,16 @@
     padding: 9px 22px;
     border-radius: 999px;
     font-size: 11px;
+    font-weight: 400;
     letter-spacing: 0.22em;
     text-transform: uppercase;
     cursor: pointer;
     transition: all 0.4s ease;
+    min-width: 130px;
+    text-align: center;
+    font-family: inherit;
+    box-sizing: border-box;
+    line-height: 1.2;
   }
   .thought-stream-btn:hover {
     border-color: rgba(255,255,255,0.55);
@@ -1099,15 +1105,20 @@
   .partner-tab {
     background: transparent;
     border: 1px solid rgba(255,255,255,0.22);
-    color: rgba(255,255,255,0.72);
+    color: rgba(255,255,255,0.82);
     padding: 9px 22px;
     border-radius: 999px;
     font-size: 11px;
+    font-weight: 400;
     letter-spacing: 0.22em;
     text-transform: uppercase;
     cursor: pointer;
     transition: all 0.4s ease;
     font-family: inherit;
+    min-width: 130px;
+    text-align: center;
+    box-sizing: border-box;
+    line-height: 1.2;
   }
   .partner-tab:hover {
     border-color: rgba(255,255,255,0.55);
@@ -1501,14 +1512,18 @@
     box-sizing: border-box;
   }
 
-  /* Top-left tag — pinned to the very top of the project body
-     with a large gap between it and the title below. */
+  /* Tag row — pushes the tag to the right edge of the body, with
+     a generous gap below it so the title sits far underneath. */
+  .project-tag-row {
+    text-align: right;
+    margin: 0 0 200px;
+  }
   .project-tag {
     display: inline-block;
-    margin: 0 0 220px; /* massive gap to push the title way down */
-    padding: 3px 9px;
+    margin: 0;
+    padding: 2px 7px;
     font-family: 'Courier Prime', 'Courier New', monospace;
-    font-size: clamp(9px, 1.2vw, 11px);
+    font-size: clamp(7.5px, 0.95vw, 9.5px);
     font-weight: 700;
     letter-spacing: 0.28em;
     text-transform: uppercase;
@@ -1519,7 +1534,8 @@
     line-height: 1;
   }
   @media (max-width: 768px) {
-    .project-tag { margin-bottom: 140px; }
+    .project-tag-row { margin-bottom: 140px; }
+    .project-tag { font-size: 8px; padding: 2px 6px; }
   }
   .project-tag.thread-grounding {
     color: #5a2390;
@@ -2100,7 +2116,12 @@
     .panel-title { font-size: 22px; }
     .thoughts-grid { grid-template-columns: repeat(2, 1fr); padding: 0 22px 48px; gap: 14px; }
     .thoughts-title { padding: 3vh 22px 4vh; font-size: 24vw; }
-    .partner-tab { padding: 8px 18px; font-size: 10px; }
+    .partner-tab,
+    .thought-stream-btn {
+      padding: 8px 18px;
+      font-size: 10px;
+      min-width: 116px;
+    }
     .shop-header { padding: 20px 22px; }
     .shop-section { padding: 0 22px 40px; }
     .shop-grid { grid-template-columns: 1fr; gap: 12px; }
@@ -2333,7 +2354,9 @@
   </header>
 
   <div class="project-body">
-    <p class="project-thread thread-grounding project-tag">Grounding</p>
+    <div class="project-tag-row">
+      <p class="project-thread thread-grounding project-tag">Grounding</p>
+    </div>
     <header class="project-header">
       <h1 class="project-title">The Overseer</h1>
     </header>
@@ -3259,11 +3282,19 @@ Lord you are Holy, Holy, Holy</p>
     // Case-sensitive compare (e.g. HOUSE PVA uses pvaOStm with a capital O)
     if (expected && val === expected) {
       ppError.classList.remove('show');
+      // Dismiss the mobile keyboard before transitioning so the
+      // viewport snaps back to its true height
+      ppInput.blur();
       const destView = PARTNER_VIEWS[selectedPartnerTab] || 'view-partner-shop';
       // Wash mode — project page breathes open after the gate opens
       flashTo(() => {
         showView(destView);
         window.scrollTo(0, 0);
+        // Reset the project view's OWN scroll position. The .view
+        // element is fixed + scrollable, so window.scrollTo doesn't
+        // touch it — and on mobile it can land cropped to the bottom.
+        const destEl = document.getElementById(destView);
+        if (destEl) destEl.scrollTop = 0;
         ppInput.value = '';
         // Reset the welcome view so the next visit re-runs the animation
         const view = document.getElementById('view-partner-welcome');
