@@ -37,16 +37,23 @@
      View system — each view fills the screen, fades between
      ============================================================ */
   /* All views cross-fade with a single shared easing curve.
-     Default 700ms feels deliberate without being slow. */
+     Default 700ms feels deliberate without being slow.
+     No transform in the resting state — iOS Safari's position:fixed
+     containing-block bug triggers even on transform:scale(1). */
   .view {
     position: fixed;
-    inset: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    min-height: 100vh;
+    min-height: 100dvh; /* iOS dynamic viewport — fills visible area */
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.7s cubic-bezier(0.32, 0.04, 0.32, 1),
-                transform 0.7s cubic-bezier(0.32, 0.04, 0.32, 1);
+    transition: opacity 0.7s cubic-bezier(0.32, 0.04, 0.32, 1);
     overflow: hidden;
-    transform: scale(1);
   }
   .view.active {
     opacity: 1;
@@ -1524,7 +1531,12 @@
     display: flex;
     flex-direction: column;
     height: 100%;
+    min-height: 100vh;
+    min-height: 100dvh; /* iOS dynamic viewport */
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: auto; /* never animate scrollTop resets */
+    overscroll-behavior: contain;
     position: relative;
     isolation: isolate;
   }
@@ -3373,20 +3385,38 @@ Lord you are Holy, Holy, Holy</p>
       // Wait for the keyboard to fully dismiss before kicking off
       // the wash transition. 280ms covers iOS + Android keyboards.
       setTimeout(() => {
-        flashTo(() => {
-          showView(destView);
-          // Belt-and-braces scroll reset on every container that
-          // could be holding a stale scroll position.
+        // Multi-pass scroll reset that fires across browser-paint
+        // boundaries so iOS Safari can't re-apply a stale position.
+        const hardResetScroll = (destEl) => {
           window.scrollTo(0, 0);
           document.documentElement.scrollTop = 0;
           document.body.scrollTop = 0;
+          // Reset every .view's internal scroll, not just the
+          // destination — covers any container iOS may have scrolled
+          // while the keyboard was up.
+          document.querySelectorAll('.view').forEach(v => { v.scrollTop = 0; });
+          if (destEl) destEl.scrollTop = 0;
+        };
+
+        flashTo(() => {
+          showView(destView);
           const destEl = document.getElementById(destView);
-          if (destEl) {
-            destEl.scrollTop = 0;
-            // Force a fresh layout pass once the new view is active
-            // so the visual viewport definitely sees its correct size
-            void destEl.offsetHeight;
-          }
+          // Immediate
+          hardResetScroll(destEl);
+          // Force a layout pass so the visual viewport definitely
+          // sees its correct dimensions before we re-reset.
+          if (destEl) void destEl.offsetHeight;
+          // After this paint
+          requestAnimationFrame(() => {
+            hardResetScroll(destEl);
+            // And once more after the next paint
+            requestAnimationFrame(() => hardResetScroll(destEl));
+          });
+          // Belt-and-braces resets at 100ms and 500ms to catch any
+          // post-transition scroll snap that iOS might apply.
+          setTimeout(() => hardResetScroll(destEl), 100);
+          setTimeout(() => hardResetScroll(destEl), 500);
+
           ppInput.value = '';
           // Reset the welcome view so the next visit re-runs the animation
           const view = document.getElementById('view-partner-welcome');
