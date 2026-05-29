@@ -7,7 +7,7 @@
 <meta name="description" content="thecreated — an attempt at giving God His ROI." />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Caveat+Brush&family=Special+Elite&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Caveat+Brush&family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&family=Special+Elite&display=swap" rel="stylesheet" />
 <style>
   /* Prefer locally-installed Petapon (the one in Canva). If a
      visitor doesn't have it, fall through to Caveat from Google. */
@@ -444,95 +444,49 @@
   }
 
   /* Homepage variant: blended tile shows all three textures at once.
-     SLOW HEARTBEAT pulse — long, contemplative lub-dub rhythm that
-     radiates outward from the centre. The painted surface itself
-     also RIPPLES via an animated SVG displacement filter so it
-     looks like there are slow waves moving underneath the material. */
+     Animation removed — the painting now sits still. */
+  /* Homepage painting variant. Override the immersive-tile defaults
+     so the painting reads as if it's emerging from the void —
+     no visible frame, edges feather into the black backdrop, with
+     a soft outer halo that hints at depth without showing an edge. */
   .blended-tile {
     position: relative;
+    border: none !important;
+    /* The standard rectangle gets a softer corner so the feather
+       blends with the page's black instead of biting a hard arc */
+    border-radius: 32px;
+    box-shadow:
+      /* Outer atmospheric halo — barely visible breath of light
+         that signals there's something there without showing a line */
+      0 0 90px 12px rgba(255, 235, 210, 0.04),
+      0 0 180px 30px rgba(120, 60, 180, 0.06),
+      /* Deep ambient drop into the page */
+      0 50px 140px rgba(0, 0, 0, 0.5),
+      0 20px 60px rgba(0, 0, 0, 0.4);
   }
   .blended-tile .blended-surface {
     position: absolute;
-    inset: -3%; /* oversize so scale never exposes the frame */
+    inset: 0;
     background-image: url('unified.jpg');
     background-size: cover;
     background-position: center;
-    transform-origin: 50% 50%;
-    /* Very slow heartbeat — ~7.5 bpm. Cubic-bezier with low control
-       points gives soft, rounded peaks rather than staccato attacks. */
-    animation: paintingHeartbeat 8.0s cubic-bezier(0.45, 0, 0.35, 1) infinite;
-    will-change: transform, filter;
-    transform: translateZ(0); /* force GPU layer for smoother filter compositing */
-    /* Wave ripple underneath the material */
-    filter: url(#paint-ripple);
-    -webkit-filter: url(#paint-ripple);
   }
-  /* Slow, soft lub-dub: two gentle peaks rounded with denser keyframes
-     so the interpolation is silky, then a long contemplative rest. */
-  @keyframes paintingHeartbeat {
-    0%    { transform: scale(1.0000); }
-    3%    { transform: scale(1.0060); }   /* easing into LUB */
-    6%    { transform: scale(1.0150); }   /* LUB peak */
-    9%    { transform: scale(1.0080); }
-    12%   { transform: scale(1.0030); }   /* gentle recoil */
-    15%   { transform: scale(1.0090); }   /* easing into DUB */
-    18%   { transform: scale(1.0125); }   /* DUB peak */
-    22%   { transform: scale(1.0050); }
-    28%   { transform: scale(1.0000); }   /* settle */
-    100%  { transform: scale(1.0000); }   /* long rest */
-  }
-  /* Reverberation ring — a centred radial glow that expands outward
-     and fades on each beat, making the pulse feel like a wave
-     travelling out from the heart of the painting. */
-  .blended-tile::after {
+  /* Feathering overlay — radial vignette painted on top of the
+     surface so the edges fade smoothly to black. With the page bg
+     also black there's no perceptible cut-off; the painting just
+     dissolves into the void. */
+  .blended-tile::before {
     content: "";
     position: absolute;
     inset: 0;
-    border-radius: inherit;
+    z-index: 3;
     pointer-events: none;
-    z-index: 4;
-    background: radial-gradient(circle at 50% 50%,
-      rgba(255, 255, 255, 0.00) 28%,
-      rgba(255, 230, 210, 0.12) 50%,
-      rgba(255, 200, 180, 0.00) 78%);
-    opacity: 0;
-    transform: scale(0.7);
-    transform-origin: 50% 50%;
-    animation: paintingReverb 8.0s cubic-bezier(0.45, 0, 0.35, 1) infinite;
-    mix-blend-mode: screen;
-    will-change: opacity, transform;
-  }
-  @keyframes paintingReverb {
-    0%    { opacity: 0;    transform: scale(0.70); }
-    3%    { opacity: 0.12; transform: scale(0.85); }
-    6%    { opacity: 0.32; transform: scale(1.00); }  /* LUB flash peak */
-    10%   { opacity: 0.18; transform: scale(1.15); }
-    14%   { opacity: 0.10; transform: scale(1.22); }
-    18%   { opacity: 0.22; transform: scale(1.30); }  /* DUB flash peak */
-    24%   { opacity: 0.08; transform: scale(1.40); }
-    32%   { opacity: 0;    transform: scale(1.50); }  /* dissipates */
-    100%  { opacity: 0;    transform: scale(1.50); }
-  }
-  /* Pause everything (including the ripple filter) once the morph
-     begins so the suction transition stays clean. */
-  .immersive-tile.morphing .blended-surface,
-  .immersive-tile.morph-target .blended-surface {
-    animation: none;
-    filter: none;
-    -webkit-filter: none;
-  }
-  .immersive-tile.morphing.blended-tile::after,
-  .immersive-tile.morph-target.blended-tile::after {
-    animation: none;
-    opacity: 0;
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .blended-tile .blended-surface {
-      animation: none;
-      filter: none;
-      -webkit-filter: none;
-    }
-    .blended-tile::after { animation: none; opacity: 0; }
+    border-radius: inherit;
+    background: radial-gradient(ellipse 78% 88% at center,
+      rgba(0, 0, 0, 0) 38%,
+      rgba(0, 0, 0, 0.18) 62%,
+      rgba(0, 0, 0, 0.55) 85%,
+      rgba(0, 0, 0, 0.95) 100%);
   }
 
   /* Morphing state — "sucked in" feel.
@@ -1517,8 +1471,9 @@
 
   /* ============================================================
      PROJECT VIEW — dedicated page per project (e.g. The Overseer)
-     White grainy backdrop, black TYPEWRITER body (Special Elite).
-     Sections are collapsible accordions — click the heading to open.
+     Clean white background, Courier Prime throughout. The header
+     reads like a screenplay cover page; the accordion sections
+     sit underneath. Sections are collapsible — click to open.
      ============================================================ */
   .project-view {
     background: #ffffff;
@@ -1530,77 +1485,124 @@
     position: relative;
     isolation: isolate;
   }
-  .project-view::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.92' numOctaves='2' stitchTiles='stitch' seed='3'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.55 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
-    background-size: 220px 220px;
-    opacity: 0.5;
-    mix-blend-mode: multiply;
-    z-index: 1;
-  }
-  .project-view > * { position: relative; z-index: 2; }
   .project-view .back-btn { color: rgba(12, 10, 8, 0.78); }
   .project-view .back-btn:hover { color: rgba(12, 10, 8, 1); }
   .project-view .site-meta {
     color: rgba(12, 10, 8, 0.55);
-    font-family: 'Special Elite', 'Courier Prime', monospace;
+    font-family: 'Courier Prime', 'Courier New', monospace;
+    letter-spacing: 0.18em;
   }
 
   .project-body {
     max-width: 760px;
     width: 100%;
     margin: 0 auto;
-    padding: 32px 8vw 96px;
+    padding: 8px 8vw 96px; /* tag sits high near the page top */
     box-sizing: border-box;
   }
-  /* Project masthead — title big, thread name smaller, both typewriter. */
+
+  /* Top-left tag — pinned to the very top of the project body
+     with a large gap between it and the title below. */
+  .project-tag {
+    display: inline-block;
+    margin: 0 0 220px; /* massive gap to push the title way down */
+    padding: 3px 9px;
+    font-family: 'Courier Prime', 'Courier New', monospace;
+    font-size: clamp(9px, 1.2vw, 11px);
+    font-weight: 700;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: #5a2390; /* Grounding purple — overridden per thread below */
+    background: rgba(122, 58, 204, 0.08);
+    border: 1px solid rgba(122, 58, 204, 0.32);
+    border-radius: 3px;
+    line-height: 1;
+  }
+  @media (max-width: 768px) {
+    .project-tag { margin-bottom: 140px; }
+  }
+  .project-tag.thread-grounding {
+    color: #5a2390;
+    background: rgba(122, 58, 204, 0.08);
+    border-color: rgba(122, 58, 204, 0.32);
+  }
+  .project-tag.thread-righteous {
+    color: #9c1b22;
+    background: rgba(201, 63, 72, 0.08);
+    border-color: rgba(201, 63, 72, 0.32);
+  }
+  .project-tag.thread-lifted {
+    color: #876215;
+    background: rgba(212, 168, 92, 0.10);
+    border-color: rgba(212, 168, 92, 0.40);
+  }
+
+  /* Script cover header — title centred on the page. */
   .project-header {
-    margin: 18px 0 48px;
-    text-align: left;
+    margin: 0 0 56px;
+    text-align: center;
+    position: relative;
   }
   .project-title {
-    font-family: 'Special Elite', 'Courier Prime', monospace;
-    font-size: clamp(36px, 6.5vw, 56px);
-    font-weight: 400;
-    line-height: 1.0;
-    letter-spacing: 0.04em;
-    margin: 0 0 10px;
+    font-family: 'Courier Prime', 'Courier New', monospace;
+    font-size: clamp(34px, 6vw, 52px);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: 0.18em;
+    margin: 0;
     color: #0c0a08;
     text-transform: uppercase;
   }
+  /* Generic .project-thread (kept for legacy / future inline use) */
   .project-thread {
-    font-family: 'Special Elite', 'Courier Prime', monospace;
-    font-size: clamp(15px, 2.4vw, 18px);
-    font-weight: 400;
+    font-family: 'Courier Prime', 'Courier New', monospace;
+    font-size: clamp(14px, 2vw, 16px);
+    font-weight: 700;
     margin: 0;
-    color: rgba(12, 10, 8, 0.65);
+    color: #5a2390;
     letter-spacing: 0.32em;
     text-transform: uppercase;
   }
+  .project-thread.thread-grounding { color: #5a2390; }
+  .project-thread.thread-righteous { color: #9c1b22; }
+  .project-thread.thread-lifted    { color: #876215; }
+  /* Thin horizontal rule below the cover — script-page convention */
+  .project-header::after {
+    content: "";
+    display: block;
+    width: 80px;
+    height: 1.5px;
+    background: rgba(12, 10, 8, 0.55);
+    margin: 36px auto 0;
+  }
 
-  /* Section — collapsible accordion */
+  /* Section — collapsible accordion, each heading rendered as
+     its own glassy tab. Gaps between tabs instead of shared rules. */
   .project-section {
-    margin: 0;
-    border-top: 1.5px solid rgba(12, 10, 8, 0.18);
+    margin: 0 0 14px;
   }
   .project-section:last-child {
-    border-bottom: 1.5px solid rgba(12, 10, 8, 0.18);
+    margin-bottom: 0;
   }
-  /* Heading is a button, takes full width, click anywhere to toggle */
+  /* Glassy tab heading — frosted-glass pill, full width.
+     Closed by default; lifts slightly on hover. */
   .project-section-title {
     appearance: none;
     -webkit-appearance: none;
-    background: transparent;
-    border: none;
     width: 100%;
     margin: 0;
-    padding: 22px 4px 22px 0;
-    font-family: 'Special Elite', 'Courier Prime', monospace;
-    font-size: clamp(16px, 2.6vw, 20px);
-    font-weight: 400;
+    padding: 18px 22px;
+    border: 1px solid rgba(12, 10, 8, 0.12);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.55);
+    -webkit-backdrop-filter: blur(10px) saturate(140%);
+            backdrop-filter: blur(10px) saturate(140%);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.85),
+      0 6px 18px -8px rgba(12, 10, 8, 0.18);
+    font-family: 'Courier Prime', 'Courier New', monospace;
+    font-size: clamp(14px, 2.2vw, 16px);
+    font-weight: 700;
     letter-spacing: 0.22em;
     text-transform: uppercase;
     color: #0c0a08;
@@ -1610,14 +1612,32 @@
     align-items: center;
     justify-content: space-between;
     gap: 16px;
-    transition: color 0.3s ease;
+    transition: background 0.3s ease,
+                border-color 0.3s ease,
+                box-shadow 0.3s ease,
+                color 0.3s ease,
+                transform 0.3s cubic-bezier(0.32, 0.04, 0.32, 1);
   }
   .project-section-title:hover {
-    color: rgba(12, 10, 8, 0.7);
+    background: rgba(255, 255, 255, 0.78);
+    border-color: rgba(12, 10, 8, 0.22);
+    transform: translateY(-1px);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.95),
+      0 10px 24px -10px rgba(12, 10, 8, 0.22);
+  }
+  /* When open, the tab darkens slightly to indicate active state */
+  .project-section.is-open .project-section-title {
+    background: rgba(255, 255, 255, 0.85);
+    border-color: rgba(12, 10, 8, 0.32);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.95),
+      0 12px 30px -12px rgba(12, 10, 8, 0.28);
   }
   .project-section-chevron {
-    font-family: 'Special Elite', 'Courier Prime', monospace;
-    font-size: 1.1em;
+    font-family: 'Courier Prime', 'Courier New', monospace;
+    font-size: 1.2em;
+    font-weight: 400;
     line-height: 1;
     color: rgba(12, 10, 8, 0.55);
     transition: transform 0.45s cubic-bezier(0.32, 0.04, 0.32, 1),
@@ -1643,8 +1663,51 @@
   .project-section-inner {
     overflow: hidden;
     min-height: 0;
-    /* Inner padding holds the breathing room when open */
-    padding: 0 4px 26px;
+    /* Side padding always applied (doesn't affect collapsed height),
+       vertical padding only when the section is open so the closed
+       state truly takes zero space. */
+    padding: 0 22px;
+    transition: padding 0.6s cubic-bezier(0.32, 0.04, 0.32, 1);
+  }
+  .project-section.is-open .project-section-inner {
+    padding: 22px 22px 28px;
+  }
+  /* BODY TEXT — Helvetica throughout. Titles stay Courier Prime. */
+
+  /* Prose blocks for the overview content */
+  .project-prose {
+    margin: 0;
+  }
+  .project-prose p {
+    font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif;
+    font-size: clamp(14px, 2vw, 16px);
+    line-height: 1.7;
+    color: #0c0a08;
+    margin: 0 0 18px;
+    font-weight: 300;
+  }
+  .project-prose p:last-child { margin-bottom: 0; }
+  /* A pre-style structure block: line-broken instructions */
+  .project-structure {
+    font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif;
+    font-size: clamp(14px, 2vw, 16px);
+    line-height: 1.85;
+    color: #0c0a08;
+    margin: 0;
+    font-weight: 300;
+    white-space: pre-line;
+  }
+  /* Scripture quote inside the Lyrics section */
+  .lyric-scripture {
+    font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif;
+    font-style: italic;
+    font-size: clamp(14px, 2vw, 16px);
+    line-height: 1.7;
+    color: rgba(12, 10, 8, 0.85);
+    margin: 0 0 26px;
+    padding: 0 0 0 16px;
+    border-left: 2px solid rgba(12, 10, 8, 0.35);
+    font-weight: 300;
   }
 
   /* Body lists — numbered or bulleted, typewriter */
@@ -1654,14 +1717,14 @@
     list-style: none;
   }
   .project-list li {
-    font-family: 'Special Elite', 'Courier Prime', monospace;
-    font-size: clamp(13px, 1.9vw, 15px);
+    font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif;
+    font-size: clamp(14px, 2vw, 16px);
     line-height: 1.7;
     color: #0c0a08;
     padding: 0 0 0 30px;
     margin: 0 0 14px;
     position: relative;
-    font-weight: 400;
+    font-weight: 300;
   }
   .project-list li:last-child { margin-bottom: 0; }
   .project-list.numbered {
@@ -1675,8 +1738,12 @@
     position: absolute;
     left: 4px;
     top: 0;
-    font-family: 'Special Elite', 'Courier Prime', monospace;
+    font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif;
     color: rgba(12, 10, 8, 0.75);
+    font-weight: 500;
+  }
+  .project-list li strong {
+    font-weight: 600;
   }
   .project-list.bullets li::before {
     content: "—";
@@ -1696,12 +1763,12 @@
     margin: 0;
   }
   .lyric-stanza {
-    font-family: 'Special Elite', 'Courier Prime', monospace;
-    font-size: clamp(13px, 1.9vw, 15px);
+    font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif;
+    font-size: clamp(14px, 2vw, 16px);
     line-height: 1.85;
     color: #0c0a08;
     margin: 0 0 22px;
-    font-weight: 400;
+    font-weight: 300;
     white-space: pre-line; /* preserve newlines inside each stanza */
   }
   .lyric-stanza:last-child { margin-bottom: 0; }
@@ -2266,50 +2333,55 @@
   </header>
 
   <div class="project-body">
+    <p class="project-thread thread-grounding project-tag">Grounding</p>
     <header class="project-header">
       <h1 class="project-title">The Overseer</h1>
-      <p class="project-thread">Grounding</p>
     </header>
 
     <section class="project-section">
       <button class="project-section-title" type="button" aria-expanded="false">
-        <span>Overview</span>
+        <span>the overview</span>
         <span class="project-section-chevron" aria-hidden="true">+</span>
       </button>
       <div class="project-section-body">
         <div class="project-section-inner">
-          <ol class="project-list numbered">
-            <li><strong>Scripture:</strong> Psalm 135:1-3 ESV, Psalm 55:22, Acts 2:25-28</li>
-            <li><strong>Inspo:</strong> Welcome Him (live) by Jesus Image; Fold by Sutra; Yielded (live) by Jordan G Welch; appeal: at your feet by Jordan G Welch; Gang over Luv by Brent Faiyaz; Trust by Brent Faiyaz; Waiting Room by Marika; Moon by Kanye West; alottmusic on ig</li>
-          </ol>
+          <div class="project-prose">
+            <p>We do these sessions with the Holy Spirit. First 30 minutes we worship, pray and make the atmosphere suitable for the Holy Spirit.</p>
+            <p>Drop all ego, drop all pride, drop all ownership. We are here to receive and steward what He gives.</p>
+            <p>We meet in our sessions wearing the light of the Word. This means before coming meditate on scripture.</p>
+            <p>For "The Overseer", meditate on Psalm 135:1-3, Psalm 55:22, Acts 2:25-28.</p>
+            <p>This song is about ministering to God. When you engage with the song, imagine you are standing in front of His throne and ministering directly to Him.</p>
+          </div>
         </div>
       </div>
     </section>
 
     <section class="project-section">
       <button class="project-section-title" type="button" aria-expanded="false">
-        <span>Structure</span>
+        <span>the song structure</span>
         <span class="project-section-chevron" aria-hidden="true">+</span>
       </button>
       <div class="project-section-body">
         <div class="project-section-inner">
-          <ul class="project-list bullets">
-            <li>start with pad that gets louder (Welcome Him inspo)</li>
-            <li>a far off praise cry vocal leads in the vocal ensemble (fold, appeal, gang over luv inspo)</li>
-            <li>vocal solos with Mike Dean style epic bass and chords (moon inspo)</li>
-          </ul>
+          <p class="project-structure">we start with the pad that gets louder to introduce the atmosphere we are in.
+then the scripture is spoken.
+then the praise vocal harness frames the worship.
+then the vocal solos guide the adoration.
+we end with the praise vocal harness.</p>
         </div>
       </div>
     </section>
 
     <section class="project-section">
       <button class="project-section-title" type="button" aria-expanded="false">
-        <span>Lyrics</span>
+        <span>the lyrics</span>
         <span class="project-section-chevron" aria-hidden="true">+</span>
       </button>
       <div class="project-section-body">
         <div class="project-section-inner">
         <div class="project-lyrics">
+        <p class="lyric-scripture">David said about him: "I saw the Lord always before me. Because he is at my right hand, I will not be shaken. Therefore my heart is glad and my tongue rejoices; my body also will rest in hope, because you will not abandon me to the realm of the dead, you will not let your holy one see decay. You have made known to me the paths of life; you will fill me with joy in your presence."</p>
+
         <p class="lyric-stanza">Hallelujah
 Hallelujah
 Hallelujah <span class="lyric-note">(voice mesh)</span></p>
@@ -2345,17 +2417,17 @@ I know my hearts in it's place <span class="lyric-note">(Marika BV)</span>
 You're guiding my ways</p>
 
         <p class="lyric-stanza">In the last days <span class="lyric-call">[HALLELUJAH]</span>
-I'll see you glorified
-Fied
-Fied
+I will see you shine
+Shine
+Shine
 In the last days
-I'll see you glorified
-Fied
-Fied
+I will see you shine
+Shine
+Shine
 In the last days
-I'll see you glorified
-Fied
-Fied</p>
+I will see you shine
+Shine
+Shine</p>
 
         <p class="lyric-stanza">Lord you are Holy, Holy, Holy <span class="lyric-call">[HALLELUJAH]</span>
 Lord you are Holy, Holy, Holy
@@ -2367,7 +2439,7 @@ Lord you are Holy, Holy, Holy</p>
 
     <section class="project-section">
       <button class="project-section-title" type="button" aria-expanded="false">
-        <span>Credits</span>
+        <span>credits</span>
         <span class="project-section-chevron" aria-hidden="true">+</span>
       </button>
       <div class="project-section-body">
@@ -3027,8 +3099,24 @@ Lord you are Holy, Holy, Holy</p>
   // ----------------------------------------------------------
   document.querySelectorAll('[data-back]').forEach(btn => {
     btn.addEventListener('click', () => {
-      // Settle mode — home gently scales down into place rather than
-      // appearing flat. Reads as a homecoming.
+      const currentView = document.querySelector('.view.active');
+      const onProjectPage = currentView && currentView.id.startsWith('view-project-');
+
+      if (onProjectPage) {
+        // From a project page, return to the project LIST (tabs of
+        // the partner welcome view), skipping the welcome animation.
+        flashTo(() => {
+          showView('view-partner-welcome');
+          window.scrollTo(0, 0);
+          const welcomeView = document.getElementById('view-partner-welcome');
+          welcomeView.classList.remove('firing', 'continue-shown', 'prompt-shown');
+          welcomeView.classList.add('tabs-shown');
+        }, 'settle');
+        return;
+      }
+
+      // Default: return to homepage. Settle mode — home gently
+      // scales down into place rather than appearing flat.
       flashTo(() => {
         showView('view-home');
         window.scrollTo(0, 0);
