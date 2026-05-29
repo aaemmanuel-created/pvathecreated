@@ -3179,7 +3179,29 @@ Lord you are Holy, Holy, Holy</p>
   document.querySelectorAll('[data-back]').forEach(btn => {
     btn.addEventListener('click', () => {
       const currentView = document.querySelector('.view.active');
-      const onProjectPage = currentView && currentView.id.startsWith('view-project-');
+
+      // Special case: on the partner welcome view while the password
+      // prompt is open, back goes BACK to the project list (the
+      // tabs-shown state), not all the way home.
+      if (currentView && currentView.id === 'view-partner-welcome' &&
+          currentView.classList.contains('prompt-shown')) {
+        currentView.classList.remove('prompt-shown');
+        currentView.classList.add('tabs-shown');
+        // Clear the password input + any error state so a fresh
+        // tab click starts cleanly
+        if (ppInput) { ppInput.value = ''; ppInput.blur(); }
+        if (ppError) ppError.classList.remove('show');
+        return;
+      }
+
+      // Any page reached through the partner password flow returns
+      // to the project list, not the homepage. This covers the
+      // dedicated project views AND the shared partner-shop view
+      // that the other three projects currently route to.
+      const onProjectPage = currentView && (
+        currentView.id.startsWith('view-project-') ||
+        currentView.id === 'view-partner-shop'
+      );
 
       if (onProjectPage) {
         // From a project page, return to the project LIST (tabs of
