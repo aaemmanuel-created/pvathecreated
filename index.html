@@ -59,26 +59,27 @@
      the entry animation completes. */
 
   /* LIFT — page lifts from below as if rising into view.
-     Used for partner welcome (cream paper landing on the desk). */
+     Used for partner welcome (cream paper landing on the desk).
+     Pure vertical motion only — no scale. */
   .view.view-enter-lift {
     animation: viewEnterLift 0.85s cubic-bezier(0.22, 0.61, 0.36, 1) both;
   }
   @keyframes viewEnterLift {
-    from { transform: translateY(22px) scale(0.99); }
-    to   { transform: translateY(0)    scale(1); }
+    from { transform: translateY(22px); }
+    to   { transform: translateY(0); }
   }
 
   /* WASH — slow, deliberate entry used when stepping through a
      gate (e.g. entering a project page after a password). The
      view itself rises gently and the inner content cascades in
      so the page assembles in front of you rather than appearing
-     pre-built. */
+     pre-built. Pure vertical motion only — no scale. */
   .view.view-enter-wash {
     animation: viewEnterWash 1.4s cubic-bezier(0.32, 0.04, 0.32, 1) both;
   }
   @keyframes viewEnterWash {
-    from { transform: translateY(28px) scale(0.955); }
-    to   { transform: translateY(0)    scale(1); }
+    from { transform: translateY(30px); }
+    to   { transform: translateY(0); }
   }
 
   /* Content cascade inside a wash-entering project view.
@@ -104,27 +105,26 @@
     to   { opacity: 1; transform: translateY(0); }
   }
 
-  /* SETTLE — gentle scale-down as if returning home. Used for
-     back-button navigations so the view feels like it's settling
-     rather than appearing. */
+  /* SETTLE — gentle drop into place from a small offset above.
+     Used for back-button navigations. Pure vertical motion only —
+     no scale, so phone viewports don't render the entry zoomed in. */
   .view.view-enter-settle {
     animation: viewEnterSettle 0.8s cubic-bezier(0.32, 0.04, 0.32, 1) both;
   }
   @keyframes viewEnterSettle {
-    from { transform: scale(1.03); }
-    to   { transform: scale(1); }
+    from { transform: translateY(-10px); }
+    to   { transform: translateY(0); }
   }
 
-  /* WASH EXIT — the leaving view (partner welcome) gently scales
-     up and away, like the camera passing through it, while the new
-     view rises in from below. Together they read as "stepping
-     through a doorway" rather than a flat cross-fade. */
+  /* WASH EXIT — the leaving view lifts up and away as the new
+     view rises in from below. Pure vertical motion only — no
+     scale, so the leaving page doesn't appear zoomed in. */
   .view.view-exit-wash {
     animation: viewExitWash 0.9s cubic-bezier(0.32, 0.04, 0.32, 1) both;
   }
   @keyframes viewExitWash {
-    from { transform: scale(1)    translateY(0); }
-    to   { transform: scale(1.06) translateY(-6px); }
+    from { transform: translateY(0); }
+    to   { transform: translateY(-14px); }
   }
 
   /* ============================================================
