@@ -69,17 +69,14 @@
     to   { transform: translateY(0); }
   }
 
-  /* WASH — slow, deliberate entry used when stepping through a
-     gate (e.g. entering a project page after a password). The
-     view itself rises gently and the inner content cascades in
-     so the page assembles in front of you rather than appearing
-     pre-built. Pure vertical motion only — no scale. */
+  /* WASH — entering a project page after a password. No transform
+     on the outer .view itself because iOS Safari loses position:
+     fixed anchoring on transformed elements during keyboard
+     dismissal (which causes the page to render cropped/zoomed).
+     The visible entry motion is fully carried by the inner
+     content cascade below. */
   .view.view-enter-wash {
-    animation: viewEnterWash 1.4s cubic-bezier(0.32, 0.04, 0.32, 1) both;
-  }
-  @keyframes viewEnterWash {
-    from { transform: translateY(30px); }
-    to   { transform: translateY(0); }
+    /* Marker class only — child selectors below do the actual work */
   }
 
   /* Content cascade inside a wash-entering project view.
@@ -116,15 +113,12 @@
     to   { transform: translateY(0); }
   }
 
-  /* WASH EXIT — the leaving view lifts up and away as the new
-     view rises in from below. Pure vertical motion only — no
-     scale, so the leaving page doesn't appear zoomed in. */
+  /* WASH EXIT — the leaving view simply fades out via its base
+     opacity transition. Transform removed so iOS Safari doesn't
+     lose viewport anchoring on the position:fixed view during
+     keyboard dismissal. */
   .view.view-exit-wash {
-    animation: viewExitWash 0.9s cubic-bezier(0.32, 0.04, 0.32, 1) both;
-  }
-  @keyframes viewExitWash {
-    from { transform: translateY(0); }
-    to   { transform: translateY(-14px); }
+    /* No transform — just the base .view opacity fade-out runs */
   }
 
   /* ============================================================
@@ -3360,24 +3354,45 @@ Lord you are Holy, Holy, Holy</p>
     // Case-sensitive compare (e.g. HOUSE PVA uses pvaOStm with a capital O)
     if (expected && val === expected) {
       ppError.classList.remove('show');
-      // Dismiss the mobile keyboard before transitioning so the
-      // viewport snaps back to its true height
+      // Dismiss the mobile keyboard before transitioning. On iOS
+      // the keyboard takes ~200ms to fully retract, and the visual
+      // viewport doesn't restore until it has. If we transition
+      // immediately the new view renders against the wrong viewport
+      // size — looks cropped or zoomed weirdly.
       ppInput.blur();
+      // Force the page itself back to top so the keyboard-induced
+      // scroll on the welcome view is undone before the swap.
+      try {
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      } catch (_) { window.scrollTo(0, 0); }
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+
       const destView = PARTNER_VIEWS[selectedPartnerTab] || 'view-partner-shop';
-      // Wash mode — project page breathes open after the gate opens
-      flashTo(() => {
-        showView(destView);
-        window.scrollTo(0, 0);
-        // Reset the project view's OWN scroll position. The .view
-        // element is fixed + scrollable, so window.scrollTo doesn't
-        // touch it — and on mobile it can land cropped to the bottom.
-        const destEl = document.getElementById(destView);
-        if (destEl) destEl.scrollTop = 0;
-        ppInput.value = '';
-        // Reset the welcome view so the next visit re-runs the animation
-        const view = document.getElementById('view-partner-welcome');
-        view.classList.remove('prompt-shown');
-      }, 'wash');
+
+      // Wait for the keyboard to fully dismiss before kicking off
+      // the wash transition. 280ms covers iOS + Android keyboards.
+      setTimeout(() => {
+        flashTo(() => {
+          showView(destView);
+          // Belt-and-braces scroll reset on every container that
+          // could be holding a stale scroll position.
+          window.scrollTo(0, 0);
+          document.documentElement.scrollTop = 0;
+          document.body.scrollTop = 0;
+          const destEl = document.getElementById(destView);
+          if (destEl) {
+            destEl.scrollTop = 0;
+            // Force a fresh layout pass once the new view is active
+            // so the visual viewport definitely sees its correct size
+            void destEl.offsetHeight;
+          }
+          ppInput.value = '';
+          // Reset the welcome view so the next visit re-runs the animation
+          const view = document.getElementById('view-partner-welcome');
+          view.classList.remove('prompt-shown');
+        }, 'wash');
+      }, 280);
     } else {
       ppError.classList.add('show');
       ppInput.value = '';
