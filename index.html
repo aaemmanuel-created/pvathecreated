@@ -68,14 +68,40 @@
     to   { transform: translateY(0)    scale(1); }
   }
 
-  /* WASH — soft scale-up like a slow breath. Used for entering
-     project pages (Overseer) after a password is accepted. */
+  /* WASH — slow, deliberate entry used when stepping through a
+     gate (e.g. entering a project page after a password). The
+     view itself rises gently and the inner content cascades in
+     so the page assembles in front of you rather than appearing
+     pre-built. */
   .view.view-enter-wash {
-    animation: viewEnterWash 0.95s cubic-bezier(0.32, 0.04, 0.32, 1) both;
+    animation: viewEnterWash 1.4s cubic-bezier(0.32, 0.04, 0.32, 1) both;
   }
   @keyframes viewEnterWash {
-    from { transform: scale(0.965); }
-    to   { transform: scale(1); }
+    from { transform: translateY(28px) scale(0.955); }
+    to   { transform: translateY(0)    scale(1); }
+  }
+
+  /* Content cascade inside a wash-entering project view.
+     The tag, title, and each section glide in on a stagger so the
+     page introduces itself rather than landing all at once. */
+  .view.view-enter-wash .project-tag-row {
+    opacity: 0;
+    animation: projectContentRise 0.7s cubic-bezier(0.22, 0.61, 0.36, 1) 0.30s both;
+  }
+  .view.view-enter-wash .project-header {
+    opacity: 0;
+    animation: projectContentRise 0.85s cubic-bezier(0.22, 0.61, 0.36, 1) 0.55s both;
+  }
+  .view.view-enter-wash .project-section {
+    opacity: 0;
+    animation: projectContentRise 0.8s cubic-bezier(0.22, 0.61, 0.36, 1) 0.90s both;
+  }
+  .view.view-enter-wash .project-section:nth-of-type(2) { animation-delay: 1.05s; }
+  .view.view-enter-wash .project-section:nth-of-type(3) { animation-delay: 1.20s; }
+  .view.view-enter-wash .project-section:nth-of-type(4) { animation-delay: 1.35s; }
+  @keyframes projectContentRise {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
   }
 
   /* SETTLE — gentle scale-down as if returning home. Used for
@@ -87,6 +113,18 @@
   @keyframes viewEnterSettle {
     from { transform: scale(1.03); }
     to   { transform: scale(1); }
+  }
+
+  /* WASH EXIT — the leaving view (partner welcome) gently scales
+     up and away, like the camera passing through it, while the new
+     view rises in from below. Together they read as "stepping
+     through a doorway" rather than a flat cross-fade. */
+  .view.view-exit-wash {
+    animation: viewExitWash 0.9s cubic-bezier(0.32, 0.04, 0.32, 1) both;
+  }
+  @keyframes viewExitWash {
+    from { transform: scale(1)    translateY(0); }
+    to   { transform: scale(1.06) translateY(-6px); }
   }
 
   /* ============================================================
@@ -2813,17 +2851,35 @@ Lord you are Holy, Holy, Holy</p>
   // entry mode. The cross-fade itself is the existing .view
   // opacity transition (0.7s).
   function transitionTo(midCallback, mode) {
+    // Capture the view we're leaving BEFORE the swap happens, so
+    // we can apply an exit animation to it.
+    const exitingView = document.querySelector('.view.active');
+
+    // Apply exit animation on the outgoing view for selected modes
+    if (mode === 'wash' && exitingView) {
+      const exitCls = 'view-exit-' + mode;
+      exitingView.classList.remove(exitCls);
+      void exitingView.offsetWidth;
+      exitingView.classList.add(exitCls);
+      setTimeout(() => exitingView.classList.remove(exitCls), 1200);
+    }
+
+    // Perform the actual view swap
     if (typeof midCallback === 'function') midCallback();
+
+    // Apply enter animation on the new active view
     if (mode && mode !== 'fade') {
       const target = document.querySelector('.view.active');
-      if (target) {
+      if (target && target !== exitingView) {
         const cls = 'view-enter-' + mode;
         target.classList.remove(cls);
         // Force reflow so the animation restarts
         void target.offsetWidth;
         target.classList.add(cls);
-        // Strip the class after the animation finishes
-        setTimeout(() => target.classList.remove(cls), 1100);
+        // Strip the class after the animation + content cascade
+        // finishes. Wash mode has the longest tail (~2.2s).
+        const cleanupMs = mode === 'wash' ? 2400 : 1100;
+        setTimeout(() => target.classList.remove(cls), cleanupMs);
       }
     }
   }
