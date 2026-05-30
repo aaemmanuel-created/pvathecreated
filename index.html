@@ -121,6 +121,10 @@
     opacity: 0;
     animation: projectContentRise 0.7s cubic-bezier(0.22, 0.61, 0.36, 1) 0.30s both;
   }
+  .view.view-enter-wash .pg-header .project-tag {
+    opacity: 0;
+    animation: projectContentRise 0.7s cubic-bezier(0.22, 0.61, 0.36, 1) 0.30s both;
+  }
   .view.view-enter-wash .project-header {
     opacity: 0;
     animation: projectContentRise 0.85s cubic-bezier(0.22, 0.61, 0.36, 1) 0.55s both;
@@ -1763,7 +1767,7 @@
 
   /* Script cover header — title centred on the page. */
   .project-header {
-    margin: 0 0 56px;
+    margin: 64px 0 48px;
     text-align: center;
     position: relative;
   }
@@ -2046,16 +2050,15 @@
   #view-project-overseer .lyric-stanza,
   #view-project-overseer .project-list li {
     background: linear-gradient(95deg,
-      #7a3acc 0%,
-      #a52a8f 24%,
-      #d2333a 50%,
-      #df7a1c 76%,
-      #b88a1e 100%);
+      #2a0f4d 0%,
+      #4a1f7a 22%,
+      #7a1024 50%,
+      #944a18 78%,
+      #7a5a1e 100%);
     -webkit-background-clip: text;
             background-clip: text;
     -webkit-text-fill-color: transparent;
             color: transparent;
-    font-weight: 400;
   }
   /* Numbered credit markers stay solid purple - an absolutely
      positioned ::before can't inherit the parent's text clip. */
@@ -2066,7 +2069,7 @@
 
   @media (max-width: 768px) {
     .project-body { padding: 24px 7vw 80px; }
-    .project-header { margin-bottom: 36px; }
+    .project-header { margin: 40px 0 30px; }
     .project-section-title { padding: 18px 4px; }
     .project-list li { padding-left: 26px; }
   }
@@ -2661,13 +2664,10 @@
 <section id="view-project-overseer" class="view project-view">
   <header class="pg-header">
     <button class="back-btn" data-back>← back</button>
-    <span class="site-meta">project</span>
+    <p class="project-thread thread-grounding project-tag">Grounding</p>
   </header>
 
   <div class="project-body">
-    <div class="project-tag-row">
-      <p class="project-thread thread-grounding project-tag">Grounding</p>
-    </div>
     <header class="project-header">
       <h1 class="project-title">The Overseer</h1>
     </header>
