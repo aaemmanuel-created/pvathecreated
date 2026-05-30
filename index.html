@@ -1260,13 +1260,13 @@
     flex: 1;
     display: flex;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: center; /* centre the block on the page */
     padding: 0 6vw;
   }
   .welcome-block {
-    max-width: 1100px;
+    max-width: 520px;        /* narrower block so it sits in the middle */
     width: 100%;
-    text-align: left;
+    text-align: left;        /* text inside still reads left-to-right */
   }
   .welcome-message {
     font-family: Helvetica, "Helvetica Neue", Arial, sans-serif;
@@ -1805,6 +1805,45 @@
     margin: 0;
     font-weight: 300;
     white-space: pre-line;
+  }
+
+  /* Three minimal clip-art illustrations beneath the song structure.
+     Pure SVG, monochrome via currentColor, spread evenly across the
+     row. Each has a small caption below identifying which moment
+     of the song it visualises. */
+  .structure-illustrations {
+    margin: 32px 0 0;
+    padding: 24px 0 0;
+    border-top: 1px solid rgba(12, 10, 8, 0.10);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+  .structure-illu {
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    color: rgba(12, 10, 8, 0.78);
+  }
+  .structure-illu svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 84px;
+  }
+  .structure-illu figcaption {
+    margin-top: 10px;
+    font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(12, 10, 8, 0.55);
+  }
+  @media (max-width: 480px) {
+    .structure-illustrations { gap: 10px; padding-top: 18px; margin-top: 24px; }
+    .structure-illu svg { max-height: 64px; }
+    .structure-illu figcaption { font-size: 9.5px; letter-spacing: 0.18em; }
   }
   /* Scripture quote inside the Lyrics section */
   .lyric-scripture {
@@ -2526,6 +2565,86 @@ then the scripture is spoken.
 then the praise vocal harness frames the worship.
 then the vocal solos guide the adoration.
 we end with the praise vocal harness.</p>
+
+          <div class="structure-illustrations" aria-hidden="true">
+
+            <figure class="structure-illu">
+              <svg viewBox="0 0 140 90" xmlns="http://www.w3.org/2000/svg">
+                <!-- Network / harness — a grid of dots connected by
+                     diagonal threads to suggest a woven net frame -->
+                <g stroke="currentColor" stroke-width="0.7" fill="none" opacity="0.55">
+                  <line x1="14"  y1="22" x2="42"  y2="45"/>
+                  <line x1="42"  y1="22" x2="14"  y2="45"/>
+                  <line x1="42"  y1="22" x2="70"  y2="45"/>
+                  <line x1="70"  y1="22" x2="42"  y2="45"/>
+                  <line x1="70"  y1="22" x2="98"  y2="45"/>
+                  <line x1="98"  y1="22" x2="70"  y2="45"/>
+                  <line x1="98"  y1="22" x2="126" y2="45"/>
+                  <line x1="126" y1="22" x2="98"  y2="45"/>
+                  <line x1="14"  y1="45" x2="42"  y2="68"/>
+                  <line x1="42"  y1="45" x2="14"  y2="68"/>
+                  <line x1="42"  y1="45" x2="70"  y2="68"/>
+                  <line x1="70"  y1="45" x2="42"  y2="68"/>
+                  <line x1="70"  y1="45" x2="98"  y2="68"/>
+                  <line x1="98"  y1="45" x2="70"  y2="68"/>
+                  <line x1="98"  y1="45" x2="126" y2="68"/>
+                  <line x1="126" y1="45" x2="98"  y2="68"/>
+                </g>
+                <g fill="currentColor">
+                  <circle cx="14"  cy="22" r="2.2"/>
+                  <circle cx="42"  cy="22" r="2.2"/>
+                  <circle cx="70"  cy="22" r="2.2"/>
+                  <circle cx="98"  cy="22" r="2.2"/>
+                  <circle cx="126" cy="22" r="2.2"/>
+                  <circle cx="14"  cy="45" r="2.2"/>
+                  <circle cx="42"  cy="45" r="2.2"/>
+                  <circle cx="70"  cy="45" r="2.2"/>
+                  <circle cx="98"  cy="45" r="2.2"/>
+                  <circle cx="126" cy="45" r="2.2"/>
+                  <circle cx="14"  cy="68" r="2.2"/>
+                  <circle cx="42"  cy="68" r="2.2"/>
+                  <circle cx="70"  cy="68" r="2.2"/>
+                  <circle cx="98"  cy="68" r="2.2"/>
+                  <circle cx="126" cy="68" r="2.2"/>
+                </g>
+              </svg>
+              <figcaption>the harness</figcaption>
+            </figure>
+
+            <figure class="structure-illu">
+              <svg viewBox="0 0 140 90" xmlns="http://www.w3.org/2000/svg">
+                <!-- Swelling waves — three sine-like curves whose
+                     amplitude grows toward the centre, then eases. -->
+                <g stroke="currentColor" stroke-width="1.4" fill="none" stroke-linecap="round">
+                  <path d="M8,45 C26,38 38,30 50,30 C62,30 78,60 90,60 C102,60 114,52 132,45"
+                        opacity="0.85"/>
+                  <path d="M8,45 C26,42 38,36 50,36 C62,36 78,54 90,54 C102,54 114,48 132,45"
+                        opacity="0.55"/>
+                  <path d="M8,45 C26,44 38,40 50,40 C62,40 78,50 90,50 C102,50 114,46 132,45"
+                        opacity="0.3"/>
+                </g>
+              </svg>
+              <figcaption>the swell</figcaption>
+            </figure>
+
+            <figure class="structure-illu">
+              <svg viewBox="0 0 140 90" xmlns="http://www.w3.org/2000/svg">
+                <!-- Guide dots — a single line of dots, evenly spaced,
+                     suggesting a path / lead for the vocal solos. -->
+                <g fill="currentColor">
+                  <circle cx="14"  cy="45" r="3"/>
+                  <circle cx="33"  cy="45" r="3"/>
+                  <circle cx="52"  cy="45" r="3"/>
+                  <circle cx="71"  cy="45" r="3"/>
+                  <circle cx="90"  cy="45" r="3"/>
+                  <circle cx="109" cy="45" r="3"/>
+                  <circle cx="128" cy="45" r="3"/>
+                </g>
+              </svg>
+              <figcaption>the guide</figcaption>
+            </figure>
+
+          </div>
         </div>
       </div>
     </section>
