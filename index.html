@@ -1260,13 +1260,16 @@
     flex: 1;
     display: flex;
     align-items: center;
-    justify-content: center; /* centre the block on the page */
-    padding: 0 6vw;
+    justify-content: flex-start; /* text stays on the LEFT of the page */
+    /* Asymmetric vertical padding biases the vertical centring UP so
+       the content sits on the true viewport-centre line rather than
+       the centre of (viewport − header). Looks visually balanced. */
+    padding: 0 6vw 12vh;
   }
   .welcome-block {
-    max-width: 520px;        /* narrower block so it sits in the middle */
+    max-width: 1100px;       /* wide so text reads like a sentence */
     width: 100%;
-    text-align: left;        /* text inside still reads left-to-right */
+    text-align: left;
   }
   .welcome-message {
     font-family: Helvetica, "Helvetica Neue", Arial, sans-serif;
