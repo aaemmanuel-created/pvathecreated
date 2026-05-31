@@ -2104,6 +2104,7 @@
   #view-project-overseer .structure-step-text,
   #view-project-overseer .lyric-scripture,
   #view-project-overseer .lyric-stanza,
+  #view-project-overseer .journey-desc,
   #view-project-overseer .project-list li {
     background: linear-gradient(95deg,
       #2a0f4d 0%,
@@ -2122,6 +2123,46 @@
     -webkit-text-fill-color: #5a2390;
             color: #5a2390;
   }
+  /* ---- Overseer: journey / list toggle + swipeable journey ---- */
+  .overseer-tabs { display: flex; gap: 30px; margin: 0 0 30px; }
+  .ov-tab {
+    background: none; border: none; cursor: pointer; padding: 4px 0;
+    font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 11px; letter-spacing: 0.24em; text-transform: uppercase;
+    color: rgba(20,16,12,0.36); transition: color 0.3s ease; position: relative;
+  }
+  .ov-tab.is-active { color: rgba(20,16,12,0.95); }
+  .ov-tab.is-active::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: -5px; height: 1px;
+    background: linear-gradient(90deg, #4a1f7a, #7a1024, #7a5a1e);
+  }
+  .project-body.show-journey > .project-section { display: none; }
+  .project-body.show-list .overseer-journey { display: none; }
+  .overseer-journey { position: relative; }
+  .journey-viewport { overflow: hidden; touch-action: pan-y; }
+  .journey-track { display: flex; transition: transform 0.55s cubic-bezier(0.22,0.61,0.36,1); }
+  .journey-slide {
+    flex: 0 0 100%; box-sizing: border-box;
+    min-height: 52vh; padding: 14px 6px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 32px;
+  }
+  .journey-diagram {
+    color: #0c0a08;
+    width: clamp(168px, 56vw, 216px); height: clamp(96px, 30vw, 124px);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .journey-diagram.journey-diagram-gold { color: #876215; }
+  .journey-diagram .particle-diagram { display: block; width: 100%; height: 100%; }
+  .journey-desc {
+    font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif;
+    font-size: clamp(15px, 4.2vw, 19px); line-height: 1.7; font-weight: 300;
+    text-align: center; max-width: 28ch; margin: 0;
+  }
+  .journey-nav { display: flex; flex-direction: column; align-items: center; gap: 14px; margin-top: 10px; }
+  .journey-dots { display: flex; gap: 9px; }
+  .journey-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(20,16,12,0.2); cursor: pointer; transition: background 0.3s ease, transform 0.3s ease; }
+  .journey-dot.is-active { background: rgba(20,16,12,0.85); transform: scale(1.3); }
+  .journey-hint { font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif; font-size: 10px; letter-spacing: 0.26em; text-transform: uppercase; color: rgba(20,16,12,0.3); margin: 0; }
 
   @media (max-width: 768px) {
     .project-body { padding: 24px 7vw 80px; }
@@ -2803,10 +2844,54 @@
     <p class="project-thread thread-grounding project-tag">Grounding</p>
   </header>
 
-  <div class="project-body">
+  <div class="project-body show-journey">
     <header class="project-header">
       <h1 class="project-title">The Overseer</h1>
     </header>
+
+    <div class="overseer-tabs">
+      <button class="ov-tab is-active" type="button" data-view="journey">journey</button>
+      <button class="ov-tab" type="button" data-view="list">list</button>
+    </div>
+
+    <div class="overseer-journey">
+      <div class="journey-viewport">
+        <div class="journey-track" id="journey-track">
+          <div class="journey-slide">
+            <div class="journey-diagram"><canvas class="particle-diagram" data-shape="gather" aria-hidden="true"></canvas></div>
+            <p class="journey-desc">First 30 minutes we worship, pray and offer up incense to the Father. We make the atmosphere suitable for the Holy Spirit.</p>
+          </div>
+          <div class="journey-slide">
+            <div class="journey-diagram"><canvas class="particle-diagram" data-shape="atmosphere" aria-hidden="true"></canvas></div>
+            <p class="journey-desc">The atmosphere will become the harness that holds the song.</p>
+          </div>
+          <div class="journey-slide">
+            <div class="journey-diagram"><canvas class="particle-diagram" data-shape="swell" aria-hidden="true"></canvas></div>
+            <p class="journey-desc">we start with the pad that gets louder to introduce the atmosphere we are in.</p>
+          </div>
+          <div class="journey-slide">
+            <div class="journey-diagram journey-diagram-gold"><canvas class="particle-diagram" data-shape="rings" aria-hidden="true"></canvas></div>
+            <p class="journey-desc">then the scripture is spoken.</p>
+          </div>
+          <div class="journey-slide">
+            <div class="journey-diagram"><canvas class="particle-diagram" data-shape="harness" aria-hidden="true"></canvas></div>
+            <p class="journey-desc">then the praise vocal harness frames the worship.</p>
+          </div>
+          <div class="journey-slide">
+            <div class="journey-diagram"><canvas class="particle-diagram" data-shape="guide" aria-hidden="true"></canvas></div>
+            <p class="journey-desc">then the vocal solos guide the adoration.</p>
+          </div>
+          <div class="journey-slide">
+            <div class="journey-diagram"><canvas class="particle-diagram" data-shape="harness" aria-hidden="true"></canvas></div>
+            <p class="journey-desc">we end with the praise vocal harness.</p>
+          </div>
+        </div>
+      </div>
+      <div class="journey-nav">
+        <div class="journey-dots" id="journey-dots"></div>
+        <p class="journey-hint">swipe</p>
+      </div>
+    </div>
 
     <section class="project-section">
       <button class="project-section-title" type="button" aria-expanded="false">
@@ -3933,13 +4018,35 @@ Lord you are Holy, Holy, Holy</p>
   }
   function guide(){ var pts=[], xs=[14,33,52,71,90,109,128]; for(var i=0;i<xs.length;i++) for(var k=0;k<8;k++){ var a=Math.random()*6.2832, rr=Math.random()*3.4; pts.push([xs[i]+Math.cos(a)*rr, 45+Math.sin(a)*rr]); } return pts; }
   function rings(){ var pts=[], cx=70, cy=45, R=[30,19], i; for(var ri=0;ri<R.length;ri++){ var n=Math.round(R[ri]*2.1); for(i=0;i<n;i++){ var a=i/n*6.2832; pts.push([cx+Math.cos(a)*R[ri], cy+Math.sin(a)*R[ri]]); } } for(i=0;i<16;i++){ var aa=Math.random()*6.2832, r2=Math.random()*7; pts.push([cx+Math.cos(aa)*r2, cy+Math.sin(aa)*r2]); } return pts; }
-  var GEN={harness:harness, swell:swell, guide:guide, rings:rings};
+  function gather(){
+    var pts=[];
+    function person(cx, hy, s, raise){
+      var hr=2.4*s, a;
+      for(a=0;a<7;a++){ var an=a/7*6.2832; pts.push([cx+Math.cos(an)*hr, hy+Math.sin(an)*hr]); }
+      var sy=hy+hr+1.5;
+      pushLine(pts, cx, sy, cx, sy+11*s, 5);
+      if(raise){ pushLine(pts, cx, sy+1, cx-6*s, sy-5*s, 4); pushLine(pts, cx, sy+1, cx+6*s, sy-5*s, 4); }
+      else { pushLine(pts, cx, sy+2, cx-5*s, sy+6*s, 3); pushLine(pts, cx, sy+2, cx+5*s, sy+6*s, 3); }
+    }
+    var row1=[[40,16],[70,13],[100,16]], row2=[[26,34],[55,36],[85,36],[114,34]], i;
+    for(i=0;i<row1.length;i++) person(row1[i][0], row1[i][1], 0.9, i===1);
+    for(i=0;i<row2.length;i++) person(row2[i][0], row2[i][1], 1.05, i===1||i===2);
+    return pts;
+  }
+  function atmosphere(){
+    var pts=[], i;
+    var cx=70, cy=82, R=[66,53,40];
+    for(var ri=0;ri<R.length;ri++){ var n=Math.round(R[ri]*0.95); for(i=0;i<=n;i++){ var ang=Math.PI*(0.08+0.84*(i/n)); pts.push([cx+Math.cos(ang)*R[ri], cy-Math.sin(ang)*R[ri]]); } }
+    for(i=0;i<64;i++){ pts.push([14+Math.random()*112, 24+Math.random()*50]); }
+    return pts;
+  }
+  var GEN={harness:harness, swell:swell, guide:guide, rings:rings, gather:gather, atmosphere:atmosphere};
   var ds=[];
   function setup(c){
     var g=GEN[c.dataset.shape]; if(!g) return;
     var pts=g(), ps=[];
     for(var i=0;i<pts.length;i++) ps.push({hx:pts[i][0], hy:pts[i][1], p1:Math.random()*6.2832, p2:Math.random()*6.2832, p3:Math.random()*6.2832, f1:0.5+Math.random()*0.9, f2:0.5+Math.random()*0.9, f3:0.6+Math.random()*1.0, amp:1.1+Math.random()*2.1, rad:0.55+Math.random()*0.65, base:0.4+Math.random()*0.5});
-    var d={c:c, ctx:c.getContext('2d'), ps:ps, color:'#0c0a08', scale:1, ox:0, oy:0, ready:false};
+    var d={c:c, ctx:c.getContext('2d'), ps:ps, color:'#0c0a08', scale:1, ox:0, oy:0, dscale:1, ready:false};
     ds.push(d); measure(d);
     if(window.ResizeObserver){ try{ new ResizeObserver(function(){ measure(d); }).observe(c); }catch(e){} }
   }
@@ -3949,7 +4056,7 @@ Lord you are Holy, Holy, Holy</p>
     d.color=getComputedStyle(d.c).color||'#0c0a08';
     d.c.width=Math.round(r.width*PR); d.c.height=Math.round(r.height*PR);
     var s=Math.min(r.width/VBW, r.height/VBH);
-    d.scale=s*PR; d.ox=(r.width-VBW*s)/2*PR; d.oy=(r.height-VBH*s)/2*PR; d.ready=true;
+    d.scale=s*PR; d.ox=(r.width-VBW*s)/2*PR; d.oy=(r.height-VBH*s)/2*PR; d.dscale=Math.max(1,s/0.667); d.ready=true;
   }
   var t=0, raf=null, on=false;
   function frame(){
@@ -3960,7 +4067,7 @@ Lord you are Holy, Holy, Holy</p>
         var x=(p.hx+Math.sin(t*p.f1+p.p1)*p.amp)*d.scale+d.ox;
         var y=(p.hy+Math.cos(t*p.f2+p.p2)*p.amp)*d.scale+d.oy;
         ctx.globalAlpha=p.base*(0.65+0.35*Math.sin(t*p.f3+p.p3));
-        ctx.beginPath(); ctx.arc(x,y,p.rad*PR,0,6.2832); ctx.fill();
+        ctx.beginPath(); ctx.arc(x,y,p.rad*PR*d.dscale,0,6.2832); ctx.fill();
       }
       ctx.globalAlpha=1;
     }
@@ -4179,6 +4286,31 @@ Lord you are Holy, Holy, Holy</p>
   function reset(){ for(var i=0;i<pts.length;i++) pts[i].rt=Math.random()*0.45; }
   window.dissolvePaintingToDots=function(){ if(!ready) return; surf=document.querySelector('#immersive-tile .blended-surface'); reset(); if(raf) cancelAnimationFrame(raf); t0=performance.now(); raf=requestAnimationFrame(frame); };
   window.clearBlackout=function(){ if(raf){ cancelAnimationFrame(raf); raf=null; } if(surf){ surf.style.opacity=''; surf.style.webkitMaskImage=''; surf.style.maskImage=''; surf=null; } try{ ctx.clearRect(0,0,canvas.width,canvas.height); }catch(e){} };
+})();
+</script>
+<script>
+/* Overseer "journey" — a swipeable walk through the song: each part shows
+   its particle diagram centred with a short description. Tabs switch
+   between the journey and the full list view. */
+(function(){
+  var track = document.getElementById('journey-track');
+  var dotsWrap = document.getElementById('journey-dots');
+  if(track && dotsWrap){
+    var n = track.children.length, idx = 0;
+    function setSlide(i){ idx = i<0?0:(i>n-1?n-1:i); track.style.transform='translateX('+(-idx*100)+'%)'; var dd=dotsWrap.children; for(var j=0;j<dd.length;j++) dd[j].classList.toggle('is-active', j===idx); }
+    for(var i=0;i<n;i++){ var dot=document.createElement('span'); dot.className='journey-dot'+(i===0?' is-active':''); (function(k){ dot.addEventListener('click', function(){ setSlide(k); }); })(i); dotsWrap.appendChild(dot); }
+    var vp = track.parentNode, sx=0, sy=0, down=false;
+    vp.addEventListener('pointerdown', function(e){ down=true; sx=e.clientX; sy=e.clientY; });
+    vp.addEventListener('pointercancel', function(){ down=false; });
+    vp.addEventListener('pointerup', function(e){ if(!down) return; down=false; var dx=e.clientX-sx, dy=e.clientY-sy; if(Math.abs(dx)>40 && Math.abs(dx)>Math.abs(dy)) setSlide(idx + (dx<0?1:-1)); });
+  }
+  var body = document.querySelector('#view-project-overseer .project-body');
+  var tabs = document.querySelectorAll('#view-project-overseer .ov-tab');
+  for(var t=0;t<tabs.length;t++){ (function(btn){ btn.addEventListener('click', function(){
+    for(var k=0;k<tabs.length;k++) tabs[k].classList.toggle('is-active', tabs[k]===btn);
+    var v=btn.getAttribute('data-view');
+    if(body){ body.classList.toggle('show-journey', v==='journey'); body.classList.toggle('show-list', v==='list'); }
+  }); })(tabs[t]); }
 })();
 </script>
 </body>
