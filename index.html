@@ -3197,21 +3197,14 @@ Lord you are Holy, Holy, Holy</p>
     tile.dataset.dissolving = '1';
     try { var _pr = tile.getBoundingClientRect(); window.__paintingRect = { w:_pr.width, h:_pr.height }; } catch(e) {}
 
-    // Everything leaves together: black dots fill in and black out the
-    // painting; then the painting dissolves while the two tabs + the
-    // tagline all fade away in the same moment, then cross-fade to threads.
-    // 1) black dots fill in over the still-visible painting
-    if (window.blackoutPainting) window.blackoutPainting();
-    // 2) once covered, the painting AND the tabs + tagline all fade together
-    setTimeout(function(){
-      var surf = tile.querySelector('.blended-surface');
-      if (surf) { surf.style.transition = 'opacity 1.2s ease'; surf.style.opacity = '0'; }
-      ['open-thoughts', 'open-partner'].forEach(function(id){ var el = document.getElementById(id); if (el) { el.style.transition = 'opacity 1.2s ease'; el.style.opacity = '0'; el.style.pointerEvents = 'none'; } });
-      var tag = document.querySelector('#view-home .home-tagline');
-      if (tag) { tag.style.transition = 'opacity 1.2s ease'; tag.style.opacity = '0'; }
-    }, 1500);
-    // 3) once it is dark, cross-fade to the threads view where dots bloom
-    setTimeout(() => revealParticle(), 2900);
+    // Everything dissolves right-to-left together: the two tabs, the
+    // tagline, and the painting all crumble away on the same grainy
+    // right-to-left wipe, then the page cross-fades to the threads view.
+    dustAway(document.getElementById('open-thoughts'));
+    dustAway(document.getElementById('open-partner'));
+    dustAway(document.querySelector('#view-home .home-tagline'));
+    tile.classList.add('dissolving');
+    setTimeout(() => revealParticle(), 3600);
   });
 
   function revealParticle() {
