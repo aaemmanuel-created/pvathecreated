@@ -878,6 +878,15 @@
     from { -webkit-mask-position: 0% 0;   mask-position: 0% 0; }
     to   { -webkit-mask-position: 100% 0; mask-position: 100% 0; }
   }
+  /* The painting doesn't wipe; it dissolves softly into the dark
+     background, blurring and fading until it melts away. */
+  .dissolving-bg {
+    animation: dissolveBg 3.4s cubic-bezier(0.45, 0.05, 0.4, 1) forwards;
+  }
+  @keyframes dissolveBg {
+    0%   { opacity: 1; filter: blur(0px); }
+    100% { opacity: 0; filter: blur(14px); }
+  }
   /* Modern thread title — Helvetica ultra-thin, tracked out wide,
      subtle gradient fill so it feels cool rather than flat. */
   .strip-thread-name {
@@ -1960,11 +1969,10 @@
     display: flex;
     justify-content: center;
   }
-  .structure-step-illu svg {
+  .structure-step-illu .particle-diagram {
     display: block;
     width: 100%;
-    height: auto;
-    max-height: 60px;
+    height: 60px;
   }
   .structure-step-text {
     font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif;
@@ -1980,7 +1988,7 @@
   }
   @media (max-width: 480px) {
     .structure-step { grid-template-columns: 72px 1fr; gap: 16px; }
-    .structure-step-illu svg { max-height: 46px; }
+    .structure-step-illu .particle-diagram { height: 46px; }
   }
   /* Scripture quote inside the Lyrics section */
   .lyric-scripture {
@@ -2462,6 +2470,48 @@
     .shop-grid { grid-template-columns: 1fr; gap: 12px; }
     .shop-title { padding: 3vh 22px 4vh; font-size: 24vw; }
   }
+  /* ============================================================
+     PARTICLE PAINTING - the painting reformed as a cloud of dots you
+     swipe to recolour (purple/red/white-gold) and tap to flood the
+     page with two columns of tiles.
+     ============================================================ */
+  #view-particle { background: #0a0a0a; color: #fff; overflow: hidden; }
+  .painting-canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; touch-action: none; }
+  #view-particle .pg-header { position: relative; z-index: 4; }
+  #view-particle .back-btn { color: rgba(255,255,255,0.75); }
+  #view-particle .site-meta { color: rgba(255,255,255,0.5); letter-spacing: 0.2em; }
+  .painting-hint {
+    position: absolute; left: 0; right: 0; bottom: 30px; text-align: center; z-index: 4; margin: 0;
+    font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif; font-size: 11px;
+    letter-spacing: 0.26em; text-transform: uppercase; color: rgba(255,255,255,0.42);
+    pointer-events: none; transition: opacity 0.5s ease;
+  }
+  #view-particle.flooded .painting-hint { opacity: 0; }
+  .painting-arrows {
+    position: absolute; left: 0; right: 0; bottom: 52px; z-index: 4;
+    display: flex; justify-content: center; align-items: center; gap: 46px;
+    color: rgba(255,255,255,0.42); font-size: 17px; pointer-events: none;
+    transition: opacity 0.5s ease;
+  }
+  #view-particle.flooded .painting-arrows { opacity: 0; }
+  .painting-arrows .pa-l { animation: paNudgeL 1.8s ease-in-out infinite; }
+  .painting-arrows .pa-r { animation: paNudgeR 1.8s ease-in-out infinite; }
+  @keyframes paNudgeL { 0%,100% { transform: translateX(0); } 50% { transform: translateX(-5px); } }
+  @keyframes paNudgeR { 0%,100% { transform: translateX(0); } 50% { transform: translateX(5px); } }
+  .painting-flood {
+    position: absolute; inset: 0; z-index: 3; display: none; overflow-y: auto;
+    -webkit-overflow-scrolling: touch; padding: 92px 16px 64px; background: rgba(10,10,10,0.93);
+  }
+  #view-particle.flooded .painting-flood { display: block; }
+  .painting-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; max-width: 760px; margin: 0 auto; }
+  .painting-card {
+    border: 1px solid rgba(255,255,255,0.14); border-radius: 12px; padding: 20px 16px; min-height: 116px;
+    display: flex; align-items: flex-end; font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 14px; line-height: 1.5; font-weight: 300; color: rgba(255,255,255,0.82);
+    background: rgba(255,255,255,0.035); opacity: 0; transform: translateY(16px);
+  }
+  #view-particle.flooded .painting-card { animation: floodIn 0.6s cubic-bezier(0.22,0.61,0.36,1) forwards; }
+  @keyframes floodIn { to { opacity: 1; transform: translateY(0); } }
 </style>
 </head>
 <body>
@@ -2725,134 +2775,35 @@
 
             <div class="structure-step">
               <div class="structure-step-illu" aria-hidden="true">
-                <svg viewBox="0 0 140 90" xmlns="http://www.w3.org/2000/svg">
-                  <!-- Swell - the pad rising to set the atmosphere -->
-                  <g stroke="currentColor" stroke-width="1.4" fill="none" stroke-linecap="round">
-                    <path d="M8,45 C26,38 38,30 50,30 C62,30 78,60 90,60 C102,60 114,52 132,45" opacity="0.85"/>
-                    <path d="M8,45 C26,42 38,36 50,36 C62,36 78,54 90,54 C102,54 114,48 132,45" opacity="0.55"/>
-                    <path d="M8,45 C26,44 38,40 50,40 C62,40 78,50 90,50 C102,50 114,46 132,45" opacity="0.3"/>
-                  </g>
-                </svg>
+                <canvas class="particle-diagram" data-shape="swell" aria-hidden="true"></canvas>
               </div>
               <p class="structure-step-text">we start with the pad that gets louder to introduce the atmosphere we are in.</p>
             </div>
 
             <div class="structure-step">
               <div class="structure-step-illu structure-step-illu-gold" aria-hidden="true">
-                <svg viewBox="0 0 140 90" xmlns="http://www.w3.org/2000/svg">
-                  <!-- Three concentric layers - the spoken word at the centre -->
-                  <g fill="none" stroke="currentColor" stroke-width="1.6">
-                    <circle cx="70" cy="45" r="30"/>
-                    <circle cx="70" cy="45" r="19"/>
-                  </g>
-                  <circle cx="70" cy="45" r="7" fill="currentColor"/>
-                </svg>
+                <canvas class="particle-diagram" data-shape="rings" aria-hidden="true"></canvas>
               </div>
               <p class="structure-step-text">then the scripture is spoken.</p>
             </div>
 
             <div class="structure-step">
               <div class="structure-step-illu" aria-hidden="true">
-                <svg viewBox="0 0 140 90" xmlns="http://www.w3.org/2000/svg">
-                  <!-- Harness - the woven net framing the worship -->
-                  <g stroke="currentColor" stroke-width="0.7" fill="none" opacity="0.55">
-                    <line x1="14" y1="22" x2="42" y2="45"/>
-                    <line x1="42" y1="22" x2="14" y2="45"/>
-                    <line x1="42" y1="22" x2="70" y2="45"/>
-                    <line x1="70" y1="22" x2="42" y2="45"/>
-                    <line x1="70" y1="22" x2="98" y2="45"/>
-                    <line x1="98" y1="22" x2="70" y2="45"/>
-                    <line x1="98" y1="22" x2="126" y2="45"/>
-                    <line x1="126" y1="22" x2="98" y2="45"/>
-                    <line x1="14" y1="45" x2="42" y2="68"/>
-                    <line x1="42" y1="45" x2="14" y2="68"/>
-                    <line x1="42" y1="45" x2="70" y2="68"/>
-                    <line x1="70" y1="45" x2="42" y2="68"/>
-                    <line x1="70" y1="45" x2="98" y2="68"/>
-                    <line x1="98" y1="45" x2="70" y2="68"/>
-                    <line x1="98" y1="45" x2="126" y2="68"/>
-                    <line x1="126" y1="45" x2="98" y2="68"/>
-                  </g>
-                  <g fill="currentColor">
-                    <circle cx="14" cy="22" r="2.2"/>
-                    <circle cx="42" cy="22" r="2.2"/>
-                    <circle cx="70" cy="22" r="2.2"/>
-                    <circle cx="98" cy="22" r="2.2"/>
-                    <circle cx="126" cy="22" r="2.2"/>
-                    <circle cx="14" cy="45" r="2.2"/>
-                    <circle cx="42" cy="45" r="2.2"/>
-                    <circle cx="70" cy="45" r="2.2"/>
-                    <circle cx="98" cy="45" r="2.2"/>
-                    <circle cx="126" cy="45" r="2.2"/>
-                    <circle cx="14" cy="68" r="2.2"/>
-                    <circle cx="42" cy="68" r="2.2"/>
-                    <circle cx="70" cy="68" r="2.2"/>
-                    <circle cx="98" cy="68" r="2.2"/>
-                    <circle cx="126" cy="68" r="2.2"/>
-                  </g>
-                </svg>
+                <canvas class="particle-diagram" data-shape="harness" aria-hidden="true"></canvas>
               </div>
               <p class="structure-step-text">then the praise vocal harness frames the worship.</p>
             </div>
 
             <div class="structure-step">
               <div class="structure-step-illu" aria-hidden="true">
-                <svg viewBox="0 0 140 90" xmlns="http://www.w3.org/2000/svg">
-                  <!-- Guide - a lead path for the vocal solos -->
-                  <g fill="currentColor">
-                    <circle cx="14" cy="45" r="3"/>
-                    <circle cx="33" cy="45" r="3"/>
-                    <circle cx="52" cy="45" r="3"/>
-                    <circle cx="71" cy="45" r="3"/>
-                    <circle cx="90" cy="45" r="3"/>
-                    <circle cx="109" cy="45" r="3"/>
-                    <circle cx="128" cy="45" r="3"/>
-                  </g>
-                </svg>
+                <canvas class="particle-diagram" data-shape="guide" aria-hidden="true"></canvas>
               </div>
               <p class="structure-step-text">then the vocal solos guide the adoration.</p>
             </div>
 
             <div class="structure-step">
               <div class="structure-step-illu" aria-hidden="true">
-                <svg viewBox="0 0 140 90" xmlns="http://www.w3.org/2000/svg">
-                  <!-- Harness - the worship closes on the harness again -->
-                  <g stroke="currentColor" stroke-width="0.7" fill="none" opacity="0.55">
-                    <line x1="14" y1="22" x2="42" y2="45"/>
-                    <line x1="42" y1="22" x2="14" y2="45"/>
-                    <line x1="42" y1="22" x2="70" y2="45"/>
-                    <line x1="70" y1="22" x2="42" y2="45"/>
-                    <line x1="70" y1="22" x2="98" y2="45"/>
-                    <line x1="98" y1="22" x2="70" y2="45"/>
-                    <line x1="98" y1="22" x2="126" y2="45"/>
-                    <line x1="126" y1="22" x2="98" y2="45"/>
-                    <line x1="14" y1="45" x2="42" y2="68"/>
-                    <line x1="42" y1="45" x2="14" y2="68"/>
-                    <line x1="42" y1="45" x2="70" y2="68"/>
-                    <line x1="70" y1="45" x2="42" y2="68"/>
-                    <line x1="70" y1="45" x2="98" y2="68"/>
-                    <line x1="98" y1="45" x2="70" y2="68"/>
-                    <line x1="98" y1="45" x2="126" y2="68"/>
-                    <line x1="126" y1="45" x2="98" y2="68"/>
-                  </g>
-                  <g fill="currentColor">
-                    <circle cx="14" cy="22" r="2.2"/>
-                    <circle cx="42" cy="22" r="2.2"/>
-                    <circle cx="70" cy="22" r="2.2"/>
-                    <circle cx="98" cy="22" r="2.2"/>
-                    <circle cx="126" cy="22" r="2.2"/>
-                    <circle cx="14" cy="45" r="2.2"/>
-                    <circle cx="42" cy="45" r="2.2"/>
-                    <circle cx="70" cy="45" r="2.2"/>
-                    <circle cx="98" cy="45" r="2.2"/>
-                    <circle cx="126" cy="45" r="2.2"/>
-                    <circle cx="14" cy="68" r="2.2"/>
-                    <circle cx="42" cy="68" r="2.2"/>
-                    <circle cx="70" cy="68" r="2.2"/>
-                    <circle cx="98" cy="68" r="2.2"/>
-                    <circle cx="126" cy="68" r="2.2"/>
-                  </g>
-                </svg>
+                <canvas class="particle-diagram" data-shape="harness" aria-hidden="true"></canvas>
               </div>
               <p class="structure-step-text">we end with the praise vocal harness.</p>
             </div>
@@ -3099,6 +3050,17 @@ Lord you are Holy, Holy, Holy</p>
   </div>
 </section>
 
+<section id="view-particle" class="view">
+  <header class="pg-header">
+    <button class="back-btn" data-back>&#8592; back</button>
+    <span class="site-meta" id="pp-thread-label">grounding</span>
+  </header>
+  <canvas id="painting-canvas" class="painting-canvas" aria-hidden="true"></canvas>
+  <div class="painting-arrows" id="painting-arrows" aria-hidden="true"><span class="pa-l">&#8592;</span><span class="pa-r">&#8594;</span></div>
+  <p class="painting-hint" id="painting-hint">swipe to shift &middot; tap to enter</p>
+  <div class="painting-flood" id="painting-flood"></div>
+</section>
+
 <!-- ============================================================
      PORTAL OVERLAY — slow meditative pull-through
      ============================================================ -->
@@ -3119,6 +3081,7 @@ Lord you are Holy, Holy, Holy</p>
     'view-partner-shop':      '#workshop',
     'view-project-overseer':  '#overseer',
     'view-strip':             '#threads',
+    'view-particle':          '#painting',
     'view-thoughts':          '#thoughts',
   };
   // Protected pages require the partner password — refreshing
@@ -3138,6 +3101,9 @@ Lord you are Holy, Holy, Holy</p>
     document.body.style.backgroundColor = chromeColor;
     // Returning home? restore the pills + tagline that dusted away.
     if (id === 'view-home' && typeof restoreDust === 'function') restoreDust();
+    // Animate the particle diagrams only while the Overseer page is open.
+    if (window.particleDiagrams) { id === 'view-project-overseer' ? window.particleDiagrams.start() : window.particleDiagrams.stop(); }
+    if (window.paintingParticles) { id === 'view-particle' ? window.paintingParticles.start() : window.paintingParticles.stop(); }
     // Reflect the active view in the URL so a refresh restores it
     const hash = VIEW_HASHES[id];
     if (hash !== undefined) {
@@ -3225,7 +3191,7 @@ Lord you are Holy, Holy, Holy</p>
     const ar = document.querySelector('#view-home .action-row');
     if (ar) { ar.style.opacity = ''; ar.style.transition = ''; }
     const t = document.getElementById('immersive-tile');
-    if (t) { t.classList.remove('dissolving'); t.removeAttribute('data-dissolving'); }
+    if (t) { t.classList.remove('dissolving', 'dissolving-bg'); t.removeAttribute('data-dissolving'); }
   }
 
   // HOMEPAGE BLENDED TILE — morph the painting into the strip,
@@ -3238,14 +3204,20 @@ Lord you are Holy, Holy, Holy</p>
     tile.dataset.dissolving = '1';
 
     // The three items wipe away first (right-to-left). Once they're gone
-    // the painting dissolves the same way, melting into the background,
+    // the painting dissolves softly into the dark background (blur + fade),
     // and then the strip is revealed.
     dustAway(document.getElementById('open-thoughts'));
     dustAway(document.getElementById('open-partner'));
     dustAway(document.querySelector('#view-home .home-tagline'));
-    setTimeout(() => dustAway(tile), 3500);
-    setTimeout(() => revealStrip(stripV), 7000);
+    setTimeout(() => tile.classList.add('dissolving-bg'), 2000);
+    setTimeout(() => revealParticle(), 5500);
   });
+
+  function revealParticle() {
+    showView('view-particle');
+    window.scrollTo(0, 0);
+    if (window.paintingParticles) window.paintingParticles.reset();
+  }
 
   function revealStrip(stripV) {
     showView('view-strip');
@@ -3478,6 +3450,13 @@ Lord you are Holy, Holy, Holy</p>
         // tab click starts cleanly
         if (ppInput) { ppInput.value = ''; ppInput.blur(); }
         if (ppError) ppError.classList.remove('show');
+        return;
+      }
+
+      // Particle painting view: if tiles have flooded in, back returns
+      // to the particle cloud; otherwise fall through to go home.
+      if (currentView && currentView.id === 'view-particle' && currentView.classList.contains('flooded')) {
+        currentView.classList.remove('flooded');
         return;
       }
 
@@ -3847,6 +3826,225 @@ Lord you are Holy, Holy, Holy</p>
     // Public views — just show them directly
     showView(target);
   })();
+</script>
+<script>
+/* Particle diagrams - the song-structure shapes (swell, rings, harness,
+   guide) drawn as clouds of dots that gently oscillate around their home
+   positions, so each shape stays readable while it shimmers. */
+(function(){
+  var PR = Math.min(window.devicePixelRatio || 1, 2);
+  var VBW = 140, VBH = 90;
+  function pushLine(pts,x1,y1,x2,y2,n){ for(var i=0;i<=n;i++){ var t=i/n; pts.push([x1+(x2-x1)*t, y1+(y2-y1)*t]); } }
+  function pushCubic(pts,x0,y0,a,b,c,d,x1,y1,n){ for(var i=0;i<=n;i++){ var t=i/n,u=1-t; pts.push([u*u*u*x0+3*u*u*t*a+3*u*t*t*c+t*t*t*x1, u*u*u*y0+3*u*u*t*b+3*u*t*t*d+t*t*t*y1]); } }
+  function harness(){
+    var pts=[], xs=[14,42,70,98,126], ys=[22,45,68], i;
+    for(var yi=0;yi<ys.length;yi++) for(var xi=0;xi<xs.length;xi++) for(var k=0;k<3;k++) pts.push([xs[xi]+(Math.random()-0.5)*3.4, ys[yi]+(Math.random()-0.5)*3.4]);
+    var rows=[[22,45],[45,68]];
+    for(var r=0;r<rows.length;r++) for(i=0;i<4;i++){ var a=xs[i], bb=xs[i+1]; pushLine(pts,a,rows[r][0],bb,rows[r][1],6); pushLine(pts,bb,rows[r][0],a,rows[r][1],6); }
+    return pts;
+  }
+  function swell(){
+    var pts=[], P=[
+      [8,45,26,38,38,30,50,30, 50,30,62,30,78,60,90,60, 90,60,102,60,114,52,132,45],
+      [8,45,26,42,38,36,50,36, 50,36,62,36,78,54,90,54, 90,54,102,54,114,48,132,45],
+      [8,45,26,44,38,40,50,40, 50,40,62,40,78,50,90,50, 90,50,102,50,114,46,132,45]];
+    for(var p=0;p<P.length;p++){ var s=P[p]; for(var seg=0;seg<3;seg++){ var o=seg*8; pushCubic(pts,s[o],s[o+1],s[o+2],s[o+3],s[o+4],s[o+5],s[o+6],s[o+7],11); } }
+    return pts;
+  }
+  function guide(){ var pts=[], xs=[14,33,52,71,90,109,128]; for(var i=0;i<xs.length;i++) for(var k=0;k<8;k++){ var a=Math.random()*6.2832, rr=Math.random()*3.4; pts.push([xs[i]+Math.cos(a)*rr, 45+Math.sin(a)*rr]); } return pts; }
+  function rings(){ var pts=[], cx=70, cy=45, R=[30,19], i; for(var ri=0;ri<R.length;ri++){ var n=Math.round(R[ri]*2.1); for(i=0;i<n;i++){ var a=i/n*6.2832; pts.push([cx+Math.cos(a)*R[ri], cy+Math.sin(a)*R[ri]]); } } for(i=0;i<16;i++){ var aa=Math.random()*6.2832, r2=Math.random()*7; pts.push([cx+Math.cos(aa)*r2, cy+Math.sin(aa)*r2]); } return pts; }
+  var GEN={harness:harness, swell:swell, guide:guide, rings:rings};
+  var ds=[];
+  function setup(c){
+    var g=GEN[c.dataset.shape]; if(!g) return;
+    var pts=g(), ps=[];
+    for(var i=0;i<pts.length;i++) ps.push({hx:pts[i][0], hy:pts[i][1], p1:Math.random()*6.2832, p2:Math.random()*6.2832, p3:Math.random()*6.2832, f1:0.5+Math.random()*0.9, f2:0.5+Math.random()*0.9, f3:0.6+Math.random()*1.0, amp:1.1+Math.random()*2.1, rad:0.55+Math.random()*0.65, base:0.4+Math.random()*0.5});
+    var d={c:c, ctx:c.getContext('2d'), ps:ps, color:'#0c0a08', scale:1, ox:0, oy:0, ready:false};
+    ds.push(d); measure(d);
+    if(window.ResizeObserver){ try{ new ResizeObserver(function(){ measure(d); }).observe(c); }catch(e){} }
+  }
+  function measure(d){
+    var r=d.c.getBoundingClientRect();
+    if(!r.width||!r.height){ d.ready=false; return; }
+    d.color=getComputedStyle(d.c).color||'#0c0a08';
+    d.c.width=Math.round(r.width*PR); d.c.height=Math.round(r.height*PR);
+    var s=Math.min(r.width/VBW, r.height/VBH);
+    d.scale=s*PR; d.ox=(r.width-VBW*s)/2*PR; d.oy=(r.height-VBH*s)/2*PR; d.ready=true;
+  }
+  var t=0, raf=null, on=false;
+  function frame(){
+    t+=0.018;
+    for(var i=0;i<ds.length;i++){ var d=ds[i]; if(!d.ready) continue;
+      var ctx=d.ctx, ps=d.ps; ctx.clearRect(0,0,d.c.width,d.c.height); ctx.fillStyle=d.color;
+      for(var j=0;j<ps.length;j++){ var p=ps[j];
+        var x=(p.hx+Math.sin(t*p.f1+p.p1)*p.amp)*d.scale+d.ox;
+        var y=(p.hy+Math.cos(t*p.f2+p.p2)*p.amp)*d.scale+d.oy;
+        ctx.globalAlpha=p.base*(0.65+0.35*Math.sin(t*p.f3+p.p3));
+        ctx.beginPath(); ctx.arc(x,y,p.rad*PR,0,6.2832); ctx.fill();
+      }
+      ctx.globalAlpha=1;
+    }
+  }
+  function loop(){ frame(); raf = on ? requestAnimationFrame(loop) : null; }
+  function start(){ if(on) return; on=true; for(var i=0;i<ds.length;i++) measure(ds[i]); raf=requestAnimationFrame(loop); }
+  function stop(){ on=false; if(raf){ cancelAnimationFrame(raf); raf=null; } }
+  function init(){
+    var cs=document.querySelectorAll('canvas.particle-diagram');
+    for(var i=0;i<cs.length;i++) setup(cs[i]);
+    window.addEventListener('resize', function(){ for(var i=0;i<ds.length;i++) measure(ds[i]); });
+    var ov=document.getElementById('view-project-overseer');
+    if(ov && ov.classList.contains('active')) start();
+  }
+  window.particleDiagrams={start:start, stop:stop};
+  if(document.readyState!=='loading') init(); else document.addEventListener('DOMContentLoaded', init);
+})();
+</script>
+<script>
+/* Particle painting - the homepage painting reformed as a cloud of dots
+   on the threads page. On entry the whole painting appears in all three
+   colours; then the colours that don't belong to the active thread fade
+   away and that thread's particles spread to refill the WHOLE frame, so
+   it becomes a full painting in a single colour. Swipe recolours the
+   full frame (purple -> red -> white-gold); tap floods two columns. */
+(function(){
+  var canvas = document.getElementById('painting-canvas');
+  if(!canvas) return;
+  var PR = Math.min(window.devicePixelRatio || 1, 2);
+  var ctx = canvas.getContext('2d');
+  var THREADS = [
+    { name:'grounding', color:[164,110,242] },
+    { name:'righteous', color:[236,86,96] },
+    { name:'lifted',    color:[244,233,180] }
+  ];
+  var COL = THREADS.map(function(t){ return 'rgb('+t.color[0]+','+t.color[1]+','+t.color[2]+')'; });
+  var particles=[], homes=[], ready=false, imgAspect=1.42;
+  var phase='all', pclock=0, introVis=0, t2=0, activeCat=0, cur=THREADS[0].color.slice();
+  function categorize(r,g,b){
+    var mx=Math.max(r,g,b), mn=Math.min(r,g,b), d=mx-mn;
+    if(d<7) return 2;
+    var h;
+    if(mx===r) h=60*(((g-b)/d)%6);
+    else if(mx===g) h=60*((b-r)/d+2);
+    else h=60*((r-g)/d+4);
+    if(h<0) h+=360;
+    if(h>=195 && h<330) return 0;
+    if(h>=330 || h<18) return 1;
+    return 2;
+  }
+  function mk(p){ return { bx:p[0], by:p[1], br:p[2], cat:p[3], fx:p[0], fy:p[1],
+    p1:Math.random()*6.2832, p2:Math.random()*6.2832, p3:Math.random()*6.2832,
+    f1:0.4+Math.random()*0.8, f2:0.4+Math.random()*0.8, f3:0.5+Math.random()*0.9,
+    amp:2.4+Math.random()*5.6, rad:0.55+Math.random()*0.95 }; }
+  function buildFromImage(img){
+    imgAspect = img.width/img.height;
+    var sw=150, sh=Math.max(1,Math.round(sw/imgAspect));
+    var oc=document.createElement('canvas'); oc.width=sw; oc.height=sh;
+    var octx=oc.getContext('2d'); octx.drawImage(img,0,0,sw,sh);
+    var data; try{ data=octx.getImageData(0,0,sw,sh).data; }catch(e){ buildCloud(); return; }
+    var tmp=[], step=2;
+    for(var y=0;y<sh;y+=step) for(var x=0;x<sw;x+=step){
+      var i=(y*sw+x)*4, r=data[i], g=data[i+1], b=data[i+2], br=(r+g+b)/765;
+      if(br>0.04) tmp.push([x/sw, y/sh, br, categorize(r,g,b)]);
+    }
+    var maxP=1100;
+    if(tmp.length>maxP){ var keep=[], stride=tmp.length/maxP; for(var k=0;k<maxP;k++) keep.push(tmp[Math.floor(k*stride)]); tmp=keep; }
+    particles=tmp.map(mk);
+    homes=particles.map(function(p){ return [p.bx,p.by]; });
+    assignFill(); ready=true; resize();
+  }
+  function buildCloud(){
+    imgAspect=1.45; var tmp=[];
+    for(var i=0;i<840;i++){ var a=Math.random()*6.2832, r=Math.pow(Math.random(),0.62);
+      tmp.push([0.5+Math.cos(a)*r*0.34, 0.5+Math.sin(a)*r*0.30, 0.45+Math.random()*0.55, i%3]); }
+    particles=tmp.map(mk); homes=particles.map(function(p){ return [p.bx,p.by]; });
+    assignFill(); ready=true; resize();
+  }
+  function assignFill(){
+    // non-grounding particles get a random painting home so the active
+    // colour can spread across the whole frame when the others leave.
+    for(var i=0;i<particles.length;i++){ var p=particles[i];
+      if(p.cat!==0){ var h=homes[(Math.random()*homes.length)|0]; p.fx=h[0]; p.fy=h[1]; } }
+  }
+  var W=0,H=0,pw=0,ph=0,pox=0,poy=0;
+  function resize(){
+    var r=canvas.getBoundingClientRect(); if(!r.width||!r.height) return;
+    W=r.width; H=r.height; canvas.width=Math.round(W*PR); canvas.height=Math.round(H*PR);
+    var aw=W*0.94, ah=H*0.74;
+    if(aw/ah > imgAspect){ ph=ah; pw=ph*imgAspect; } else { pw=aw; ph=pw/imgAspect; }
+    pox=(W-pw)/2; poy=(H-ph)/2;
+  }
+  var t=0, raf=null, on=false;
+  function frame(){
+    t+=0.016; pclock+=0.016;
+    if(phase==='all'){ introVis=Math.min(pclock/0.9,1); if(pclock>2.0){ phase='morph'; pclock=0; } }
+    else if(phase==='morph'){ t2=Math.min(pclock/1.6,1); if(t2>=1){ phase='full'; cur=THREADS[0].color.slice(); } }
+    else { for(var c=0;c<3;c++) cur[c]+=(THREADS[activeCat].color[c]-cur[c])*0.09; }
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    if(!ready) return;
+    var fullCol='rgb('+(cur[0]|0)+','+(cur[1]|0)+','+(cur[2]|0)+')';
+    var pc=THREADS[0].color;
+    for(var i=0;i<particles.length;i++){ var p=particles[i];
+      var tw=0.68+0.32*Math.sin(t*p.f3+p.p3), base=0.3+0.5*p.br;
+      var hx,hy,alpha,colStr;
+      if(phase==='all'){ hx=p.bx; hy=p.by; alpha=base*tw*introVis; colStr=COL[p.cat]; }
+      else if(phase==='morph'){
+        if(p.cat===0){ hx=p.bx; hy=p.by; alpha=base*tw; colStr=COL[0]; }
+        else {
+          var s=t2*t2*(3-2*t2);
+          hx=p.bx+(p.fx-p.bx)*s; hy=p.by+(p.fy-p.by)*s;
+          var dip=1-3.8*t2*(1-t2); if(dip<0.04) dip=0.04;
+          alpha=base*tw*dip;
+          var cc=THREADS[p.cat].color;
+          colStr='rgb('+((cc[0]+(pc[0]-cc[0])*t2)|0)+','+((cc[1]+(pc[1]-cc[1])*t2)|0)+','+((cc[2]+(pc[2]-cc[2])*t2)|0)+')';
+        }
+      } else {
+        if(p.cat===0){ hx=p.bx; hy=p.by; } else { hx=p.fx; hy=p.fy; }
+        alpha=base*tw; colStr=fullCol;
+      }
+      if(alpha<0.012) continue;
+      var x=(pox+hx*pw+Math.sin(t*p.f1+p.p1)*p.amp)*PR;
+      var y=(poy+hy*ph+Math.cos(t*p.f2+p.p2)*p.amp)*PR;
+      ctx.globalAlpha=alpha; ctx.fillStyle=colStr;
+      ctx.beginPath(); ctx.arc(x,y,p.rad*PR,0,6.2832); ctx.fill();
+    }
+    ctx.globalAlpha=1;
+  }
+  function loop(){ frame(); raf = on?requestAnimationFrame(loop):null; }
+  function start(){ if(on)return; on=true; resize(); raf=requestAnimationFrame(loop); }
+  function stop(){ on=false; if(raf){cancelAnimationFrame(raf);raf=null;} }
+  function setThread(n){ activeCat=((n%3)+3)%3;
+    var l=document.getElementById('pp-thread-label'); if(l) l.textContent=THREADS[activeCat].name; }
+  var CARDS={
+    grounding:['Grounding - placeholder one','Grounding - placeholder two','Grounding - placeholder three','Grounding - placeholder four','Grounding - placeholder five','Grounding - placeholder six'],
+    righteous:['Righteous - placeholder one','Righteous - placeholder two','Righteous - placeholder three','Righteous - placeholder four','Righteous - placeholder five','Righteous - placeholder six'],
+    lifted:['Lifted - placeholder one','Lifted - placeholder two','Lifted - placeholder three','Lifted - placeholder four','Lifted - placeholder five','Lifted - placeholder six']
+  };
+  function flood(){
+    var view=document.getElementById('view-particle'), holder=document.getElementById('painting-flood');
+    var items=CARDS[THREADS[activeCat].name]||[], html='<div class="painting-grid">';
+    for(var n=0;n<items.length;n++) html+='<div class="painting-card" style="animation-delay:'+(n*70)+'ms">'+items[n]+'</div>';
+    holder.innerHTML=html+'</div>'; view.classList.add('flooded');
+  }
+  var sx=0, sy=0, moved=false, down=false;
+  canvas.addEventListener('pointerdown', function(e){ down=true; moved=false; sx=e.clientX; sy=e.clientY; });
+  canvas.addEventListener('pointermove', function(e){ if(down && (Math.abs(e.clientX-sx)>8||Math.abs(e.clientY-sy)>8)) moved=true; });
+  canvas.addEventListener('pointercancel', function(){ down=false; });
+  canvas.addEventListener('pointerup', function(e){
+    if(!down) return; down=false;
+    if(document.getElementById('view-particle').classList.contains('flooded')) return;
+    var dx=e.clientX-sx, dy=e.clientY-sy;
+    if(Math.abs(dx)>42 && Math.abs(dx)>Math.abs(dy)) setThread(activeCat + (dx<0?1:-1));
+    else if(!moved) flood();
+  });
+  window.paintingParticles={ start:start, stop:stop, reset:function(){
+    var v=document.getElementById('view-particle'); if(v) v.classList.remove('flooded');
+    phase='all'; pclock=0; introVis=0; t2=0; activeCat=0; cur=THREADS[0].color.slice();
+    assignFill();
+    var l=document.getElementById('pp-thread-label'); if(l) l.textContent='grounding';
+  } };
+  window.addEventListener('resize', resize);
+  var img=new Image(); img.onload=function(){ buildFromImage(img); }; img.onerror=buildCloud; img.src='unified.jpg';
+})();
 </script>
 </body>
 </html>
