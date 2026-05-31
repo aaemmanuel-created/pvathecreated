@@ -439,6 +439,7 @@
   .immersive-tile:hover {
     transform: translateY(-4px);
   }
+  .home-dissolve { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 5; pointer-events: none; }
   .tile-surface {
     position: absolute;
     inset: 0;
@@ -2475,7 +2476,7 @@
      swipe to recolour (purple/red/white-gold) and tap to flood the
      page with two columns of tiles.
      ============================================================ */
-  #view-particle { background: #0a0a0a; color: #fff; overflow: hidden; }
+  #view-particle { background: #000; color: #fff; overflow: hidden; }
   .painting-canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; touch-action: none; }
   #view-particle .pg-header { position: relative; z-index: 4; }
   #view-particle .back-btn { color: rgba(255,255,255,0.75); }
@@ -2490,7 +2491,7 @@
   #view-particle.flooded .painting-hint { opacity: 0; }
   .painting-flood {
     position: absolute; inset: 0; z-index: 3; display: none; overflow-y: auto;
-    -webkit-overflow-scrolling: touch; padding: 92px 16px 64px; background: rgba(10,10,10,0.93);
+    -webkit-overflow-scrolling: touch; padding: 92px 16px 64px; background: rgba(0,0,0,0.93);
   }
   #view-particle.flooded .painting-flood { display: block; }
   .painting-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; max-width: 760px; margin: 0 auto; }
@@ -2576,6 +2577,7 @@
       <div class="tile-stack stack-unified">
         <article class="immersive-tile blended-tile" id="immersive-tile" role="button" tabindex="0" aria-label="Open the threads">
           <div class="blended-surface"></div>
+          <canvas class="home-dissolve" id="home-dissolve" aria-hidden="true"></canvas>
         </article>
       </div>
     </div>
@@ -3180,7 +3182,9 @@ Lord you are Holy, Holy, Holy</p>
     const ar = document.querySelector('#view-home .action-row');
     if (ar) { ar.style.opacity = ''; ar.style.transition = ''; }
     const t = document.getElementById('immersive-tile');
-    if (t) { t.classList.remove('dissolving', 'dissolving-bg'); t.removeAttribute('data-dissolving'); }
+    if (t) { t.classList.remove('dissolving', 'dissolving-bg'); t.removeAttribute('data-dissolving');
+      var sf = t.querySelector('.blended-surface'); if (sf) { sf.style.transition = ''; sf.style.opacity = ''; } }
+    if (window.clearBlackout) window.clearBlackout();
   }
 
   // HOMEPAGE BLENDED TILE — morph the painting into the strip,
@@ -3193,12 +3197,21 @@ Lord you are Holy, Holy, Holy</p>
     tile.dataset.dissolving = '1';
     try { var _pr = tile.getBoundingClientRect(); window.__paintingRect = { w:_pr.width, h:_pr.height }; } catch(e) {}
 
-    // The three items wipe away first (right-to-left). Then the painting
-    // itself dissolves into its particle form on the next page.
+    // The three items wipe away first (right-to-left). Then black particle
+    // dots fill in over the painting and black it out, before the page
+    // cross-fades to the all-black threads view where the dots bloom.
     dustAway(document.getElementById('open-thoughts'));
     dustAway(document.getElementById('open-partner'));
     dustAway(document.querySelector('#view-home .home-tagline'));
-    setTimeout(() => revealParticle(), 3600);
+    // 1) black dots fill in over the still-visible painting
+    setTimeout(function(){ if (window.blackoutPainting) window.blackoutPainting(); }, 3400);
+    // 2) only then does the painting dissolve away beneath the dots
+    setTimeout(function(){
+      var surf = tile.querySelector('.blended-surface');
+      if (surf) { surf.style.transition = 'opacity 1.2s ease'; surf.style.opacity = '0'; }
+    }, 5500);
+    // 3) once it is dark, cross-fade to the threads view where dots bloom
+    setTimeout(() => revealParticle(), 6800);
   });
 
   function revealParticle() {
@@ -3902,7 +3915,7 @@ Lord you are Holy, Holy, Holy</p>
     { name:'righteous', color:[236,86,96] },
     { name:'lifted',    color:[244,233,180] }
   ];
-  var ASH = [140,142,150];
+  var ASH = [0,0,0];
   var COL = THREADS.map(function(t){ return 'rgb('+t.color[0]+','+t.color[1]+','+t.color[2]+')'; });
   var particles=[], homes=[], ready=false, imgAspect=1.42;
   var phase='intro', pclock=0, introVis=0, cz=0, t2=0, activeCat=0, cur=THREADS[0].color.slice();
@@ -4033,6 +4046,46 @@ Lord you are Holy, Holy, Holy</p>
   } };
   window.addEventListener('resize', resize);
   var img=new Image(); img.onload=function(){ buildFromImage(img); }; img.onerror=buildCloud; img.src='unified.jpg';
+})();
+</script>
+<script>
+/* Homepage painting black-out: black particle dots fill in over the
+   painting and black it out before the cross-fade to the threads view. */
+(function(){
+  var canvas=document.getElementById('home-dissolve'); if(!canvas) return;
+  var ctx=canvas.getContext('2d'); var PR=Math.min(window.devicePixelRatio||1,2);
+  var pts=[], ready=false;
+  var img=new Image();
+  img.onload=function(){
+    var sw=170, sh=Math.max(1,Math.round(sw*img.height/img.width));
+    var oc=document.createElement('canvas'); oc.width=sw; oc.height=sh;
+    var c2=oc.getContext('2d'); c2.drawImage(img,0,0,sw,sh);
+    var d; try{ d=c2.getImageData(0,0,sw,sh).data; }catch(e){ return; }
+    for(var y=0;y<sh;y+=1) for(var x=0;x<sw;x+=1){ var i=(y*sw+x)*4; if((d[i]+d[i+1]+d[i+2])/765>0.02) pts.push([x/sw, y/sh, Math.random()*0.85]); }
+    if(pts.length>16000){ var k=[], st=pts.length/16000; for(var j=0;j<16000;j++) k.push(pts[(j*st)|0]); pts=k; }
+    ready=true;
+  };
+  img.src='unified.jpg';
+  var raf=null, t0=0, DUR=1600;
+  function frame(now){
+    var r=canvas.getBoundingClientRect();
+    var cw=Math.round(r.width*PR), ch=Math.round(r.height*PR);
+    if(canvas.width!==cw) canvas.width=cw;
+    if(canvas.height!==ch) canvas.height=ch;
+    var prog=Math.min((now-t0)/DUR,1);
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle='#000';
+    ctx.globalAlpha=1;
+    var side=Math.sqrt((canvas.width*canvas.height)/(pts.length||1))*1.08;
+    for(var i=0;i<pts.length;i++){ var p=pts[i];
+      if(p[2]>prog) continue;
+      ctx.fillRect(p[0]*canvas.width - side*0.5, p[1]*canvas.height - side*0.5, side, side);
+    }
+    ctx.globalAlpha=1;
+    if(prog<1) raf=requestAnimationFrame(frame); else raf=null;
+  }
+  window.blackoutPainting=function(){ if(!ready) return; if(raf) cancelAnimationFrame(raf); t0=performance.now(); raf=requestAnimationFrame(frame); };
+  window.clearBlackout=function(){ if(raf){ cancelAnimationFrame(raf); raf=null; } try{ ctx.clearRect(0,0,canvas.width,canvas.height); }catch(e){} };
 })();
 </script>
 </body>
