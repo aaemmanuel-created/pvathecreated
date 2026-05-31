@@ -888,6 +888,28 @@
     0%   { opacity: 1; filter: blur(0px); }
     100% { opacity: 0; filter: blur(14px); }
   }
+  /* Painting-only: a grainy dissolve that STARTS AT THE CENTRE and spreads
+     outward to both edges. A black overlay grows over the painting via a
+     noise-displaced horizontal mask whose opaque core widens from the
+     centre line until it covers the whole frame. */
+  .immersive-tile.dissolving-center::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 6;
+    pointer-events: none;
+    background: #000;
+    -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='120' preserveAspectRatio='none'><defs><linearGradient id='cg' x1='0' y1='0' x2='1' y2='0'><stop offset='0' stop-color='%23fff' stop-opacity='0'/><stop offset='0.12' stop-color='%23fff' stop-opacity='0'/><stop offset='0.30' stop-color='%23fff' stop-opacity='1'/><stop offset='0.70' stop-color='%23fff' stop-opacity='1'/><stop offset='0.88' stop-color='%23fff' stop-opacity='0'/><stop offset='1' stop-color='%23fff' stop-opacity='0'/></linearGradient><filter id='cdw' x='-25%25' y='-25%25' width='150%25' height='150%25'><feTurbulence type='fractalNoise' baseFrequency='0.9 0.6' numOctaves='2' seed='8' result='n'/><feDisplacementMap in='SourceGraphic' in2='n' scale='22' xChannelSelector='R' yChannelSelector='G'/></filter></defs><rect width='200' height='120' fill='url(%23cg)' filter='url(%23cdw)'/></svg>");
+            mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='120' preserveAspectRatio='none'><defs><linearGradient id='cg' x1='0' y1='0' x2='1' y2='0'><stop offset='0' stop-color='%23fff' stop-opacity='0'/><stop offset='0.12' stop-color='%23fff' stop-opacity='0'/><stop offset='0.30' stop-color='%23fff' stop-opacity='1'/><stop offset='0.70' stop-color='%23fff' stop-opacity='1'/><stop offset='0.88' stop-color='%23fff' stop-opacity='0'/><stop offset='1' stop-color='%23fff' stop-opacity='0'/></linearGradient><filter id='cdw' x='-25%25' y='-25%25' width='150%25' height='150%25'><feTurbulence type='fractalNoise' baseFrequency='0.9 0.6' numOctaves='2' seed='8' result='n'/><feDisplacementMap in='SourceGraphic' in2='n' scale='22' xChannelSelector='R' yChannelSelector='G'/></filter></defs><rect width='200' height='120' fill='url(%23cg)' filter='url(%23cdw)'/></svg>");
+    -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+    -webkit-mask-position: center; mask-position: center;
+    -webkit-mask-size: 6% 150%; mask-size: 6% 150%;
+    animation: dissolveCenter 3.4s cubic-bezier(0.4, 0.08, 0.5, 1) forwards;
+  }
+  @keyframes dissolveCenter {
+    from { -webkit-mask-size: 6% 150%;   mask-size: 6% 150%; }
+    to   { -webkit-mask-size: 280% 150%; mask-size: 280% 150%; }
+  }
   /* Modern thread title — Helvetica ultra-thin, tracked out wide,
      subtle gradient fill so it feels cool rather than flat. */
   .strip-thread-name {
@@ -3182,8 +3204,8 @@ Lord you are Holy, Holy, Holy</p>
     const ar = document.querySelector('#view-home .action-row');
     if (ar) { ar.style.opacity = ''; ar.style.transition = ''; }
     const t = document.getElementById('immersive-tile');
-    if (t) { t.classList.remove('dissolving', 'dissolving-bg'); t.removeAttribute('data-dissolving');
-      var sf = t.querySelector('.blended-surface'); if (sf) { sf.style.transition = ''; sf.style.opacity = ''; } }
+    if (t) { t.classList.remove('dissolving', 'dissolving-bg', 'dissolving-center'); t.removeAttribute('data-dissolving');
+      var sf = t.querySelector('.blended-surface'); if (sf) { sf.style.transition = ''; sf.style.opacity = ''; sf.style.webkitMaskImage = ''; sf.style.maskImage = ''; } }
     if (window.clearBlackout) window.clearBlackout();
   }
 
@@ -3204,7 +3226,7 @@ Lord you are Holy, Holy, Holy</p>
     dustAway(document.getElementById('open-thoughts'));
     dustAway(document.getElementById('open-partner'));
     dustAway(document.querySelector('#view-home .home-tagline'));
-    setTimeout(function(){ tile.classList.add('dissolving'); }, 3500);
+    setTimeout(function(){ if (window.dissolvePaintingToDots) window.dissolvePaintingToDots(); }, 3500);
     setTimeout(() => revealParticle(), 7000);
   });
 
@@ -3970,7 +3992,7 @@ Lord you are Holy, Holy, Holy</p>
   function frame(){
     t+=0.016; pclock+=0.016;
     if(phase==='intro'){ introVis=Math.min(pclock/0.7,1); cz=Math.max(0,Math.min((pclock-1.0)/1.1,1)); if(pclock>2.4){ phase='morph'; pclock=0; } }
-    else if(phase==='morph'){ t2=Math.min(pclock/1.5,1); if(t2>=1){ phase='full'; cur=THREADS[0].color.slice(); } }
+    else if(phase==='morph'){ t2=Math.min(pclock/3.2,1); if(t2>=1){ phase='full'; cur=THREADS[0].color.slice(); } }
     else { for(var c=0;c<3;c++) cur[c]+=(THREADS[activeCat].color[c]-cur[c])*0.09; }
     ctx.clearRect(0,0,canvas.width,canvas.height);
     if(!ready) return;
@@ -4043,43 +4065,57 @@ Lord you are Holy, Holy, Holy</p>
 })();
 </script>
 <script>
-/* Homepage painting black-out: black particle dots fill in over the
-   painting and black it out before the cross-fade to the threads view. */
+/* Homepage painting disintegration: a right-to-left front sweeps the
+   painting; as it passes, the painting breaks up into coloured dots
+   (sampled from the painting) that drift up and fade into the dark, while
+   the painting itself wipes away beneath the same front. */
 (function(){
   var canvas=document.getElementById('home-dissolve'); if(!canvas) return;
   var ctx=canvas.getContext('2d'); var PR=Math.min(window.devicePixelRatio||1,2);
-  var pts=[], ready=false;
+  var pts=[], ready=false, surf=null;
   var img=new Image();
   img.onload=function(){
-    var sw=170, sh=Math.max(1,Math.round(sw*img.height/img.width));
+    var sw=150, sh=Math.max(1,Math.round(sw*img.height/img.width)); // 4:3 == tile cover
     var oc=document.createElement('canvas'); oc.width=sw; oc.height=sh;
     var c2=oc.getContext('2d'); c2.drawImage(img,0,0,sw,sh);
     var d; try{ d=c2.getImageData(0,0,sw,sh).data; }catch(e){ return; }
-    for(var y=0;y<sh;y+=1) for(var x=0;x<sw;x+=1){ var i=(y*sw+x)*4; if((d[i]+d[i+1]+d[i+2])/765>0.02) pts.push([x/sw, y/sh, Math.random()*0.85]); }
-    if(pts.length>16000){ var k=[], st=pts.length/16000; for(var j=0;j<16000;j++) k.push(pts[(j*st)|0]); pts=k; }
+    for(var y=0;y<sh;y+=1) for(var x=0;x<sw;x+=1){ var i=(y*sw+x)*4; var br=(d[i]+d[i+1]+d[i+2])/765;
+      if(br>0.05) pts.push({x:x/sw, y:y/sh, r:d[i], g:d[i+1], b:d[i+2], rt:Math.random()*0.45,
+        jx:(Math.random()-0.5)*0.9, jy:-(0.2+Math.random()*0.9), sp:0.6+Math.random()*0.8, life:0.28+Math.random()*0.22}); }
+    if(pts.length>4200){ var k=[], st=pts.length/4200; for(var j=0;j<4200;j++) k.push(pts[(j*st)|0]); pts=k; }
     ready=true;
   };
   img.src='unified.jpg';
-  var raf=null, t0=0, DUR=1600;
+  var raf=null, t0=0, DUR=3300;
   function frame(now){
     var r=canvas.getBoundingClientRect();
     var cw=Math.round(r.width*PR), ch=Math.round(r.height*PR);
     if(canvas.width!==cw) canvas.width=cw;
     if(canvas.height!==ch) canvas.height=ch;
-    var prog=Math.min((now-t0)/DUR,1);
+    var prog=(now-t0)/DUR;
     ctx.clearRect(0,0,canvas.width,canvas.height);
-    ctx.fillStyle='#000';
-    ctx.globalAlpha=1;
-    var side=Math.sqrt((canvas.width*canvas.height)/(pts.length||1))*1.08;
-    for(var i=0;i<pts.length;i++){ var p=pts[i];
-      if(p[2]>prog) continue;
-      ctx.fillRect(p[0]*canvas.width - side*0.5, p[1]*canvas.height - side*0.5, side, side);
+    // the painting fades out uniformly (no directional wipe) as it sheds dots
+    if(surf){ var o=1-prog/0.55; surf.style.opacity = o>0 ? ''+o : '0'; }
+    if(ready){
+      var W=canvas.width, H=canvas.height;
+      for(var i=0;i<pts.length;i++){ var p=pts[i];
+        if(prog<p.rt) continue;            // this dot has not lifted off yet
+        var age=(prog-p.rt)/p.life; if(age>1) continue;
+        var dr=age*0.16*p.sp;
+        var dx=(p.x + p.jx*dr)*W, dy=(p.y + p.jy*dr)*H;
+        var a=1-age; a=a*a*(3-2*a);
+        ctx.globalAlpha=a<0?0:a;
+        ctx.fillStyle='rgb('+p.r+','+p.g+','+p.b+')';
+        var rad=(0.8+0.7*(1-age))*PR;
+        ctx.beginPath(); ctx.arc(dx,dy,rad,0,6.2832); ctx.fill();
+      }
+      ctx.globalAlpha=1;
     }
-    ctx.globalAlpha=1;
-    if(prog<1) raf=requestAnimationFrame(frame); else raf=null;
+    if(prog<1.05) raf=requestAnimationFrame(frame); else raf=null;
   }
-  window.blackoutPainting=function(){ if(!ready) return; if(raf) cancelAnimationFrame(raf); t0=performance.now(); raf=requestAnimationFrame(frame); };
-  window.clearBlackout=function(){ if(raf){ cancelAnimationFrame(raf); raf=null; } try{ ctx.clearRect(0,0,canvas.width,canvas.height); }catch(e){} };
+  function reset(){ for(var i=0;i<pts.length;i++) pts[i].rt=Math.random()*0.45; }
+  window.dissolvePaintingToDots=function(){ if(!ready) return; surf=document.querySelector('#immersive-tile .blended-surface'); reset(); if(raf) cancelAnimationFrame(raf); t0=performance.now(); raf=requestAnimationFrame(frame); };
+  window.clearBlackout=function(){ if(raf){ cancelAnimationFrame(raf); raf=null; } if(surf){ surf.style.opacity=''; surf.style.webkitMaskImage=''; surf.style.maskImage=''; surf=null; } try{ ctx.clearRect(0,0,canvas.width,canvas.height); }catch(e){} };
 })();
 </script>
 </body>
