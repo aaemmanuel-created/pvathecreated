@@ -2511,6 +2511,53 @@
     pointer-events: none; transition: opacity 0.5s ease;
   }
   #view-particle.flooded .painting-hint { opacity: 0; }
+  /* Threads intro — three small, left-aligned Helvetica lines on black.
+     They fade in, hold, then fade out; a Continue button (partner-style
+     gradient hairline ring) then fades in. Line 1 names the threads in
+     their own colours; lines 2-3 use the blended gradient. */
+  #view-threads-intro { background: #000; }
+  .threads-intro {
+    position: absolute; top: 50%; left: 0;
+    transform: translateY(-50%);
+    padding-left: clamp(24px, 8vw, 64px);
+    text-align: left; max-width: 86vw;
+  }
+  .ti-line {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-weight: 300; font-size: clamp(11px, 3.3vw, 14px);
+    letter-spacing: 0.02em; line-height: 1.95; margin: 0; opacity: 0;
+  }
+  #view-threads-intro.active .ti-line { animation: tiIn 3.2s cubic-bezier(0.22,0.61,0.36,1) forwards; }
+  #view-threads-intro.active .ti-line:nth-child(1) { animation-delay: 0.40s; }
+  #view-threads-intro.active .ti-line:nth-child(2) { animation-delay: 1.20s; }
+  #view-threads-intro.active .ti-line:nth-child(3) { animation-delay: 2.00s; }
+  @keyframes tiIn { from { opacity: 0; transform: translateY(9px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes tiOut { from { opacity: 1; } to { opacity: 0; } }
+  @keyframes tiBtnIn { from { opacity: 0; } to { opacity: 1; } }
+  /* after the hold: the lines fade out as a block, the Continue button fades in */
+  #view-threads-intro.ti-done .threads-intro { animation: tiOut 3.2s ease forwards; }
+  .ti-names { color: rgba(255,255,255,0.55); }
+  .ti-names .ti-g { color: #a46ef2; }   /* Grounding — purple */
+  .ti-names .ti-r { color: #ec5660; }   /* Righteous — red */
+  .ti-names .ti-l { color: #f4e9b4; }   /* Lifted — white-gold */
+  .ti-sub { color: rgba(255,255,255,0.5); }
+  .ti-continue {
+    position: absolute; top: 50%; left: clamp(24px, 8vw, 64px);
+    transform: translateY(-50%);
+    background: transparent; border: none; color: rgba(255,255,255,0.9);
+    padding: 9px 44px; border-radius: 999px;
+    font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 10px; font-weight: 500; letter-spacing: 0.24em; text-transform: uppercase;
+    cursor: pointer; display: none; opacity: 0;
+  }
+  .ti-continue::before {
+    content: ""; position: absolute; inset: 0; border-radius: 999px; padding: 0.75px;
+    background: linear-gradient(95deg, #a46ef2 0%, #ec5660 50%, #f4e9b4 100%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none;
+  }
+  .ti-continue:hover { background: rgba(255,255,255,0.05); }
+  #view-threads-intro.ti-done .ti-continue { display: inline-block; animation: tiBtnIn 2.0s ease 2.2s forwards; }
   .painting-flood {
     position: absolute; inset: 0; z-index: 3; display: none; overflow-y: auto;
     -webkit-overflow-scrolling: touch; padding: 92px 16px 64px; background: rgba(0,0,0,0.93);
@@ -3070,8 +3117,15 @@ Lord you are Holy, Holy, Holy</p>
     <span class="site-meta" id="pp-thread-label">grounding</span>
   </header>
   <canvas id="painting-canvas" class="painting-canvas" aria-hidden="true"></canvas>
-  <p class="painting-hint" id="painting-hint"><span>swipe to shift</span><span>tap to enter</span></p>
   <div class="painting-flood" id="painting-flood"></div>
+</section>
+
+<section id="view-threads-intro" class="view">
+  <div class="threads-intro">
+    <p class="ti-line ti-names"><span class="ti-g">Grounding</span>, <span class="ti-r">Righteous</span>, <span class="ti-l">Lifted</span>.</p>
+    <p class="ti-line ti-sub">swipe to shift.</p>
+    <p class="ti-line ti-sub">tap to enter.</p>
+  </div>
 </section>
 
 <!-- ============================================================
@@ -3221,15 +3275,24 @@ Lord you are Holy, Holy, Holy</p>
 
     // Staggered right-to-left dissolve: the two tabs and the "powered by"
     // tagline fully crumble away FIRST (their 3.4s wipe completes), and
-    // only then does the painting begin its own grainy wipe, before the
-    // page cross-fades to the threads view.
+    // only then does the painting blur softly and fade into the black,
+    // before the page cross-fades to the threads view.
     dustAway(document.getElementById('open-thoughts'));
     dustAway(document.getElementById('open-partner'));
     dustAway(document.querySelector('#view-home .home-tagline'));
-    setTimeout(function(){ if (window.dissolvePaintingToDots) window.dissolvePaintingToDots(); }, 3500);
-    setTimeout(() => revealParticle(), 7000);
+    setTimeout(function(){ tile.classList.add('dissolving-bg'); }, 3500);
+    setTimeout(() => revealThreadsIntro(), 7000);
   });
 
+  function revealThreadsIntro() {
+    var v = document.getElementById('view-threads-intro');
+    if (v) v.classList.remove('ti-done');
+    showView('view-threads-intro');
+    window.scrollTo(0, 0);
+    // lines hold, fade out, then continue straight on to the painting
+    setTimeout(function(){ if (v) v.classList.add('ti-done'); }, 6200);
+    setTimeout(revealParticle, 9600);
+  }
   function revealParticle() {
     showView('view-particle');
     window.scrollTo(0, 0);
