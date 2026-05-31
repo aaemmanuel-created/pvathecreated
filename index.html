@@ -3197,14 +3197,14 @@ Lord you are Holy, Holy, Holy</p>
     tile.dataset.dissolving = '1';
     try { var _pr = tile.getBoundingClientRect(); window.__paintingRect = { w:_pr.width, h:_pr.height }; } catch(e) {}
 
-    // Everything dissolves right-to-left together: the two tabs, the
-    // tagline, and the painting all crumble away on the same grainy
-    // right-to-left wipe, then the page cross-fades to the threads view.
+    // Staggered right-to-left dissolve: the two tabs and the "powered by"
+    // tagline crumble away first, then the painting follows on the same
+    // grainy wipe, before the page cross-fades to the threads view.
     dustAway(document.getElementById('open-thoughts'));
     dustAway(document.getElementById('open-partner'));
     dustAway(document.querySelector('#view-home .home-tagline'));
-    tile.classList.add('dissolving');
-    setTimeout(() => revealParticle(), 3600);
+    setTimeout(function(){ tile.classList.add('dissolving'); }, 1500);
+    setTimeout(() => revealParticle(), 5100);
   });
 
   function revealParticle() {
