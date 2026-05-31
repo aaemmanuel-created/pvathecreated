@@ -2481,23 +2481,13 @@
   #view-particle .back-btn { color: rgba(255,255,255,0.75); }
   #view-particle .site-meta { color: rgba(255,255,255,0.5); letter-spacing: 0.2em; }
   .painting-hint {
-    position: absolute; left: 0; right: 0; bottom: 30px; text-align: center; z-index: 4; margin: 0;
+    position: absolute; left: 0; right: 0; bottom: 30px; z-index: 4; margin: 0;
+    display: flex; flex-direction: column; align-items: center; gap: 7px;
     font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif; font-size: 11px;
     letter-spacing: 0.26em; text-transform: uppercase; color: rgba(255,255,255,0.42);
     pointer-events: none; transition: opacity 0.5s ease;
   }
   #view-particle.flooded .painting-hint { opacity: 0; }
-  .painting-arrows {
-    position: absolute; left: 0; right: 0; bottom: 52px; z-index: 4;
-    display: flex; justify-content: center; align-items: center; gap: 46px;
-    color: rgba(255,255,255,0.42); font-size: 17px; pointer-events: none;
-    transition: opacity 0.5s ease;
-  }
-  #view-particle.flooded .painting-arrows { opacity: 0; }
-  .painting-arrows .pa-l { animation: paNudgeL 1.8s ease-in-out infinite; }
-  .painting-arrows .pa-r { animation: paNudgeR 1.8s ease-in-out infinite; }
-  @keyframes paNudgeL { 0%,100% { transform: translateX(0); } 50% { transform: translateX(-5px); } }
-  @keyframes paNudgeR { 0%,100% { transform: translateX(0); } 50% { transform: translateX(5px); } }
   .painting-flood {
     position: absolute; inset: 0; z-index: 3; display: none; overflow-y: auto;
     -webkit-overflow-scrolling: touch; padding: 92px 16px 64px; background: rgba(10,10,10,0.93);
@@ -3056,8 +3046,7 @@ Lord you are Holy, Holy, Holy</p>
     <span class="site-meta" id="pp-thread-label">grounding</span>
   </header>
   <canvas id="painting-canvas" class="painting-canvas" aria-hidden="true"></canvas>
-  <div class="painting-arrows" id="painting-arrows" aria-hidden="true"><span class="pa-l">&#8592;</span><span class="pa-r">&#8594;</span></div>
-  <p class="painting-hint" id="painting-hint">swipe to shift &middot; tap to enter</p>
+  <p class="painting-hint" id="painting-hint"><span>swipe to shift</span><span>tap to enter</span></p>
   <div class="painting-flood" id="painting-flood"></div>
 </section>
 
@@ -3202,15 +3191,14 @@ Lord you are Holy, Holy, Holy</p>
     const stripV = document.getElementById('view-strip');
     if (tile.dataset.dissolving === '1' || tile.classList.contains('morphing')) return; // guard
     tile.dataset.dissolving = '1';
+    try { var _pr = tile.getBoundingClientRect(); window.__paintingRect = { w:_pr.width, h:_pr.height }; } catch(e) {}
 
-    // The three items wipe away first (right-to-left). Once they're gone
-    // the painting dissolves softly into the dark background (blur + fade),
-    // and then the strip is revealed.
+    // The three items wipe away first (right-to-left). Then the painting
+    // itself dissolves into its particle form on the next page.
     dustAway(document.getElementById('open-thoughts'));
     dustAway(document.getElementById('open-partner'));
     dustAway(document.querySelector('#view-home .home-tagline'));
-    setTimeout(() => tile.classList.add('dissolving-bg'), 2000);
-    setTimeout(() => revealParticle(), 5500);
+    setTimeout(() => revealParticle(), 3600);
   });
 
   function revealParticle() {
@@ -3900,12 +3888,10 @@ Lord you are Holy, Holy, Holy</p>
 })();
 </script>
 <script>
-/* Particle painting - the homepage painting reformed as a cloud of dots
-   on the threads page. On entry the whole painting appears in all three
-   colours; then the colours that don't belong to the active thread fade
-   away and that thread's particles spread to refill the WHOLE frame, so
-   it becomes a full painting in a single colour. Swipe recolours the
-   full frame (purple -> red -> white-gold); tap floods two columns. */
+/* Particle painting - on entry the painting reforms as a cloud of dim
+   neutral (ash) dots which then bloom into colour (the painting's
+   purple/red/gold). Next the off-thread colours dissolve and the active
+   colour spreads to fill the whole frame. Swipe recolours; tap floods. */
 (function(){
   var canvas = document.getElementById('painting-canvas');
   if(!canvas) return;
@@ -3916,9 +3902,10 @@ Lord you are Holy, Holy, Holy</p>
     { name:'righteous', color:[236,86,96] },
     { name:'lifted',    color:[244,233,180] }
   ];
+  var ASH = [140,142,150];
   var COL = THREADS.map(function(t){ return 'rgb('+t.color[0]+','+t.color[1]+','+t.color[2]+')'; });
   var particles=[], homes=[], ready=false, imgAspect=1.42;
-  var phase='all', pclock=0, introVis=0, t2=0, activeCat=0, cur=THREADS[0].color.slice();
+  var phase='intro', pclock=0, introVis=0, cz=0, t2=0, activeCat=0, cur=THREADS[0].color.slice();
   function categorize(r,g,b){
     var mx=Math.max(r,g,b), mn=Math.min(r,g,b), d=mx-mn;
     if(d<7) return 2;
@@ -3960,8 +3947,6 @@ Lord you are Holy, Holy, Holy</p>
     assignFill(); ready=true; resize();
   }
   function assignFill(){
-    // non-grounding particles get a random painting home so the active
-    // colour can spread across the whole frame when the others leave.
     for(var i=0;i<particles.length;i++){ var p=particles[i];
       if(p.cat!==0){ var h=homes[(Math.random()*homes.length)|0]; p.fx=h[0]; p.fy=h[1]; } }
   }
@@ -3969,25 +3954,29 @@ Lord you are Holy, Holy, Holy</p>
   function resize(){
     var r=canvas.getBoundingClientRect(); if(!r.width||!r.height) return;
     W=r.width; H=r.height; canvas.width=Math.round(W*PR); canvas.height=Math.round(H*PR);
-    var aw=W*0.94, ah=H*0.74;
-    if(aw/ah > imgAspect){ ph=ah; pw=ph*imgAspect; } else { pw=aw; ph=pw/imgAspect; }
+    var box=window.__paintingRect;
+    if(box && box.w>20 && box.h>20){ pw=Math.min(box.w, W*0.98); ph=Math.min(box.h, H*0.92); }
+    else { var aw=W*0.94, ah=H*0.74; if(aw/ah > imgAspect){ ph=ah; pw=ph*imgAspect; } else { pw=aw; ph=pw/imgAspect; } }
     pox=(W-pw)/2; poy=(H-ph)/2;
   }
   var t=0, raf=null, on=false;
   function frame(){
     t+=0.016; pclock+=0.016;
-    if(phase==='all'){ introVis=Math.min(pclock/0.9,1); if(pclock>2.0){ phase='morph'; pclock=0; } }
-    else if(phase==='morph'){ t2=Math.min(pclock/1.6,1); if(t2>=1){ phase='full'; cur=THREADS[0].color.slice(); } }
+    if(phase==='intro'){ introVis=Math.min(pclock/0.7,1); cz=Math.max(0,Math.min((pclock-1.0)/1.1,1)); if(pclock>2.4){ phase='morph'; pclock=0; } }
+    else if(phase==='morph'){ t2=Math.min(pclock/1.5,1); if(t2>=1){ phase='full'; cur=THREADS[0].color.slice(); } }
     else { for(var c=0;c<3;c++) cur[c]+=(THREADS[activeCat].color[c]-cur[c])*0.09; }
     ctx.clearRect(0,0,canvas.width,canvas.height);
     if(!ready) return;
     var fullCol='rgb('+(cur[0]|0)+','+(cur[1]|0)+','+(cur[2]|0)+')';
-    var pc=THREADS[0].color;
+    var pcl=THREADS[0].color;
     for(var i=0;i<particles.length;i++){ var p=particles[i];
       var tw=0.68+0.32*Math.sin(t*p.f3+p.p3), base=0.3+0.5*p.br;
       var hx,hy,alpha,colStr;
-      if(phase==='all'){ hx=p.bx; hy=p.by; alpha=base*tw*introVis; colStr=COL[p.cat]; }
-      else if(phase==='morph'){
+      if(phase==='intro'){
+        hx=p.bx; hy=p.by; alpha=base*tw*introVis;
+        var cc0=THREADS[p.cat].color;
+        colStr='rgb('+((ASH[0]+(cc0[0]-ASH[0])*cz)|0)+','+((ASH[1]+(cc0[1]-ASH[1])*cz)|0)+','+((ASH[2]+(cc0[2]-ASH[2])*cz)|0)+')';
+      } else if(phase==='morph'){
         if(p.cat===0){ hx=p.bx; hy=p.by; alpha=base*tw; colStr=COL[0]; }
         else {
           var s=t2*t2*(3-2*t2);
@@ -3995,7 +3984,7 @@ Lord you are Holy, Holy, Holy</p>
           var dip=1-3.8*t2*(1-t2); if(dip<0.04) dip=0.04;
           alpha=base*tw*dip;
           var cc=THREADS[p.cat].color;
-          colStr='rgb('+((cc[0]+(pc[0]-cc[0])*t2)|0)+','+((cc[1]+(pc[1]-cc[1])*t2)|0)+','+((cc[2]+(pc[2]-cc[2])*t2)|0)+')';
+          colStr='rgb('+((cc[0]+(pcl[0]-cc[0])*t2)|0)+','+((cc[1]+(pcl[1]-cc[1])*t2)|0)+','+((cc[2]+(pcl[2]-cc[2])*t2)|0)+')';
         }
       } else {
         if(p.cat===0){ hx=p.bx; hy=p.by; } else { hx=p.fx; hy=p.fy; }
@@ -4038,7 +4027,7 @@ Lord you are Holy, Holy, Holy</p>
   });
   window.paintingParticles={ start:start, stop:stop, reset:function(){
     var v=document.getElementById('view-particle'); if(v) v.classList.remove('flooded');
-    phase='all'; pclock=0; introVis=0; t2=0; activeCat=0; cur=THREADS[0].color.slice();
+    phase='intro'; pclock=0; introVis=0; cz=0; t2=0; activeCat=0; cur=THREADS[0].color.slice();
     assignFill();
     var l=document.getElementById('pp-thread-label'); if(l) l.textContent='grounding';
   } };
