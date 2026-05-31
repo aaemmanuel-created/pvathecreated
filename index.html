@@ -3175,10 +3175,10 @@ Lord you are Holy, Holy, Holy</p>
   function restoreDust() {
     ['open-partner', 'open-thoughts'].forEach(id => {
       const e = document.getElementById(id);
-      if (e) { e.classList.remove('dissolving'); e.style.visibility = ''; }
+      if (e) { e.classList.remove('dissolving'); e.style.visibility = ''; e.style.opacity = ''; e.style.transition = ''; e.style.pointerEvents = ''; }
     });
     const tag = document.querySelector('#view-home .home-tagline');
-    if (tag) { tag.classList.remove('dissolving'); tag.style.visibility = ''; }
+    if (tag) { tag.classList.remove('dissolving'); tag.style.visibility = ''; tag.style.opacity = ''; tag.style.transition = ''; }
     const ar = document.querySelector('#view-home .action-row');
     if (ar) { ar.style.opacity = ''; ar.style.transition = ''; }
     const t = document.getElementById('immersive-tile');
@@ -3197,21 +3197,21 @@ Lord you are Holy, Holy, Holy</p>
     tile.dataset.dissolving = '1';
     try { var _pr = tile.getBoundingClientRect(); window.__paintingRect = { w:_pr.width, h:_pr.height }; } catch(e) {}
 
-    // The three items wipe away first (right-to-left). Then black particle
-    // dots fill in over the painting and black it out, before the page
-    // cross-fades to the all-black threads view where the dots bloom.
-    dustAway(document.getElementById('open-thoughts'));
-    dustAway(document.getElementById('open-partner'));
-    dustAway(document.querySelector('#view-home .home-tagline'));
+    // Everything leaves together: black dots fill in and black out the
+    // painting; then the painting dissolves while the two tabs + the
+    // tagline all fade away in the same moment, then cross-fade to threads.
     // 1) black dots fill in over the still-visible painting
-    setTimeout(function(){ if (window.blackoutPainting) window.blackoutPainting(); }, 3400);
-    // 2) only then does the painting dissolve away beneath the dots
+    if (window.blackoutPainting) window.blackoutPainting();
+    // 2) once covered, the painting AND the tabs + tagline all fade together
     setTimeout(function(){
       var surf = tile.querySelector('.blended-surface');
       if (surf) { surf.style.transition = 'opacity 1.2s ease'; surf.style.opacity = '0'; }
-    }, 5500);
+      ['open-thoughts', 'open-partner'].forEach(function(id){ var el = document.getElementById(id); if (el) { el.style.transition = 'opacity 1.2s ease'; el.style.opacity = '0'; el.style.pointerEvents = 'none'; } });
+      var tag = document.querySelector('#view-home .home-tagline');
+      if (tag) { tag.style.transition = 'opacity 1.2s ease'; tag.style.opacity = '0'; }
+    }, 1500);
     // 3) once it is dark, cross-fade to the threads view where dots bloom
-    setTimeout(() => revealParticle(), 6800);
+    setTimeout(() => revealParticle(), 2900);
   });
 
   function revealParticle() {
