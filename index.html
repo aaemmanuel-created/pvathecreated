@@ -2169,7 +2169,10 @@
   .journey-overview { text-align: left; max-width: 34ch; }
   .jo-line { font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif; font-size: clamp(13px, 3.6vw, 16px); line-height: 1.7; font-weight: 300; margin: 0 0 11px; }
   .jo-subhead { font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif; font-size: 12px; font-weight: 500; letter-spacing: 0.22em; text-transform: uppercase; margin: 0 0 16px; }
-  #view-project-overseer .journey-slide:first-child { align-items: flex-start; padding-left: clamp(18px, 7vw, 60px); }
+  #view-project-overseer .journey-slide:first-child { align-items: center; }
+  #view-project-overseer .journey-slide:first-child .journey-diagram { width: clamp(224px, 76vw, 320px); height: clamp(148px, 50vw, 210px); }
+  #view-project-overseer .journey-slide:first-child .journey-overview { align-self: stretch; max-width: none; padding-left: 6px; }
+  #view-project-overseer .journey-slide:first-child .jo-line { font-size: clamp(11px, 3.2vw, 14px); line-height: 1.6; }
   /* atmosphere -> harness: two diagrams side by side */
   .journey-duo { display: flex; align-items: center; justify-content: center; gap: 12px; }
   .journey-duo .journey-diagram { width: clamp(94px, 31vw, 128px); height: clamp(72px, 23vw, 98px); }
