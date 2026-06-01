@@ -2877,14 +2877,21 @@
       <div class="journey-viewport">
         <div class="journey-track" id="journey-track">
           <div class="journey-slide">
-            <div class="journey-diagram"><canvas class="particle-diagram" data-shape="gather" aria-hidden="true"></canvas></div>
+            <div class="journey-diagram"><canvas class="particle-diagram" data-shape="overview" aria-hidden="true"></canvas></div>
             <div class="journey-overview">
-              <p class="jo-subhead">gathering</p>
-              <p class="jo-line">We start with posture. We worship, pray and offer up incense to our Father.</p>
-              <p class="jo-line">We make our posture suitable for the Holy Spirit.</p>
+              <p class="jo-subhead">overview</p>
+              <p class="jo-line">We start with posture.</p>
+              <p class="jo-line">We yield and make our posture suitable for the Holy Spirit.</p>
               <p class="jo-line">He alters the atmosphere.</p>
               <p class="jo-line">We turn the atmosphere into a harness. We use the harness to set the frame.</p>
               <p class="jo-line">We guide around the frame with revelation received from the Holy Spirit in the atmosphere.</p>
+            </div>
+          </div>
+          <div class="journey-slide">
+            <div class="journey-diagram"><canvas class="particle-diagram" data-shape="gather" aria-hidden="true"></canvas></div>
+            <div class="journey-overview">
+              <p class="jo-subhead">gathering</p>
+              <p class="journey-desc">We worship, pray and offer up incense to our Father.</p>
             </div>
           </div>
           <div class="journey-slide">
@@ -2894,14 +2901,14 @@
               <div class="journey-diagram"><canvas class="particle-diagram" data-shape="harness" aria-hidden="true"></canvas></div>
             </div>
             <div class="journey-overview">
-              <p class="jo-subhead">harnessing the atmosphere</p>
+              <p class="jo-subhead">harnessing</p>
               <p class="journey-desc">The atmosphere will become the harness that holds the song.</p>
             </div>
           </div>
           <div class="journey-slide">
             <div class="journey-diagram"><canvas class="particle-diagram" data-shape="swell" aria-hidden="true"></canvas></div>
             <div class="journey-overview">
-              <p class="jo-subhead">transition swell</p>
+              <p class="jo-subhead">transition</p>
               <p class="journey-desc">we start with the pad that gets louder to introduce the atmosphere we are in.</p>
             </div>
           </div>
@@ -4088,7 +4095,19 @@ Lord you are Holy, Holy, Holy</p>
     for(i=0;i<64;i++){ pts.push([14+Math.random()*112, 24+Math.random()*50]); }
     return pts;
   }
-  var GEN={harness:harness, swell:swell, guide:guide, rings:rings, gather:gather, atmosphere:atmosphere};
+  function overview(){
+    var pts=[], cx=70, cy=45, R=30;
+    var shapes=[gather, atmosphere, swell, rings, harness, guide], nodes=[], i, j;
+    for(i=0;i<shapes.length;i++){
+      var a=-1.5708 + i/shapes.length*6.2832;
+      var nx=cx+Math.cos(a)*R, ny=cy+Math.sin(a)*R; nodes.push([nx,ny]);
+      var sp=shapes[i](), step=Math.max(1, Math.floor(sp.length/16)), sc=0.19;
+      for(j=0;j<sp.length;j+=step){ pts.push([ nx+(sp[j][0]-70)*sc, ny+(sp[j][1]-45)*sc ]); }
+    }
+    for(i=0;i<nodes.length;i++){ var n1=nodes[i], n2=nodes[(i+1)%nodes.length]; pushLine(pts, n1[0],n1[1], n2[0],n2[1], 7); }
+    return pts;
+  }
+  var GEN={harness:harness, swell:swell, guide:guide, rings:rings, gather:gather, atmosphere:atmosphere, overview:overview};
   var ds=[];
   function setup(c){
     var g=GEN[c.dataset.shape]; if(!g) return;
