@@ -2106,6 +2106,7 @@
   #view-project-overseer .lyric-stanza,
   #view-project-overseer .journey-desc,
   #view-project-overseer .jo-line,
+  #view-project-overseer .jo-subhead,
   #view-project-overseer .project-list li {
     background: linear-gradient(95deg,
       #2a0f4d 0%,
@@ -2166,7 +2167,9 @@
   .journey-hint { font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif; font-size: 10px; letter-spacing: 0.26em; text-transform: uppercase; color: rgba(20,16,12,0.3); margin: 0; }
   /* overview slide: four blended-Helvetica lines */
   .journey-overview { text-align: left; max-width: 34ch; }
-  .jo-line { font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif; font-size: clamp(13px, 3.6vw, 16px); line-height: 1.85; font-weight: 300; margin: 0 0 4px; }
+  .jo-line { font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif; font-size: clamp(13px, 3.6vw, 16px); line-height: 1.7; font-weight: 300; margin: 0 0 11px; }
+  .jo-subhead { font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif; font-size: 12px; font-weight: 500; letter-spacing: 0.22em; text-transform: uppercase; margin: 0 0 16px; }
+  #view-project-overseer .journey-slide:first-child { align-items: flex-start; padding-left: clamp(18px, 7vw, 60px); }
   /* atmosphere -> harness: two diagrams side by side */
   .journey-duo { display: flex; align-items: center; justify-content: center; gap: 12px; }
   .journey-duo .journey-diagram { width: clamp(94px, 31vw, 128px); height: clamp(72px, 23vw, 98px); }
@@ -2874,12 +2877,11 @@
           <div class="journey-slide">
             <div class="journey-diagram"><canvas class="particle-diagram" data-shape="gather" aria-hidden="true"></canvas></div>
             <div class="journey-overview">
-              <p class="jo-line">We start with posture.</p>
-              <p class="jo-line">We worship, pray and offer up incense to our Father.</p>
+              <p class="jo-subhead">gathering</p>
+              <p class="jo-line">We start with posture. We worship, pray and offer up incense to our Father.</p>
               <p class="jo-line">We make our posture suitable for the Holy Spirit.</p>
               <p class="jo-line">He alters the atmosphere.</p>
-              <p class="jo-line">We turn the atmosphere into a harness.</p>
-              <p class="jo-line">We use the harness to frame.</p>
+              <p class="jo-line">We turn the atmosphere into a harness. We use the harness to set the frame.</p>
               <p class="jo-line">We guide around the frame with revelation received from the Holy Spirit in the atmosphere.</p>
             </div>
           </div>
