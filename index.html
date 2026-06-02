@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>thecreated</title>
-<meta name="description" content="thecreated — an attempt at giving God His ROI." />
+<meta name="description" content="thecreated — Powered by pvaOS™." />
 <meta name="theme-color" content="#000000" />
 <link rel="canonical" href="https://pvathecreated.co/" />
 
@@ -17,7 +17,7 @@
 <meta property="og:type"        content="website" />
 <meta property="og:site_name"   content="thecreated" />
 <meta property="og:title"       content="thecreated" />
-<meta property="og:description" content="an attempt at giving God His ROI." />
+<meta property="og:description" content="Powered by pvaOS™." />
 <meta property="og:url"         content="https://pvathecreated.co/" />
 <meta property="og:image"       content="https://pvathecreated.co/og-card.jpg" />
 <meta property="og:image:secure_url" content="https://pvathecreated.co/og-card.jpg" />
@@ -29,7 +29,7 @@
 <!-- Twitter Card — for X / Twitter unfurls -->
 <meta name="twitter:card"        content="summary_large_image" />
 <meta name="twitter:title"       content="thecreated" />
-<meta name="twitter:description" content="an attempt at giving God His ROI." />
+<meta name="twitter:description" content="Powered by pvaOS™." />
 <meta name="twitter:image"       content="https://pvathecreated.co/og-card.jpg" />
 <meta name="twitter:image:alt"   content="thecreated — a blended painting of purple, red and gold light." />
 
@@ -1821,6 +1821,33 @@
     background: rgba(212, 168, 92, 0.10);
     border-color: rgba(212, 168, 92, 0.40);
   }
+  .project-tag.tag-housepva {
+    color: #fff;
+    -webkit-text-fill-color: #fff;
+    background: #000;
+    border-color: #000;
+  }
+  /* Per-visual SCRIPT / MOODBOARD / SHOT LIST + screenplay formatting (Courier Prime) */
+  .visual-subhead { font-family: 'Courier Prime','Courier New',monospace; font-size: 15px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #0c0a08; -webkit-text-fill-color: #0c0a08; margin: 32px 0 14px; padding-bottom: 7px; border-bottom: 1px solid rgba(12,10,8,0.28); }
+  .visual-subhead:first-child { margin-top: 0; }
+  .script, .script-note { font-family: 'Courier Prime','Courier New',monospace; font-size: 12.5px; line-height: 1.55; color: #0c0a08; -webkit-text-fill-color: #0c0a08; }
+  .script { max-width: 58ch; }
+  .credits-script { font-size: 15px; }
+  .project-view u { -webkit-text-fill-color: #5a2390; color: #5a2390; text-decoration-color: #5a2390; text-underline-offset: 2px; }
+  .day-heading { font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif; font-weight: 700; font-size: 16px; letter-spacing: 0.01em; margin: 28px 0 12px; padding-bottom: 7px; border-bottom: 1px solid rgba(12,10,8,0.2); }
+  .script p { margin: 0; }
+  .script .s-logline { margin: 0 0 1.5em; font-weight: 700; }
+  .script .s-scene { font-weight: 700; text-transform: uppercase; margin: 1.4em 0 0.8em; }
+  .script .s-action { margin: 0 0 0.9em; }
+  .script .s-char { text-transform: uppercase; margin: 0.4em 0 0; padding-left: 9ch; }
+  .script .s-paren { margin: 0; padding-left: 7ch; }
+  .script .s-dia { margin: 0 0 0.7em; padding-left: 4ch; max-width: 42ch; }
+  .script .s-trans { text-transform: uppercase; text-align: right; margin: 0.8em 0; font-weight: 700; }
+  /* "not ready" sections: greyed title + pulsing LOADING tag, not expandable */
+  .project-section.is-loading .project-section-title { cursor: default; background: rgba(245,243,240,0.5); }
+  .project-section.is-loading .project-section-title > span:first-child { color: rgba(12,10,8,0.4); -webkit-text-fill-color: rgba(12,10,8,0.4); }
+  .ld-tag { font-family: 'Courier Prime','Courier New',monospace; font-size: 9.5px; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: rgba(12,10,8,0.55); animation: ldPulse 1.6s ease-in-out infinite; }
+  @keyframes ldPulse { 0%, 100% { opacity: 0.45; } 50% { opacity: 1; } }
 
   /* Script cover header — title centred on the page. */
   .project-header {
@@ -2107,6 +2134,7 @@
   .project-view .journey-desc,
   .project-view .jo-line,
   .project-view .jo-subhead,
+  .project-view .day-heading,
   .project-view .project-list li {
     background: linear-gradient(95deg,
       #2a0f4d 0%,
@@ -2737,9 +2765,9 @@
 
       <div class="partner-tabs" id="partner-tabs">
         <p class="partner-tabs-header">Please select the project you are partnering on</p>
+        <button class="partner-tab-link" data-tab="overseer-interlude">The Overseer's Interlude <span class="tab-arrow">→</span></button>
         <button class="partner-tab-link" data-tab="overseer">The Overseer <span class="tab-arrow">→</span></button>
         <button class="partner-tab-link" data-tab="righthere">Right Here (Behold) <span class="tab-arrow">→</span></button>
-        <button class="partner-tab-link" data-tab="overseer-interlude">The Overseer's Interlude <span class="tab-arrow">→</span></button>
         <button class="partner-tab-link" data-tab="renew-verse">"What verse are you wearing?" for RENEW by PVA <span class="tab-arrow">→</span></button>
         <button class="partner-tab-link" data-tab="house-pva">HOUSE PVA <span class="tab-arrow">→</span></button>
       </div>
@@ -3316,6 +3344,66 @@ Lord you are Holy, Holy, Holy</p>
   </div>
 </section>
 
+<section id="view-project-renew" class="view project-view">
+  <header class="pg-header">
+    <button class="back-btn" data-back>&#8592; back</button>
+    <p class="project-thread project-tag tag-housepva">HOUSEPVA</p>
+  </header>
+  <div class="project-body show-list">
+    <header class="project-header">
+      <h1 class="project-title">What verse are you wearing?</h1>
+    </header>
+    <div class="overseer-tabs">
+      <button class="ov-tab is-active" type="button" data-view="list">list</button>
+    </div>
+    <section class="project-section">
+      <button class="project-section-title" type="button" aria-expanded="false"><span>LOGISTICS</span><span class="project-section-chevron" aria-hidden="true">+</span></button>
+      <div class="project-section-body"><div class="project-section-inner"><div class="project-prose"><p><strong>Date:</strong> Thursday 4th June 2026</p><p><strong>Location:</strong> Silverspace Studios, Silver Building, Dock Road, London (closest stations: West Silvertown (DLR), Royal Victoria (DLR))</p><p><strong>Time:</strong> 9am to 12pm</p></div><p class="day-heading">What the day looks like</p><ol class="project-list numbered"><li>We have "Studio B" for <u>two</u> hours from 0900 to 1100 hrs.</li><li>We have "Lifestyle Studio" for <u>one</u> hour from 1100 to 1200 hrs.</li><li>We are shooting <u>two</u> visuals in the space of <u>three</u> hours.</li><li><u>Two</u> visuals will be shot in Studio B.</li><li><u>One</u> visual will be shot in the Lifestyle Studio.</li><li>Each visual should take about <u>thirty</u> minutes to shoot.</li></ol></div></div>
+    </section>
+    <section class="project-section is-loading">
+      <button class="project-section-title" type="button" aria-expanded="false" disabled><span>EQUIPMENT LIST</span><span class="ld-tag" aria-hidden="true">LOADING</span></button>
+      <div class="project-section-body"><div class="project-section-inner"><ol class="project-list numbered"><li>To be filled in</li></ol></div></div>
+    </section>
+    <section class="project-section">
+      <button class="project-section-title" type="button" aria-expanded="false"><span>VISUAL 1 - Andrea Onifade</span><span class="project-section-chevron" aria-hidden="true">+</span></button>
+      <div class="project-section-body"><div class="project-section-inner">
+        <p class="visual-subhead">SCRIPT</p>
+        <div class="script"><p class="s-logline">LOGLINE — Andrea moves from hurry to still upon meditating on Matthew 11:28-29.</p><p class="s-scene">INT. APARTMENT — DAY</p><p class="s-action">Loud banging on the door. ANDREA throws it open, aggressive.</p><p class="s-char">ANDREA</p><p class="s-paren">(in Italian, shouting)</p><p class="s-dia">Hurry up, come in — you’re late!</p><p class="s-trans">CUT TO:</p><p class="s-action">Andrea’s aggressive workout.</p><p class="s-trans">CUT TO:</p><p class="s-action">MONTAGE — Andrea walks the room, repeating the scripture over and over in Italian.</p><p class="s-trans">CUT TO:</p><p class="s-action">He picks up the items to wear, one after the other.</p><p class="s-trans">CUT TO:</p><p class="s-action">DOLLY ZOOM into the final fit. Andrea walks out of frame; the door shuts.</p></div>
+        <p class="visual-subhead">MOODBOARD</p>
+        <p class="script-note">To be filled in.</p>
+        <p class="visual-subhead">SHOT LIST</p>
+        <p class="script-note">To be filled in.</p>
+      </div></div>
+    </section>
+    <section class="project-section is-loading">
+      <button class="project-section-title" type="button" aria-expanded="false" disabled><span>VISUAL 2 - Mallory "Oluchichi" Omegui</span><span class="ld-tag" aria-hidden="true">LOADING</span></button>
+      <div class="project-section-body"><div class="project-section-inner">
+        <p class="visual-subhead">SCRIPT</p>
+        <div class="script"><p class="s-logline">LOGLINE — Oluchichi moves from anxiety to peace upon meditating on Isaiah 26:3.</p><p class="s-scene">INT. BEDROOM — MORNING</p><p class="s-action">OPEN ON OLUCHICHI’s hands, shaking.</p><p class="s-trans">CUT TO:</p><p class="s-action">Quick blinking.</p><p class="s-trans">CUT TO:</p><p class="s-action">A hand hits her face. She rises from the bed.</p><p class="s-trans">CUT TO:</p><p class="s-action">Quick pacing.</p><p class="s-trans">CUT TO:</p><p class="s-action">Frustration — she can’t get the stack right, but she keeps saying the verse over and over.</p></div>
+        <p class="visual-subhead">MOODBOARD</p>
+        <p class="script-note">To be filled in.</p>
+        <p class="visual-subhead">SHOT LIST</p>
+        <p class="script-note">To be filled in.</p>
+      </div></div>
+    </section>
+    <section class="project-section is-loading">
+      <button class="project-section-title" type="button" aria-expanded="false" disabled><span>VISUAL 3 - Dean "Deano" Dobson</span><span class="ld-tag" aria-hidden="true">LOADING</span></button>
+      <div class="project-section-body"><div class="project-section-inner">
+        <p class="visual-subhead">SCRIPT</p>
+        <div class="script"><p class="s-logline">LOGLINE — Deano moves from depression and hopelessness to complete joy and certainty upon meditating on Romans 15:13.</p><p class="s-action">Script to be written.</p></div>
+        <p class="visual-subhead">MOODBOARD</p>
+        <p class="script-note">To be filled in.</p>
+        <p class="visual-subhead">SHOT LIST</p>
+        <p class="script-note">To be filled in.</p>
+      </div></div>
+    </section>
+    <section class="project-section">
+      <button class="project-section-title" type="button" aria-expanded="false"><span>CREDITS</span><span class="project-section-chevron" aria-hidden="true">+</span></button>
+      <div class="project-section-body"><div class="project-section-inner"><div class="script credits-script"><p><strong>Director:</strong> Thecreated</p><p><strong>Producer:</strong> Thecreated</p><p><strong>DOP:</strong> Kevyn</p><p><strong>Stylist:</strong> Arindy Plet</p><p><strong>Stylist:</strong> Maria Roberta Dobson (MRD)</p><p><strong>Actor:</strong> Andrea Onifade</p><p><strong>Actor:</strong> Mallory "Oluchichi" Omegui</p><p><strong>Actor:</strong> Dean "Deano" Dobson</p></div></div></div>
+    </section>
+  </div>
+</section>
+
 <section id="view-thoughts" class="view">
   <header class="thoughts-header">
     <button class="back-btn" data-back style="color: rgba(255,255,255,0.7);">← back</button>
@@ -3364,13 +3452,14 @@ Lord you are Holy, Holy, Holy</p>
     'view-partner-shop':      '#workshop',
     'view-project-overseer':  '#overseer',
     'view-project-righthere': '#righthere',
+    'view-project-renew':     '#renew',
     'view-strip':             '#threads',
     'view-particle':          '#painting',
     'view-thoughts':          '#thoughts',
   };
   // Protected pages require the partner password — refreshing
   // on them bounces back to the project list to re-authenticate.
-  const PROTECTED_VIEWS = ['view-partner-shop', 'view-project-overseer', 'view-project-righthere'];
+  const PROTECTED_VIEWS = ['view-partner-shop', 'view-project-overseer', 'view-project-righthere', 'view-project-renew'];
 
   function showView(id) {
     views.forEach(v => v.classList.toggle('active', v.id === id));
@@ -3926,7 +4015,7 @@ Lord you are Holy, Holy, Holy</p>
     'overseer':           'view-project-overseer',
     'righthere':          'view-project-righthere',
     'overseer-interlude': 'view-partner-shop',
-    'renew-verse':        'view-partner-shop',
+    'renew-verse':        'view-project-renew',
     'house-pva':          'view-partner-shop',
   };
   let selectedPartnerTab = null;
