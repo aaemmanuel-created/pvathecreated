@@ -2211,21 +2211,43 @@
     font-size: clamp(13px, 3.5vw, 15.5px); letter-spacing: 0.01em;
     -webkit-text-fill-color: #0c0a08; color: #0c0a08; background: none;
   }
-  /* ---- RENEW: role picker (Director / DOP / Actor / Stylist / Producer) ---- */
-  .role-tabs { display: flex; flex-wrap: wrap; gap: 10px 20px; margin: 0 0 26px; }
-  .role-tab {
-    background: none; border: none; cursor: pointer; padding: 4px 0;
-    font-family: 'Courier Prime', 'Courier New', monospace;
-    font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase;
-    color: rgba(20,16,12,0.34); transition: color 0.3s ease; position: relative;
+  #view-project-renew .journey-slide:first-child .journey-desc {
+    font-family: 'Courier Prime', 'Courier New', monospace; font-weight: 400;
+    font-size: clamp(13px, 3.5vw, 15.5px); letter-spacing: 0.01em;
+    -webkit-text-fill-color: #0c0a08; color: #0c0a08; background: none;
   }
-  .role-tab.is-active { color: rgba(20,16,12,0.95); }
-  .role-tab.is-active::after {
-    content: ""; position: absolute; left: 0; right: 0; bottom: -5px; height: 1px;
-    background: linear-gradient(90deg, #4a1f7a, #7a1024, #7a5a1e);
+  /* ---- RENEW: role picker (Director / DOP / Actor / Stylist / Producer) ---- */
+  .role-intro {
+    font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 16px; line-height: 1.6; margin: 0 0 22px; overflow: hidden;
+    background: linear-gradient(95deg, #2a0f4d, #4a1f7a, #7a1024, #944a18, #7a5a1e);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent; color: transparent;
+    opacity: 0;
+  }
+  #renew-roles.intro-play .role-intro { animation: roleIntroFade 5.5s ease forwards; }
+  @keyframes roleIntroFade { 0%{opacity:0;max-height:8em;} 16%{opacity:1;} 68%{opacity:1;max-height:8em;margin-bottom:22px;} 100%{opacity:0;max-height:0;margin-bottom:0;} }
+  #renew-roles.name-selected .role-tab:not(.is-active) { display: none; }
+  .role-tab.is-loading { cursor: default; color: rgba(20,16,12,0.4); border-color: rgba(20,16,12,0.16); }
+  .role-tab .ld-tag { margin-left: 8px; }
+  .role-tabs { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 30px; }
+  .role-tab {
+    background: none; cursor: pointer; padding: 8px 17px;
+    border: 1px solid rgba(20,16,12,0.22); border-radius: 999px;
+    font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: rgba(20,16,12,0.55);
+    transition: color 0.3s ease, background 0.3s ease, border-color 0.3s ease;
+  }
+  .role-tab:hover { color: rgba(20,16,12,0.9); border-color: rgba(20,16,12,0.42); }
+  .role-tab.is-active {
+    color: #fff; border-color: transparent;
+    background: linear-gradient(95deg, #4a1f7a, #7a1024, #7a5a1e);
   }
   .role-panel { display: none; }
   .role-panel.is-active { display: block; }
+  .journey-link { color: #5a2390; -webkit-text-fill-color: #5a2390; text-decoration: underline; text-decoration-color: rgba(90,35,144,0.55); text-underline-offset: 2px; cursor: pointer; }
+  #view-project-renew .journey-desc + .journey-desc { margin-top: 0.7em; }
 
   @media (max-width: 768px) {
     .project-body { padding: 24px 7vw 80px; }
@@ -3364,51 +3386,69 @@ Lord you are Holy, Holy, Holy</p>
     <button class="back-btn" data-back>&#8592; back</button>
     <p class="project-thread project-tag tag-housepva">HOUSEPVA</p>
   </header>
-  <div class="project-body show-list">
+  <div class="project-body show-journey">
     <header class="project-header">
       <h1 class="project-title">What verse are you wearing?</h1>
     </header>
     <div class="overseer-tabs">
-      <button class="ov-tab is-active" type="button" data-view="list">list</button>
+      <button class="ov-tab is-active" type="button" data-view="journey">journey</button>
+      <button class="ov-tab" type="button" data-view="list">list</button>
     </div>
     <div class="overseer-journey role-journey" id="renew-roles">
+      <p class="role-intro">Please click on your name to see your journey with this project.</p>
       <div class="role-tabs">
-        <button class="role-tab" type="button" data-role="director">Director</button>
-        <button class="role-tab" type="button" data-role="dop">DOP</button>
-        <button class="role-tab" type="button" data-role="actor">Actor</button>
-        <button class="role-tab is-active" type="button" data-role="stylist">Stylist</button>
-        <button class="role-tab" type="button" data-role="producer">Producer</button>
+        <button class="role-tab is-loading" type="button" data-role="kevin" disabled>Kevin James <span class="ld-tag">loading</span></button>
+        <button class="role-tab" type="button" data-role="arindy">Arindy Plet</button>
+        <button class="role-tab" type="button" data-role="maria">Maria Roberta Dobson</button>
+        <button class="role-tab is-loading" type="button" data-role="andrea" disabled>Andrea Onifade <span class="ld-tag">loading</span></button>
+        <button class="role-tab is-loading" type="button" data-role="mallory" disabled>Mallory "Oluchichi" Omegui <span class="ld-tag">loading</span></button>
+        <button class="role-tab is-loading" type="button" data-role="dean" disabled>Dean "Deano" Dobson <span class="ld-tag">loading</span></button>
       </div>
-      <div class="role-panel" data-role="director">
+      <div class="role-panel" data-role="dean">
         <div class="journey-viewport"><div class="journey-track">
-          <div class="journey-slide"><div class="journey-overview"><p class="jo-subhead">director</p><p class="journey-desc">To be built.</p></div></div>
+          <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">To be built.</p></div></div>
         </div></div>
         <div class="journey-nav"><div class="journey-dots"></div><p class="journey-hint">swipe</p></div>
       </div>
-      <div class="role-panel" data-role="dop">
+      <div class="role-panel" data-role="mallory">
         <div class="journey-viewport"><div class="journey-track">
-          <div class="journey-slide"><div class="journey-overview"><p class="jo-subhead">dop</p><p class="journey-desc">To be built.</p></div></div>
+          <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">To be built.</p></div></div>
         </div></div>
         <div class="journey-nav"><div class="journey-dots"></div><p class="journey-hint">swipe</p></div>
       </div>
-      <div class="role-panel" data-role="actor">
+      <div class="role-panel" data-role="andrea">
         <div class="journey-viewport"><div class="journey-track">
-          <div class="journey-slide"><div class="journey-overview"><p class="jo-subhead">actor</p><p class="journey-desc">To be built.</p></div></div>
+          <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">To be built.</p></div></div>
         </div></div>
         <div class="journey-nav"><div class="journey-dots"></div><p class="journey-hint">swipe</p></div>
       </div>
-      <div class="role-panel is-active" data-role="stylist">
+      <div class="role-panel" data-role="arindy">
         <div class="journey-viewport"><div class="journey-track">
-          <div class="journey-slide">
-            <div class="journey-diagram"><canvas class="particle-diagram" data-shape="arrive" aria-hidden="true"></canvas></div>
-            <div class="journey-overview"><p class="jo-subhead">arrive on-site</p><p class="journey-desc">To be added.</p></div>
-          </div>
+          <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">This is a campaign for RENEW by PVA which is a scripture meditation app.</p><p class="journey-desc">Your mission is to take <strong>3 scripture verses</strong> and turn them into an outfit that our actors will wear in their individual shoots.</p><p class="journey-desc">The idea is that actors will show the process of meditation and then <strong>wear the verses</strong> they meditate on by the end of their visual.</p><p class="journey-desc"><strong>The outfits are to represent the inward change.</strong></p></div></div>
+          <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">Read and meditate on <strong>Matthew 11:28-29</strong>, <strong>Isaiah 26:3</strong>, <strong>Romans 15:13</strong>.</p></div></div>
+          <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">Then answer the question: "<strong>if I had to turn this verse into a fit, what would it look like?</strong>"</p></div></div>
+          <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">Arindy, you will be styling Andrea and Mallory.</p><p class="journey-desc">Andrea Onifade's verse is <strong>Matthew 11:28-29</strong></p><p class="journey-desc">Mallory "Oluchichi" Omegui's verse is <strong>Isaiah 26:3</strong></p></div></div>
+          <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">Send what the outfits should look like and we will try to bring/source the items.</p></div></div>
+          <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">Arrive on set. Connect with everyone. Lay out your pieces on the racks. Scan the feel of the set.</p></div></div>
+          <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">Then we shoot.</p></div></div>
         </div></div>
         <div class="journey-nav"><div class="journey-dots"></div><p class="journey-hint">swipe</p></div>
       </div>
-      <div class="role-panel" data-role="producer">
+      <div class="role-panel" data-role="maria">
         <div class="journey-viewport"><div class="journey-track">
-          <div class="journey-slide"><div class="journey-overview"><p class="jo-subhead">producer</p><p class="journey-desc">To be built.</p></div></div>
+          <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">This is a campaign for RENEW by PVA which is a scripture meditation app.</p><p class="journey-desc">Your mission is to take <strong>3 scripture verses</strong> and turn them into an outfit that our actors will wear in their individual shoots.</p><p class="journey-desc">The idea is that actors will show the process of meditation and then <strong>wear the verses</strong> they meditate on by the end of their visual.</p><p class="journey-desc"><strong>The outfits are to represent the inward change.</strong></p></div></div>
+          <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">Read and meditate on <strong>Matthew 11:28-29</strong>, <strong>Isaiah 26:3</strong>, <strong>Romans 15:13</strong>.</p></div></div>
+          <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">Then answer the question: "<strong>if I had to turn this verse into a fit, what would it look like?</strong>"</p></div></div>
+          <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">Maria, you will be styling Dean.</p><p class="journey-desc">Dean "Deano" Dobson's verse is <strong>Romans 15:13</strong></p></div></div>
+          <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">Send what the outfits should look like and we will try to bring/source the items.</p></div></div>
+          <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">Arrive on set. Connect with everyone. Lay out your pieces on the racks. Scan the feel of the set.</p></div></div>
+          <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">Then we shoot.</p></div></div>
+        </div></div>
+        <div class="journey-nav"><div class="journey-dots"></div><p class="journey-hint">swipe</p></div>
+      </div>
+      <div class="role-panel" data-role="kevin">
+        <div class="journey-viewport"><div class="journey-track">
+          <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">To be built.</p></div></div>
         </div></div>
         <div class="journey-nav"><div class="journey-dots"></div><p class="journey-hint">swipe</p></div>
       </div>
@@ -3456,7 +3496,7 @@ Lord you are Holy, Holy, Holy</p>
     </section>
     <section class="project-section">
       <button class="project-section-title" type="button" aria-expanded="false"><span>CREDITS</span><span class="project-section-chevron" aria-hidden="true">+</span></button>
-      <div class="project-section-body"><div class="project-section-inner"><div class="script credits-script"><p><strong>Director:</strong> Thecreated</p><p><strong>Producer:</strong> Thecreated</p><p><strong>DOP:</strong> Kevyn</p><p><strong>Stylist:</strong> Arindy Plet</p><p><strong>Stylist:</strong> Maria Roberta Dobson (MRD)</p><p><strong>Actor:</strong> Andrea Onifade</p><p><strong>Actor:</strong> Mallory "Oluchichi" Omegui</p><p><strong>Actor:</strong> Dean "Deano" Dobson</p></div></div></div>
+      <div class="project-section-body"><div class="project-section-inner"><div class="script credits-script"><p><strong>Director:</strong> Thecreated</p><p><strong>Producer:</strong> Thecreated</p><p><strong>DOP:</strong> Kevin James</p><p><strong>Stylist:</strong> Arindy Plet</p><p><strong>Stylist:</strong> Maria Roberta Dobson (MRD)</p><p><strong>Actor:</strong> Andrea Onifade</p><p><strong>Actor:</strong> Mallory "Oluchichi" Omegui</p><p><strong>Actor:</strong> Dean "Deano" Dobson</p></div></div></div>
     </section>
   </div>
 </section>
@@ -3533,6 +3573,7 @@ Lord you are Holy, Holy, Holy</p>
     if (id === 'view-home' && typeof restoreDust === 'function') restoreDust();
     // Animate the particle diagrams only while the Overseer page is open.
     if (window.particleDiagrams) { (__pv && __pv.classList.contains('project-view')) ? window.particleDiagrams.start() : window.particleDiagrams.stop(); }
+    if (id === 'view-project-renew') { var rr = document.getElementById('renew-roles'); if (rr) { rr.classList.remove('name-selected'); var ra = rr.querySelectorAll('.role-tab.is-active, .role-panel.is-active'); for (var z=0; z<ra.length; z++) ra[z].classList.remove('is-active'); rr.classList.remove('intro-play'); void rr.offsetWidth; rr.classList.add('intro-play'); } }
     if (window.paintingParticles) { id === 'view-particle' ? window.paintingParticles.start() : window.paintingParticles.stop(); }
     // Reflect the active view in the URL so a refresh restores it
     const hash = VIEW_HASHES[id];
@@ -4655,8 +4696,15 @@ Lord you are Holy, Holy, Holy</p>
   for(var i=0;i<panels.length;i++) initPanel(panels[i]);
   for(var t=0;t<roleTabs.length;t++){ (function(btn){ btn.addEventListener('click', function(){
     var role = btn.getAttribute('data-role');
-    for(var k=0;k<roleTabs.length;k++) roleTabs[k].classList.toggle('is-active', roleTabs[k]===btn);
-    for(var p=0;p<panels.length;p++){ var on = panels[p].getAttribute('data-role')===role; panels[p].classList.toggle('is-active', on); if(on && panels[p]._reset) panels[p]._reset(); }
+    if (btn.classList.contains('is-active')) {
+      btn.classList.remove('is-active');
+      for(var p=0;p<panels.length;p++) panels[p].classList.remove('is-active');
+      root.classList.remove('name-selected');
+    } else {
+      for(var k=0;k<roleTabs.length;k++) roleTabs[k].classList.toggle('is-active', roleTabs[k]===btn);
+      for(var p=0;p<panels.length;p++){ var on = panels[p].getAttribute('data-role')===role; panels[p].classList.toggle('is-active', on); if(on && panels[p]._reset) panels[p]._reset(); }
+      root.classList.add('name-selected');
+    }
     try{ window.dispatchEvent(new Event('resize')); }catch(e){}
   }); })(roleTabs[t]); }
 })();
