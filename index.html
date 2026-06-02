@@ -1833,6 +1833,8 @@
   .script, .script-note { font-family: 'Courier Prime','Courier New',monospace; font-size: 12.5px; line-height: 1.55; color: #0c0a08; -webkit-text-fill-color: #0c0a08; }
   .script { max-width: 58ch; }
   .credits-script { font-size: 15px; }
+  .moodboard { columns: 2; column-gap: 8px; margin: 6px 0 4px; }
+  .moodboard img { width: 100%; margin: 0 0 8px; display: block; border-radius: 4px; break-inside: avoid; }
   .project-view u { -webkit-text-fill-color: #5a2390; color: #5a2390; text-decoration-color: #5a2390; text-underline-offset: 2px; }
   .day-heading { font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif; font-weight: 700; font-size: 16px; letter-spacing: 0.01em; margin: 28px 0 12px; padding-bottom: 7px; border-bottom: 1px solid rgba(12,10,8,0.2); }
   .script p { margin: 0; }
@@ -2219,7 +2221,7 @@
   /* ---- RENEW: role picker (Director / DOP / Actor / Stylist / Producer) ---- */
   .role-intro {
     font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif;
-    font-size: 16px; line-height: 1.6; margin: 0 0 22px; overflow: hidden;
+    font-size: 16px; line-height: 1.6; font-weight: 300; margin: 0 0 22px; overflow: hidden;
     background: linear-gradient(95deg, #2a0f4d, #4a1f7a, #7a1024, #944a18, #7a5a1e);
     -webkit-background-clip: text; background-clip: text;
     -webkit-text-fill-color: transparent; color: transparent;
@@ -2228,12 +2230,13 @@
   #renew-roles.intro-play .role-intro { animation: roleIntroFade 5.5s ease forwards; }
   @keyframes roleIntroFade { 0%{opacity:0;max-height:8em;} 16%{opacity:1;} 68%{opacity:1;max-height:8em;margin-bottom:22px;} 100%{opacity:0;max-height:0;margin-bottom:0;} }
   #renew-roles.name-selected .role-tab:not(.is-active) { display: none; }
-  .role-tab.is-loading { cursor: default; color: rgba(20,16,12,0.4); border-color: rgba(20,16,12,0.16); }
+  .role-tab.is-loading { cursor: default; border: 1px solid rgba(20,16,12,0.2); background: none; color: rgba(20,16,12,0.4); }
   .role-tab .ld-tag { margin-left: 8px; }
   .role-tabs { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 30px; }
   .role-tab {
-    background: none; cursor: pointer; padding: 8px 17px;
-    border: 1px solid rgba(20,16,12,0.22); border-radius: 999px;
+    cursor: pointer; padding: 8px 17px;
+    border: 1px solid transparent; border-radius: 999px;
+    background: linear-gradient(#ffffff, #ffffff) padding-box, linear-gradient(95deg, #2a0f4d, #4a1f7a, #7a1024, #944a18, #7a5a1e) border-box;
     font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif;
     font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
     color: rgba(20,16,12,0.55);
@@ -3400,7 +3403,7 @@ Lord you are Holy, Holy, Holy</p>
         <button class="role-tab is-loading" type="button" data-role="kevin" disabled>Kevin James <span class="ld-tag">loading</span></button>
         <button class="role-tab" type="button" data-role="arindy">Arindy Plet</button>
         <button class="role-tab" type="button" data-role="maria">Maria Roberta Dobson</button>
-        <button class="role-tab is-loading" type="button" data-role="andrea" disabled>Andrea Onifade <span class="ld-tag">loading</span></button>
+        <button class="role-tab" type="button" data-role="andrea">Andrea Onifade</button>
         <button class="role-tab is-loading" type="button" data-role="mallory" disabled>Mallory "Oluchichi" Omegui <span class="ld-tag">loading</span></button>
         <button class="role-tab is-loading" type="button" data-role="dean" disabled>Dean "Deano" Dobson <span class="ld-tag">loading</span></button>
       </div>
@@ -3418,7 +3421,10 @@ Lord you are Holy, Holy, Holy</p>
       </div>
       <div class="role-panel" data-role="andrea">
         <div class="journey-viewport"><div class="journey-track">
-          <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">To be built.</p></div></div>
+          <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">This is a campaign for <strong>RENEW by PVA</strong> which is a scripture meditation app.</p><p class="journey-desc">Your mission is to <strong>act in visual 1</strong>, where you will show the transition from being in a <strong>state of hurry</strong> to a <strong>state of calm</strong>.</p><p class="journey-desc">The idea is that actors will show the chaos without meditation then the order after meditation. Their outfit portrays the inner change. <strong>They now carry light/revelation</strong>.</p></div></div>
+          <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">Your verse to meditate on is <strong>Matthew 11:28-29</strong></p></div></div>
+          <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">Andrea, you are to take on the role of a man who is in a <strong>rush</strong>, <strong>impatient</strong> and <strong>unstable</strong>.</p><p class="journey-desc">Show this through an aggressive <strong>home workout</strong> with body weight, then meditate on the verse to show a transition to <strong>calm</strong>, by the end of the visual you should be <strong>calm</strong>, <strong>collected</strong> and <strong>stable</strong>.</p><p class="journey-desc">This should also be reflected in your choice of clothing you put on.</p><p class="journey-desc">We don't want people to think the transformation came solely because of the workout but mainly because of the <strong>meditation</strong>.</p></div></div>
+          <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">Now take a look at your moodboard and shot list.</p></div></div>
         </div></div>
         <div class="journey-nav"><div class="journey-dots"></div><p class="journey-hint">swipe</p></div>
       </div>
@@ -3465,9 +3471,9 @@ Lord you are Holy, Holy, Holy</p>
       <button class="project-section-title" type="button" aria-expanded="false"><span>VISUAL 1 - Andrea Onifade</span><span class="project-section-chevron" aria-hidden="true">+</span></button>
       <div class="project-section-body"><div class="project-section-inner">
         <p class="visual-subhead">SCRIPT</p>
-        <div class="script"><p class="s-logline">LOGLINE — Andrea moves from hurry to still upon meditating on Matthew 11:28-29.</p><p class="s-scene">INT. APARTMENT — DAY</p><p class="s-action">Loud banging on the door. ANDREA throws it open, aggressive.</p><p class="s-char">ANDREA</p><p class="s-paren">(in Italian, shouting)</p><p class="s-dia">Hurry up, come in — you’re late!</p><p class="s-trans">CUT TO:</p><p class="s-action">Andrea’s aggressive workout.</p><p class="s-trans">CUT TO:</p><p class="s-action">MONTAGE — Andrea walks the room, repeating the scripture over and over in Italian.</p><p class="s-trans">CUT TO:</p><p class="s-action">He picks up the items to wear, one after the other.</p><p class="s-trans">CUT TO:</p><p class="s-action">DOLLY ZOOM into the final fit. Andrea walks out of frame; the door shuts.</p></div>
+        <div class="script"><p class="s-logline">LOGLINE — Andrea moves from hurry to still upon meditating on Matthew 11:28-29.</p><p class="s-scene">INT. APARTMENT — DAY</p><p class="s-action">Loud banging on the door. ANDREA throws it open, aggressively.</p><p class="s-char">ANDREA</p><p class="s-paren">(in Italian, shouting)</p><p class="s-dia">Hurry up, come in — you're late!</p><p class="s-trans">CUT TO:</p><p class="s-action">Andrea's aggressive workout.</p><p class="s-trans">CUT TO:</p><p class="s-action">Andrea looking at the Word and silence falls in the room. Then shakes his head and goes back to working out with noise resuming.</p><p class="s-trans">CUT TO:</p><p class="s-action">Andrea looking at the Word as he does push ups. Noise still loud.</p><p class="s-trans">CUT TO:</p><p class="s-action">Andrea looking at the Word as he does sit ups. Noise still loud.</p><p class="s-trans">CUT TO:</p><p class="s-action">Andrea looking at the Word as he does squats. Noise still loud.</p><p class="s-trans">CUT TO:</p><p class="s-action">Wide-angle shot of Andrea finally caves in and goes to pick up the Word.</p><p class="s-trans">CUT TO:</p><p class="s-action">OTS shot of Andrea putting his finger through the Word.</p><p class="s-trans">CUT TO:</p><p class="s-action">Andrea's eyes scanning the page, with whistling kettle sound to show intensity.</p><p class="s-trans">CUT TO:</p><p class="s-action">Then tracking shot showing Andrea walking around the room and muttering the verse over and over again in Italian.</p><p class="s-trans">CUT TO:</p><p class="s-action">Andrea looks directly into the camera.</p><p class="s-char">ANDREA</p><p class="s-paren">(in Italian, to camera)</p><p class="s-dia">What verse will you wear today?</p></div>
         <p class="visual-subhead">MOODBOARD</p>
-        <p class="script-note">To be filled in.</p>
+        <div class="moodboard"><img src="andrea-mood-1.jpg" alt="" loading="lazy"><img src="andrea-mood-2.jpg" alt="" loading="lazy"><img src="andrea-mood-3.jpg" alt="" loading="lazy"><img src="andrea-mood-4.jpg" alt="" loading="lazy"></div>
         <p class="visual-subhead">SHOT LIST</p>
         <p class="script-note">To be filled in.</p>
       </div></div>
@@ -3496,7 +3502,7 @@ Lord you are Holy, Holy, Holy</p>
     </section>
     <section class="project-section">
       <button class="project-section-title" type="button" aria-expanded="false"><span>CREDITS</span><span class="project-section-chevron" aria-hidden="true">+</span></button>
-      <div class="project-section-body"><div class="project-section-inner"><div class="script credits-script"><p><strong>Director:</strong> Thecreated</p><p><strong>Producer:</strong> Thecreated</p><p><strong>DOP:</strong> Kevin James</p><p><strong>Stylist:</strong> Arindy Plet</p><p><strong>Stylist:</strong> Maria Roberta Dobson (MRD)</p><p><strong>Actor:</strong> Andrea Onifade</p><p><strong>Actor:</strong> Mallory "Oluchichi" Omegui</p><p><strong>Actor:</strong> Dean "Deano" Dobson</p></div></div></div>
+      <div class="project-section-body"><div class="project-section-inner"><div class="script credits-script"><p><strong>Director:</strong> Thecreated</p><p><strong>Producer:</strong> Thecreated</p><p><strong>DOP:</strong> Kevin James</p><p><strong>Editor:</strong> Kevin James</p><p><strong>Stylist:</strong> Arindy Plet</p><p><strong>Stylist:</strong> Maria Roberta Dobson (MRD)</p><p><strong>Actor:</strong> Andrea Onifade</p><p><strong>Actor:</strong> Mallory "Oluchichi" Omegui</p><p><strong>Actor:</strong> Dean "Deano" Dobson</p></div></div></div>
     </section>
   </div>
 </section>
