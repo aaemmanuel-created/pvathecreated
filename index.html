@@ -2100,14 +2100,14 @@
 
   /* Overseer body copy - colourful gradient text, matching the other
      pages. Section titles are deliberately excluded. */
-  #view-project-overseer .project-prose p,
-  #view-project-overseer .structure-step-text,
-  #view-project-overseer .lyric-scripture,
-  #view-project-overseer .lyric-stanza,
-  #view-project-overseer .journey-desc,
-  #view-project-overseer .jo-line,
-  #view-project-overseer .jo-subhead,
-  #view-project-overseer .project-list li {
+  .project-view .project-prose p,
+  .project-view .structure-step-text,
+  .project-view .lyric-scripture,
+  .project-view .lyric-stanza,
+  .project-view .journey-desc,
+  .project-view .jo-line,
+  .project-view .jo-subhead,
+  .project-view .project-list li {
     background: linear-gradient(95deg,
       #2a0f4d 0%,
       #4a1f7a 22%,
@@ -2121,7 +2121,7 @@
   }
   /* Numbered credit markers stay solid purple - an absolutely
      positioned ::before can't inherit the parent's text clip. */
-  #view-project-overseer .project-list.numbered li::before {
+  .project-view .project-list.numbered li::before {
     -webkit-text-fill-color: #5a2390;
             color: #5a2390;
   }
@@ -2169,16 +2169,16 @@
   .journey-overview { text-align: left; width: 100%; max-width: none; padding-left: 6px; box-sizing: border-box; }
   .jo-line { font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif; font-size: clamp(13px, 3.6vw, 16px); line-height: 1.7; font-weight: 300; margin: 0 0 11px; }
   .jo-subhead { font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif; font-size: 12px; font-weight: 500; letter-spacing: 0.22em; text-transform: uppercase; margin: 0 0 16px; }
-  #view-project-overseer .journey-slide:first-child { align-items: center; }
-  #view-project-overseer .journey-slide:first-child .journey-diagram { width: clamp(224px, 76vw, 320px); height: clamp(148px, 50vw, 210px); }
-  #view-project-overseer .journey-slide:first-child .journey-overview { align-self: stretch; max-width: none; padding-left: 6px; }
-  #view-project-overseer .journey-slide:first-child .jo-line { font-size: clamp(11px, 3.2vw, 14px); line-height: 1.6; }
+  .project-view .journey-slide:first-child { align-items: center; }
+  .project-view .journey-slide:first-child .journey-diagram { width: clamp(224px, 76vw, 320px); height: clamp(148px, 50vw, 210px); }
+  .project-view .journey-slide:first-child .journey-overview { align-self: stretch; max-width: none; padding-left: 6px; }
+  .project-view .journey-slide:first-child .jo-line { font-size: clamp(11px, 3.2vw, 14px); line-height: 1.6; }
   /* atmosphere -> harness: two diagrams side by side */
   .journey-duo { display: flex; align-items: center; justify-content: center; gap: 12px; }
   .journey-duo .journey-diagram { width: clamp(94px, 31vw, 128px); height: clamp(72px, 23vw, 98px); }
   .journey-arrow { font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif; font-size: 22px; line-height: 1; background: linear-gradient(95deg, #4a1f7a, #7a1024, #7a5a1e); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
   /* step descriptions from slide 3 on: Courier Prime, solid black, script-like */
-  #view-project-overseer .journey-slide:nth-child(n+2) .journey-desc {
+  .project-view .journey-slide:nth-child(n+2) .journey-desc {
     font-family: 'Courier Prime', 'Courier New', monospace; font-weight: 400;
     font-size: clamp(13px, 3.5vw, 15.5px); letter-spacing: 0.01em;
     -webkit-text-fill-color: #0c0a08; color: #0c0a08; background: none;
@@ -2738,6 +2738,7 @@
       <div class="partner-tabs" id="partner-tabs">
         <p class="partner-tabs-header">Please select the project you are partnering on</p>
         <button class="partner-tab-link" data-tab="overseer">The Overseer <span class="tab-arrow">→</span></button>
+        <button class="partner-tab-link" data-tab="righthere">RIGHT HERE (BEHOLD) <span class="tab-arrow">→</span></button>
         <button class="partner-tab-link" data-tab="overseer-interlude">The Overseer's Interlude <span class="tab-arrow">→</span></button>
         <button class="partner-tab-link" data-tab="renew-verse">"What verse are you wearing?" for RENEW by PVA <span class="tab-arrow">→</span></button>
         <button class="partner-tab-link" data-tab="house-pva">HOUSE PVA <span class="tab-arrow">→</span></button>
@@ -2876,7 +2877,7 @@
 
     <div class="overseer-journey">
       <div class="journey-viewport">
-        <div class="journey-track" id="journey-track">
+        <div class="journey-track">
           <div class="journey-slide">
             <div class="journey-overview">
               <p class="jo-line">We start with posture.</p>
@@ -2890,25 +2891,26 @@
             <div class="journey-diagram"><canvas class="particle-diagram" data-shape="gather" aria-hidden="true"></canvas></div>
             <div class="journey-overview">
               <p class="jo-subhead">gathering</p>
-              <p class="journey-desc">We worship, pray and offer up incense to our Father.</p>
+              <p class="journey-desc">We start the session with Worship, Pray and Offer up incense to Our Father.</p>
+            </div>
+          </div>
+          <div class="journey-slide">
+            <div class="journey-diagram"><canvas class="particle-diagram" data-shape="transitionLine" aria-hidden="true"></canvas></div>
+            <div class="journey-overview">
+              <p class="jo-subhead">transition</p>
+              <p class="journey-desc">the padded siren gets louder introducing the atmosphere we are in.</p>
+              <p class="journey-desc">prayer and worship continues.</p>
             </div>
           </div>
           <div class="journey-slide">
             <div class="journey-duo">
               <div class="journey-diagram"><canvas class="particle-diagram" data-shape="atmosphere" aria-hidden="true"></canvas></div>
               <span class="journey-arrow" aria-hidden="true">&#8594;</span>
-              <div class="journey-diagram"><canvas class="particle-diagram" data-shape="harness" aria-hidden="true"></canvas></div>
+              <div class="journey-diagram"><canvas class="particle-diagram" data-shape="harnessRing" aria-hidden="true"></canvas></div>
             </div>
             <div class="journey-overview">
-              <p class="jo-subhead">harnessing</p>
-              <p class="journey-desc">The atmosphere will become the harness that holds the song.</p>
-            </div>
-          </div>
-          <div class="journey-slide">
-            <div class="journey-diagram"><canvas class="particle-diagram" data-shape="swell" aria-hidden="true"></canvas></div>
-            <div class="journey-overview">
-              <p class="jo-subhead">transition</p>
-              <p class="journey-desc">we start with the pad that gets louder to introduce the atmosphere we are in.</p>
+              <p class="jo-subhead">atmosphere harnessing</p>
+              <p class="journey-desc">our worship and prayer becomes the stitching that frames the song.</p>
             </div>
           </div>
           <div class="journey-slide">
@@ -2942,7 +2944,7 @@
         </div>
       </div>
       <div class="journey-nav">
-        <div class="journey-dots" id="journey-dots"></div>
+        <div class="journey-dots"></div>
         <p class="journey-hint">swipe</p>
       </div>
     </div>
@@ -3239,6 +3241,81 @@ Lord you are Holy, Holy, Holy</p>
 <!-- ============================================================
      THOUGHTS PAGE
      ============================================================ -->
+<section id="view-project-righthere" class="view project-view">
+  <header class="pg-header">
+    <button class="back-btn" data-back>&#8592; back</button>
+    <p class="project-thread thread-grounding project-tag">Grounding</p>
+  </header>
+  <div class="project-body show-journey">
+    <header class="project-header">
+      <h1 class="project-title">Right Here</h1>
+    </header>
+    <div class="overseer-tabs">
+      <button class="ov-tab is-active" type="button" data-view="journey">journey</button>
+      <button class="ov-tab" type="button" data-view="list">list</button>
+    </div>
+    <div class="overseer-journey">
+      <div class="journey-viewport">
+        <div class="journey-track">
+          <div class="journey-slide">
+            <div class="journey-overview">
+              <p class="jo-line">Overview line one. (replace with the song's flow)</p>
+              <p class="jo-line">Overview line two.</p>
+              <p class="jo-line">Overview line three.</p>
+            </div>
+          </div>
+          <div class="journey-slide">
+            <div class="journey-diagram"><canvas class="particle-diagram" data-shape="gather" aria-hidden="true"></canvas></div>
+            <div class="journey-overview"><p class="jo-subhead">section one</p><p class="journey-desc">Describe this part of the song. (to be filled in)</p></div>
+          </div>
+          <div class="journey-slide">
+            <div class="journey-diagram"><canvas class="particle-diagram" data-shape="transitionLine" aria-hidden="true"></canvas></div>
+            <div class="journey-overview"><p class="jo-subhead">section two</p><p class="journey-desc">Describe this part of the song. (to be filled in)</p></div>
+          </div>
+          <div class="journey-slide">
+            <div class="journey-duo">
+              <div class="journey-diagram"><canvas class="particle-diagram" data-shape="atmosphere" aria-hidden="true"></canvas></div>
+              <span class="journey-arrow" aria-hidden="true">&#8594;</span>
+              <div class="journey-diagram"><canvas class="particle-diagram" data-shape="harnessRing" aria-hidden="true"></canvas></div>
+            </div>
+            <div class="journey-overview"><p class="jo-subhead">section three</p><p class="journey-desc">Describe this part of the song. (to be filled in)</p></div>
+          </div>
+          <div class="journey-slide">
+            <div class="journey-diagram journey-diagram-gold"><canvas class="particle-diagram" data-shape="rings" aria-hidden="true"></canvas></div>
+            <div class="journey-overview"><p class="jo-subhead">section four</p><p class="journey-desc">Describe this part of the song. (to be filled in)</p></div>
+          </div>
+          <div class="journey-slide">
+            <div class="journey-diagram"><canvas class="particle-diagram" data-shape="guide" aria-hidden="true"></canvas></div>
+            <div class="journey-overview"><p class="jo-subhead">section five</p><p class="journey-desc">Describe this part of the song. (to be filled in)</p></div>
+          </div>
+        </div>
+      </div>
+      <div class="journey-nav">
+        <div class="journey-dots"></div>
+        <p class="journey-hint">swipe</p>
+      </div>
+    </div>
+    <section class="project-section">
+      <button class="project-section-title" type="button" aria-expanded="false"><span>the overview</span><span class="project-section-chevron" aria-hidden="true">+</span></button>
+      <div class="project-section-body"><div class="project-section-inner"><div class="project-prose"><p>To be filled in.</p></div></div></div>
+    </section>
+    <section class="project-section">
+      <button class="project-section-title" type="button" aria-expanded="false"><span>the song structure</span><span class="project-section-chevron" aria-hidden="true">+</span></button>
+      <div class="project-section-body"><div class="project-section-inner"><div class="structure-flow">
+        <div class="structure-step"><div class="structure-step-illu" aria-hidden="true"><canvas class="particle-diagram" data-shape="gather" aria-hidden="true"></canvas></div><p class="structure-step-text">To be filled in.</p></div>
+      </div></div></div>
+    </section>
+    <section class="project-section">
+      <button class="project-section-title" type="button" aria-expanded="false"><span>the lyrics</span><span class="project-section-chevron" aria-hidden="true">+</span></button>
+      <div class="project-section-body"><div class="project-section-inner"><div class="project-lyrics"><p class="lyric-stanza">To be filled in.</p></div></div></div>
+    </section>
+    <section class="project-section">
+      <button class="project-section-title" type="button" aria-expanded="false"><span>credits</span><span class="project-section-chevron" aria-hidden="true">+</span></button>
+      <div class="project-section-body"><div class="project-section-inner"><ol class="project-list numbered"><li><strong>Written by:</strong> To be filled in</li><li><strong>Performed by:</strong> To be filled in</li><li><strong>Produced by:</strong> To be filled in</li></ol></div></div>
+    </section>
+  </div>
+</section>
+
 <section id="view-thoughts" class="view">
   <header class="thoughts-header">
     <button class="back-btn" data-back style="color: rgba(255,255,255,0.7);">← back</button>
@@ -3286,20 +3363,21 @@ Lord you are Holy, Holy, Holy</p>
     'view-partner-welcome':   '#partner',
     'view-partner-shop':      '#workshop',
     'view-project-overseer':  '#overseer',
+    'view-project-righthere': '#righthere',
     'view-strip':             '#threads',
     'view-particle':          '#painting',
     'view-thoughts':          '#thoughts',
   };
   // Protected pages require the partner password — refreshing
   // on them bounces back to the project list to re-authenticate.
-  const PROTECTED_VIEWS = ['view-partner-shop', 'view-project-overseer'];
+  const PROTECTED_VIEWS = ['view-partner-shop', 'view-project-overseer', 'view-project-righthere'];
 
   function showView(id) {
     views.forEach(v => v.classList.toggle('active', v.id === id));
     // Match the browser chrome (iOS Safari bars + safe areas + the
     // overscroll bounce) to the active view, so a light page blends
     // into the phone screen instead of sitting inside black borders.
-    const isLightView = (id === 'view-partner-welcome' || id === 'view-project-overseer');
+    const __pv = document.getElementById(id); const isLightView = (id === 'view-partner-welcome' || !!(__pv && __pv.classList.contains('project-view')));
     const chromeColor = isLightView ? '#ffffff' : '#000000';
     const themeMeta = document.querySelector('meta[name="theme-color"]');
     if (themeMeta) themeMeta.setAttribute('content', chromeColor);
@@ -3308,7 +3386,7 @@ Lord you are Holy, Holy, Holy</p>
     // Returning home? restore the pills + tagline that dusted away.
     if (id === 'view-home' && typeof restoreDust === 'function') restoreDust();
     // Animate the particle diagrams only while the Overseer page is open.
-    if (window.particleDiagrams) { id === 'view-project-overseer' ? window.particleDiagrams.start() : window.particleDiagrams.stop(); }
+    if (window.particleDiagrams) { (__pv && __pv.classList.contains('project-view')) ? window.particleDiagrams.start() : window.particleDiagrams.stop(); }
     if (window.paintingParticles) { id === 'view-particle' ? window.paintingParticles.start() : window.paintingParticles.stop(); }
     // Reflect the active view in the URL so a refresh restores it
     const hash = VIEW_HASHES[id];
@@ -3839,12 +3917,14 @@ Lord you are Holy, Holy, Holy</p>
   // ----------------------------------------------------------
   const PARTNER_PASSWORDS = {
     'overseer':           'bleeding',
+    'righthere':          'behold',
     'overseer-interlude': 'yearning',
     'renew-verse':        'mindrenewal',
     'house-pva':          'pvaOStm',
   };
   const PARTNER_VIEWS = {
     'overseer':           'view-project-overseer',
+    'righthere':          'view-project-righthere',
     'overseer-interlude': 'view-partner-shop',
     'renew-verse':        'view-partner-shop',
     'house-pva':          'view-partner-shop',
@@ -4106,7 +4186,23 @@ Lord you are Holy, Holy, Holy</p>
     for(i=0;i<nodes.length;i++){ var n1=nodes[i], n2=nodes[(i+1)%nodes.length]; pushLine(pts, n1[0],n1[1], n2[0],n2[1], 7); }
     return pts;
   }
-  var GEN={harness:harness, swell:swell, guide:guide, rings:rings, gather:gather, atmosphere:atmosphere, overview:overview};
+  function harnessRing(){
+    var pts=[], cx=70, cy=45, R=33, i;
+    var nb=Math.round(R*1.4); for(i=0;i<nb;i++){ var a=i/nb*6.2832; pts.push([cx+Math.cos(a)*R, cy+Math.sin(a)*R]); }
+    for(var o=-R; o<=R; o+=11){
+      for(var s=-R; s<=R; s+=3.6){ var x=cx+s;
+        var ya=cy+s+o; if((x-cx)*(x-cx)+(ya-cy)*(ya-cy)<=R*R) pts.push([x,ya]);
+        var yb=cy-s+o; if((x-cx)*(x-cx)+(yb-cy)*(yb-cy)<=R*R) pts.push([x,yb]); }
+    }
+    return pts;
+  }
+  function transitionLine(){
+    var pts=[], y=45, i;
+    for(i=0;i<=66;i++){ var t=i/66, x=8+t*112, th=t*t*5; pts.push([x,y]); if(th>0.9){ pts.push([x, y-th*0.6]); pts.push([x, y+th*0.6]); } }
+    pushLine(pts, 120, y, 110, y-6, 5); pushLine(pts, 120, y, 110, y+6, 5);
+    return pts;
+  }
+  var GEN={harness:harness, swell:swell, guide:guide, rings:rings, gather:gather, atmosphere:atmosphere, overview:overview, harnessRing:harnessRing, transitionLine:transitionLine};
   var ds=[];
   function setup(c){
     var g=GEN[c.dataset.shape]; if(!g) return;
@@ -4145,8 +4241,8 @@ Lord you are Holy, Holy, Holy</p>
     var cs=document.querySelectorAll('canvas.particle-diagram');
     for(var i=0;i<cs.length;i++) setup(cs[i]);
     window.addEventListener('resize', function(){ for(var i=0;i<ds.length;i++) measure(ds[i]); });
-    var ov=document.getElementById('view-project-overseer');
-    if(ov && ov.classList.contains('active')) start();
+    var ov=document.querySelector('.project-view.active');
+    if(ov) start();
   }
   window.particleDiagrams={start:start, stop:stop};
   if(document.readyState!=='loading') init(); else document.addEventListener('DOMContentLoaded', init);
@@ -4359,24 +4455,26 @@ Lord you are Holy, Holy, Holy</p>
    its particle diagram centred with a short description. Tabs switch
    between the journey and the full list view. */
 (function(){
-  var track = document.getElementById('journey-track');
-  var dotsWrap = document.getElementById('journey-dots');
-  if(track && dotsWrap){
-    var n = track.children.length, idx = 0;
-    function setSlide(i){ idx = i<0?0:(i>n-1?n-1:i); track.style.transform='translateX('+(-idx*100)+'%)'; var dd=dotsWrap.children; for(var j=0;j<dd.length;j++) dd[j].classList.toggle('is-active', j===idx); }
-    for(var i=0;i<n;i++){ var dot=document.createElement('span'); dot.className='journey-dot'+(i===0?' is-active':''); (function(k){ dot.addEventListener('click', function(){ setSlide(k); }); })(i); dotsWrap.appendChild(dot); }
-    var vp = track.parentNode, sx=0, sy=0, down=false;
-    vp.addEventListener('pointerdown', function(e){ down=true; sx=e.clientX; sy=e.clientY; });
-    vp.addEventListener('pointercancel', function(){ down=false; });
-    vp.addEventListener('pointerup', function(e){ if(!down) return; down=false; var dx=e.clientX-sx, dy=e.clientY-sy; if(Math.abs(dx)>40 && Math.abs(dx)>Math.abs(dy)) setSlide(idx + (dx<0?1:-1)); });
-  }
-  var body = document.querySelector('#view-project-overseer .project-body');
-  var tabs = document.querySelectorAll('#view-project-overseer .ov-tab');
-  for(var t=0;t<tabs.length;t++){ (function(btn){ btn.addEventListener('click', function(){
-    for(var k=0;k<tabs.length;k++) tabs[k].classList.toggle('is-active', tabs[k]===btn);
-    var v=btn.getAttribute('data-view');
-    if(body){ body.classList.toggle('show-journey', v==='journey'); body.classList.toggle('show-list', v==='list'); }
-  }); })(tabs[t]); }
+  document.querySelectorAll('.project-view').forEach(function(view){
+    var track = view.querySelector('.journey-track');
+    var dotsWrap = view.querySelector('.journey-dots');
+    if(track && dotsWrap){
+      var n = track.children.length, idx = 0;
+      var setSlide = function(i){ idx = i<0?0:(i>n-1?n-1:i); track.style.transform='translateX('+(-idx*100)+'%)'; var dd=dotsWrap.children; for(var j=0;j<dd.length;j++) dd[j].classList.toggle('is-active', j===idx); };
+      for(var i=0;i<n;i++){ var dot=document.createElement('span'); dot.className='journey-dot'+(i===0?' is-active':''); (function(k){ dot.addEventListener('click', function(){ setSlide(k); }); })(i); dotsWrap.appendChild(dot); }
+      var vp = track.parentNode, sx=0, sy=0, down=false;
+      vp.addEventListener('pointerdown', function(e){ down=true; sx=e.clientX; sy=e.clientY; });
+      vp.addEventListener('pointercancel', function(){ down=false; });
+      vp.addEventListener('pointerup', function(e){ if(!down) return; down=false; var dx=e.clientX-sx, dy=e.clientY-sy; if(Math.abs(dx)>40 && Math.abs(dx)>Math.abs(dy)) setSlide(idx + (dx<0?1:-1)); });
+    }
+    var body = view.querySelector('.project-body');
+    var tabs = view.querySelectorAll('.ov-tab');
+    for(var t=0;t<tabs.length;t++){ (function(btn){ btn.addEventListener('click', function(){
+      for(var k=0;k<tabs.length;k++) tabs[k].classList.toggle('is-active', tabs[k]===btn);
+      var v=btn.getAttribute('data-view');
+      if(body){ body.classList.toggle('show-journey', v==='journey'); body.classList.toggle('show-list', v==='list'); }
+    }); })(tabs[t]); }
+  });
 })();
 </script>
 </body>
