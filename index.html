@@ -1835,6 +1835,8 @@
   .credits-script { font-size: 15px; }
   .moodboard { columns: 2; column-gap: 8px; margin: 6px 0 4px; }
   .moodboard img { width: 100%; margin: 0 0 8px; display: block; border-radius: 4px; break-inside: avoid; }
+  .journey-shots { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; max-width: 460px; align-self: start; margin-left: 6px; }
+  .journey-shots img { width: 100%; display: block; border-radius: 4px; }
   .project-view u { -webkit-text-fill-color: #5a2390; color: #5a2390; text-decoration-color: #5a2390; text-underline-offset: 2px; }
   .day-heading { font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif; font-weight: 700; font-size: 16px; letter-spacing: 0.01em; margin: 28px 0 12px; padding-bottom: 7px; border-bottom: 1px solid rgba(12,10,8,0.2); }
   .script p { margin: 0; }
@@ -3400,7 +3402,7 @@ Lord you are Holy, Holy, Holy</p>
     <div class="overseer-journey role-journey" id="renew-roles">
       <p class="role-intro">Please click on your name to see your journey with this project.</p>
       <div class="role-tabs">
-        <button class="role-tab is-loading" type="button" data-role="kevin" disabled>Kevin James <span class="ld-tag">loading</span></button>
+        <button class="role-tab" type="button" data-role="kevin">Kevin James</button>
         <button class="role-tab" type="button" data-role="arindy">Arindy Plet</button>
         <button class="role-tab" type="button" data-role="maria">Maria Roberta Dobson</button>
         <button class="role-tab" type="button" data-role="andrea">Andrea Onifade</button>
@@ -3418,10 +3420,10 @@ Lord you are Holy, Holy, Holy</p>
       </div>
       <div class="role-panel" data-role="grace">
         <div class="journey-viewport"><div class="journey-track">
-          <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">This is a campaign for <strong>RENEW by PVA</strong> which is a scripture meditation app.</p><p class="journey-desc">Your mission is to <strong>act in visual 2</strong>, where you will show the transition from being in a <strong>state of anxiety</strong> to a <strong>state of peace</strong>.</p><p class="journey-desc">The idea is that actors will show the anxiety without meditation then the peace after meditation. Their outfit portrays the inner change. <strong>They now carry light/revelation</strong>.</p></div></div>
-          <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">Your verse to meditate on is <strong>Isaiah 26:3</strong></p></div></div>
-          <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">Esther-Grace, you are to take on the role of a girl who feels <strong>anxious</strong> and <strong>overwhelmed</strong>.</p><p class="journey-desc">Show this through restless pacing and frustration, then meditate on the verse to show a transition to <strong>peace</strong>, by the end of the visual you should be <strong>peaceful</strong>, <strong>calm</strong> and <strong>settled</strong>.</p><p class="journey-desc">This should also be reflected in your choice of clothing you put on.</p><p class="journey-desc">We don't want people to think the transformation came solely because of a change in mood but mainly because of the <strong>meditation</strong>.</p></div></div>
-          <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">Now take a look at your moodboard and shot list.</p></div></div>
+          <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">This is a campaign for <strong>RENEW by PVA</strong> which is a scripture meditation app.</p><p class="journey-desc">Your mission is to <strong>act in visual 2</strong>, where you will show the transition from being in a <strong>state of anxiety</strong> to a <strong>state of peace</strong>.</p><p class="journey-desc">The idea is that actors will show the anxiety without meditation then the peace after meditation. Their outfit portrays the inner change. <strong>They now carry light/revelation</strong>.</p></div><div class="journey-shots"><img src="grace-mood-1.jpg" alt="" loading="lazy"><img src="grace-mood-2.jpg" alt="" loading="lazy"></div></div>
+          <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">Your verse to meditate on is <strong>Isaiah 26:3</strong></p></div><div class="journey-shots"><img src="grace-mood-3.jpg" alt="" loading="lazy"><img src="grace-mood-4.jpg" alt="" loading="lazy"></div></div>
+          <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">Esther-Grace, you are to take on the role of a girl who feels <strong>anxious</strong> and <strong>overwhelmed</strong>.</p><p class="journey-desc">Show this through restless pacing and frustration, then meditate on the verse to show a transition to <strong>peace</strong>, by the end of the visual you should be <strong>peaceful</strong>, <strong>calm</strong> and <strong>settled</strong>.</p><p class="journey-desc">This should also be reflected in your choice of clothing you put on.</p><p class="journey-desc">We don't want people to think the transformation came solely because of a change in mood but mainly because of the <strong>meditation</strong>.</p></div><div class="journey-shots"><img src="grace-mood-5.jpg" alt="" loading="lazy"><img src="grace-mood-6.jpg" alt="" loading="lazy"></div></div>
+          <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">Now take a look at your moodboard and shot list.</p></div><div class="journey-shots"><img src="grace-mood-7.jpg" alt="" loading="lazy"><img src="grace-mood-8.jpg" alt="" loading="lazy"></div></div>
         </div></div>
         <div class="journey-nav"><div class="journey-dots"></div><p class="journey-hint">swipe</p></div>
       </div>
@@ -3460,7 +3462,11 @@ Lord you are Holy, Holy, Holy</p>
       </div>
       <div class="role-panel" data-role="kevin">
         <div class="journey-viewport"><div class="journey-track">
-          <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">To be built.</p></div></div>
+          <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">This is a campaign for <strong>RENEW by PVA</strong> which is a scripture meditation app.</p><p class="journey-desc">The idea is to shoot three simple 30-second visuals, one in the Lifestyle Studio (with the couch) and two in Studio B (the white cove space studio).</p><p class="journey-desc">Each visual shows the actors go from a <strong>state of chaos</strong> to a <strong>state of order</strong> after meditating on a verse from scripture.</p></div></div>
+          <div class="journey-slide"><div class="journey-overview"><p class="jo-subhead">VISUAL 1 - ANDREA ONIFADE</p><p class="journey-desc">Visual 1 shows an Italian man in a vest doing an aggressive workout, moving from a <strong>state of hurry</strong> to a <strong>state of calm</strong>.</p><p class="journey-desc">He does a few push ups, sit ups, squats, room pacing, sitting and walking.</p><p class="journey-desc">This is mostly tracking shots and quick cuts to show intensity.</p></div></div>
+          <div class="journey-slide"><div class="journey-overview"><p class="jo-subhead">VISUAL 2 - ESTHER-GRACE "GRACE CHI" CHIDIMA</p><p class="journey-desc">Visual 2 shows a woman dealing with <strong>anxiety</strong> but moving to a place of <strong>peace</strong> as she meditates on the Word.</p><p class="journey-desc">This has more close up shots showing shaking hands, rapid-blinking eyes, tense neck muscles.</p><p class="journey-desc">This is mostly close-up shots and wide-angle shots.</p></div></div>
+          <div class="journey-slide"><div class="journey-overview"><p class="jo-subhead">VISUAL 3 - DEAN "DEANO" DOBSON</p><p class="journey-desc">Visual 3 shows a man dealing with <strong>hopelessness</strong> but moving to a place of <strong>joy</strong> as he meditates on the Word.</p><p class="journey-desc">This has still close up shots showing the man's face moving from despair to joy. A tracking shot showing struggle against the room to face a wall.</p><p class="journey-desc">This is mostly close-up shots and a tracking shot.</p></div></div>
+          <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">Lay out the equipment list that you have.</p></div></div>
         </div></div>
         <div class="journey-nav"><div class="journey-dots"></div><p class="journey-hint">swipe</p></div>
       </div>
@@ -3484,13 +3490,13 @@ Lord you are Holy, Holy, Holy</p>
         <p class="script-note">To be filled in.</p>
       </div></div>
     </section>
-    <section class="project-section is-loading">
-      <button class="project-section-title" type="button" aria-expanded="false" disabled><span>VISUAL 2 - Esther-Grace "Grace Chi" Chidima</span><span class="ld-tag" aria-hidden="true">LOADING</span></button>
+    <section class="project-section">
+      <button class="project-section-title" type="button" aria-expanded="false"><span>VISUAL 2 - Esther-Grace "Grace Chi" Chidima</span><span class="project-section-chevron" aria-hidden="true">+</span></button>
       <div class="project-section-body"><div class="project-section-inner">
         <p class="visual-subhead">SCRIPT</p>
         <div class="script"><p class="s-logline">LOGLINE — Grace Chi moves from anxiety to peace upon meditating on Isaiah 26:3.</p><p class="s-scene">INT. BEDROOM — MORNING</p><p class="s-action">OPEN ON GRACE CHI’s hands, shaking.</p><p class="s-trans">CUT TO:</p><p class="s-action">Quick blinking.</p><p class="s-trans">CUT TO:</p><p class="s-action">A hand hits her face. She rises from the bed.</p><p class="s-trans">CUT TO:</p><p class="s-action">Quick pacing.</p><p class="s-trans">CUT TO:</p><p class="s-action">Frustration — she can’t get the stack right, but she keeps saying the verse over and over.</p></div>
         <p class="visual-subhead">MOODBOARD</p>
-        <p class="script-note">To be filled in.</p>
+        <div class="moodboard"><img src="grace-mood-1.jpg" alt="" loading="lazy"><img src="grace-mood-2.jpg" alt="" loading="lazy"><img src="grace-mood-3.jpg" alt="" loading="lazy"><img src="grace-mood-4.jpg" alt="" loading="lazy"><img src="grace-mood-5.jpg" alt="" loading="lazy"><img src="grace-mood-6.jpg" alt="" loading="lazy"><img src="grace-mood-7.jpg" alt="" loading="lazy"><img src="grace-mood-8.jpg" alt="" loading="lazy"></div>
         <p class="visual-subhead">SHOT LIST</p>
         <p class="script-note">To be filled in.</p>
       </div></div>
