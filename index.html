@@ -1607,6 +1607,7 @@
   /* Field wrapper carries the gradient pill ring (a masked ::before,
      exactly like the Continue button) so the input itself stays
      transparent and the grainy paper shows through — no white fill. */
+  .pp-row { display: inline-flex; align-items: center; gap: 8px; }
   .pp-field {
     position: relative;
     display: inline-block;
@@ -1651,6 +1652,34 @@
     outline: none;
     caret-color: #1a1612;
   }
+  .pp-go {
+    position: relative;
+    flex-shrink: 0; width: 30px; height: 30px; border-radius: 999px; padding: 0;
+    border: none; background: none;
+    cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
+    font-size: 16px; line-height: 1; color: #1a1612; opacity: 0.9;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+  .pp-go::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 999px;
+    padding: 0.75px;
+    background: linear-gradient(95deg,
+      #2a0f4d 0%,
+      #4a1f7a 22%,
+      #7a1024 50%,
+      #944a18 78%,
+      #7a5a1e 100%);
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    pointer-events: none;
+  }
+  .pp-go:hover { opacity: 1; transform: translateX(2px); }
   .pp-error {
     font-size: 11px;
     letter-spacing: 0.16em;
@@ -1837,6 +1866,8 @@
   .moodboard img { width: 100%; margin: 0 0 8px; display: block; border-radius: 4px; break-inside: avoid; }
   .journey-shots { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; max-width: 460px; align-self: start; margin-left: 6px; }
   .journey-shots img { width: 100%; display: block; border-radius: 4px; }
+  .journey-shot { width: 100%; max-width: 440px; align-self: start; margin-left: 6px; }
+  .journey-shot img { width: 100%; display: block; border-radius: 4px; }
   .project-view u { -webkit-text-fill-color: #5a2390; color: #5a2390; text-decoration-color: #5a2390; text-underline-offset: 2px; }
   .day-heading { font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif; font-weight: 700; font-size: 16px; letter-spacing: 0.01em; margin: 28px 0 12px; padding-bottom: 7px; border-bottom: 1px solid rgba(12,10,8,0.2); }
   .script p { margin: 0; }
@@ -2817,7 +2848,8 @@
       <div class="password-prompt" id="password-prompt">
         <p class="pp-preface" id="pp-preface">Drop all ego, drop all pride, drop all ownership. We are here to receive and steward what He gives.</p>
         <p class="pp-label">Enter the password to continue</p>
-        <div class="pp-field">
+        <div class="pp-row">
+          <div class="pp-field">
           <input
             type="password"
             id="pp-input"
@@ -2827,6 +2859,8 @@
             spellcheck="false"
             aria-label="Partner password"
           />
+          </div>
+          <button type="button" class="pp-go" id="pp-go" aria-label="Enter password">›</button>
         </div>
         <p class="pp-error" id="pp-error">incorrect — try again</p>
       </div>
@@ -3403,7 +3437,6 @@ Lord you are Holy, Holy, Holy</p>
       <p class="role-intro">Please click on your name to see your journey with this project.</p>
       <div class="role-tabs">
         <button class="role-tab" type="button" data-role="kevin">Kevin James</button>
-        <button class="role-tab" type="button" data-role="arindy">Arindy Plet</button>
         <button class="role-tab" type="button" data-role="maria">Maria Roberta Dobson</button>
         <button class="role-tab" type="button" data-role="andrea">Andrea Onifade</button>
         <button class="role-tab" type="button" data-role="grace">Sovereign "Sove" Secondus</button>
@@ -3411,10 +3444,10 @@ Lord you are Holy, Holy, Holy</p>
       </div>
       <div class="role-panel" data-role="dean">
         <div class="journey-viewport"><div class="journey-track">
-          <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">This is a campaign for <strong>RENEW by PVA</strong> which is a scripture meditation app.</p><p class="journey-desc">Your mission is to <strong>act in visual 3</strong>, where you will show the transition from being in a <strong>state of depression and hopelessness</strong> to a <strong>state of complete joy and certainty</strong>.</p><p class="journey-desc">The idea is that actors will show the hopelessness without meditation then the joy after meditation. Their outfit portrays the inner change. <strong>They now carry light/revelation</strong>.</p></div></div>
-          <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">Your verse to meditate on is <strong>Romans 15:13</strong></p></div></div>
-          <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">Dean, you are to take on the role of a man who feels <strong>hopeless</strong> and <strong>defeated</strong>.</p><p class="journey-desc">Show this through a heavy, withdrawn stillness, then meditate on the verse to show a transition to <strong>joy</strong>, by the end of the visual you should be <strong>joyful</strong>, <strong>certain</strong> and <strong>hopeful</strong>.</p><p class="journey-desc">This should also be reflected in your choice of clothing you put on.</p><p class="journey-desc">We don't want people to think the transformation came solely because of a change in mood but mainly because of the <strong>meditation</strong>.</p></div></div>
-          <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">Now take a look at your moodboard and shot list.</p></div></div>
+          <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">This is a campaign for <strong>RENEW by PVA</strong> which is a scripture meditation app.</p><p class="journey-desc">Your mission is to <strong>act in visual 3</strong>, where you will show the transition from being in a <strong>state of depression and hopelessness</strong> to a <strong>state of complete joy and certainty</strong>.</p><p class="journey-desc">The idea is that actors will show the hopelessness without meditation then the joy after meditation. Their outfit portrays the inner change. <strong>They now carry light/revelation</strong>.</p></div><div class="journey-shot"><img src="deano-mood-1.jpg" alt="" loading="lazy"></div></div>
+          <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">Your verse to meditate on is <strong>Romans 15:13</strong></p></div><div class="journey-shot"><img src="deano-mood-2.jpg" alt="" loading="lazy"></div></div>
+          <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">Dean, you are to take on the role of a man who feels <strong>hopeless</strong> and <strong>defeated</strong>.</p><p class="journey-desc">Show this through a heavy, withdrawn stillness, then meditate on the verse to show a transition to <strong>joy</strong>, by the end of the visual you should be <strong>joyful</strong>, <strong>certain</strong> and <strong>hopeful</strong>.</p><p class="journey-desc">This should also be reflected in your choice of clothing you put on.</p><p class="journey-desc">We don't want people to think the transformation came solely because of a change in mood but mainly because of the <strong>meditation</strong>.</p></div><div class="journey-shot"><img src="deano-mood-3.jpg" alt="" loading="lazy"></div></div>
+          <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">Now take a look at your moodboard and shot list.</p></div><div class="journey-shot"><img src="deano-mood-4.jpg" alt="" loading="lazy"></div></div>
         </div></div>
         <div class="journey-nav"><div class="journey-dots"></div><p class="journey-hint">swipe</p></div>
       </div>
@@ -3433,18 +3466,6 @@ Lord you are Holy, Holy, Holy</p>
           <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">Your verse to meditate on is <strong>Matthew 11:28-29</strong></p></div></div>
           <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">Andrea, you are to take on the role of a man who is in a <strong>rush</strong>, <strong>impatient</strong> and <strong>unstable</strong>.</p><p class="journey-desc">Show this through an aggressive <strong>home workout</strong> with body weight, then meditate on the verse to show a transition to <strong>calm</strong>, by the end of the visual you should be <strong>calm</strong>, <strong>collected</strong> and <strong>stable</strong>.</p><p class="journey-desc">This should also be reflected in your choice of clothing you put on.</p><p class="journey-desc">We don't want people to think the transformation came solely because of the workout but mainly because of the <strong>meditation</strong>.</p></div></div>
           <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">Now take a look at your moodboard and shot list.</p></div></div>
-        </div></div>
-        <div class="journey-nav"><div class="journey-dots"></div><p class="journey-hint">swipe</p></div>
-      </div>
-      <div class="role-panel" data-role="arindy">
-        <div class="journey-viewport"><div class="journey-track">
-          <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">This is a campaign for RENEW by PVA which is a scripture meditation app.</p><p class="journey-desc">Your mission is to take <strong>3 scripture verses</strong> and turn them into an outfit that our actors will wear in their individual shoots.</p><p class="journey-desc">The idea is that actors will show the process of meditation and then <strong>wear the verses</strong> they meditate on by the end of their visual.</p><p class="journey-desc"><strong>The outfits are to represent the inward change.</strong></p></div></div>
-          <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">Read and meditate on <strong>Matthew 11:28-29</strong>, <strong>Isaiah 26:3</strong>, <strong>Romans 15:13</strong>.</p></div></div>
-          <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">Then answer the question: "<strong>if I had to turn this verse into a fit, what would it look like?</strong>"</p></div></div>
-          <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">Arindy, you will be styling Andrea and Sovereign.</p><p class="journey-desc">Andrea Onifade's verse is <strong>Matthew 11:28-29</strong></p><p class="journey-desc">Sovereign "Sove" Secondus's verse is <strong>Isaiah 26:3</strong></p></div></div>
-          <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">Send what the outfits should look like and we will try to bring/source the items.</p></div></div>
-          <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">Arrive on set. Connect with everyone. Lay out your pieces on the racks. Scan the feel of the set.</p></div></div>
-          <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">Then we shoot.</p></div></div>
         </div></div>
         <div class="journey-nav"><div class="journey-dots"></div><p class="journey-hint">swipe</p></div>
       </div>
@@ -3507,14 +3528,14 @@ Lord you are Holy, Holy, Holy</p>
         <p class="visual-subhead">SCRIPT</p>
         <div class="script"><p class="s-logline">LOGLINE — Deano moves from depression and hopelessness to complete joy and certainty upon meditating on Romans 15:13.</p><p class="s-action">Script to be written.</p></div>
         <p class="visual-subhead">MOODBOARD</p>
-        <p class="script-note">To be filled in.</p>
+        <div class="moodboard"><img src="deano-mood-1.jpg" alt="" loading="lazy"><img src="deano-mood-2.jpg" alt="" loading="lazy"><img src="deano-mood-3.jpg" alt="" loading="lazy"><img src="deano-mood-4.jpg" alt="" loading="lazy"></div>
         <p class="visual-subhead">SHOT LIST</p>
         <p class="script-note">To be filled in.</p>
       </div></div>
     </section>
     <section class="project-section">
       <button class="project-section-title" type="button" aria-expanded="false"><span>CREDITS</span><span class="project-section-chevron" aria-hidden="true">+</span></button>
-      <div class="project-section-body"><div class="project-section-inner"><div class="script credits-script"><p><strong>Director:</strong> Thecreated</p><p><strong>Producer:</strong> Thecreated</p><p><strong>DOP:</strong> Kevin James</p><p><strong>Editor:</strong> Kevin James</p><p><strong>Stylist:</strong> Arindy Plet</p><p><strong>Stylist:</strong> Maria Roberta Dobson (MRD)</p><p><strong>Actor:</strong> Andrea Onifade</p><p><strong>Actor:</strong> Sovereign "Sove" Secondus</p><p><strong>Actor:</strong> Dean "Deano" Dobson</p></div></div></div>
+      <div class="project-section-body"><div class="project-section-inner"><div class="script credits-script"><p><strong>Director:</strong> Thecreated</p><p><strong>Producer:</strong> Thecreated</p><p><strong>DOP:</strong> Kevin James</p><p><strong>Editor:</strong> Kevin James</p><p><strong>Stylist:</strong> Maria Roberta Dobson (MRD)</p><p><strong>Actor:</strong> Andrea Onifade</p><p><strong>Actor:</strong> Sovereign "Sove" Secondus</p><p><strong>Actor:</strong> Dean "Deano" Dobson</p></div></div></div>
     </section>
   </div>
 </section>
@@ -4268,6 +4289,8 @@ Lord you are Holy, Holy, Holy</p>
     if (e.key === 'Enter') { e.preventDefault(); tryPartnerPassword(); }
     if (ppError.classList.contains('show')) ppError.classList.remove('show');
   });
+  const ppGo = document.getElementById('pp-go');
+  if (ppGo) ppGo.addEventListener('click', () => { tryPartnerPassword(); });
 
   // (Password gate removed — partners now flow welcome → workshop.)
 
