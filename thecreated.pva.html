@@ -1582,6 +1582,31 @@
     text-shadow: 0.4px 0 0 #000, -0.4px 0 0 #000;
   }
 
+  /* Seed-list archive — a tab at the bottom of the project list that
+     swaps the current seeds for the archived ones, mirroring the
+     project-page tab idiom (small, tracked, gradient underline). */
+  .seed-list { display: flex; flex-direction: column; align-items: flex-start; gap: 16px; width: 100%; }
+  .seed-list-archive { display: none; }
+  .project-links.show-archive .seed-list-current { display: none; }
+  .project-links.show-archive .seed-archive-open { display: none; }
+  .project-links.show-archive .seed-list-archive { display: flex; }
+  .seed-archive-tab {
+    margin-top: 14px;
+    background: none; border: none; cursor: pointer; padding: 6px 0;
+    font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 11px; letter-spacing: 0.24em; text-transform: uppercase;
+    color: rgba(20,16,12,0.42); position: relative;
+    display: inline-flex; align-items: baseline; gap: 8px;
+    transition: color 0.3s ease, transform 0.3s ease;
+  }
+  .seed-archive-tab .tab-arrow { font-size: 12px; color: currentColor; -webkit-text-fill-color: currentColor; opacity: 0.75; }
+  .seed-archive-tab:hover, .seed-archive-tab:focus-visible { color: rgba(20,16,12,0.95); transform: translateX(2px); outline: none; }
+  .seed-archive-tab:hover::after, .seed-archive-tab:focus-visible::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px;
+    background: linear-gradient(90deg, #4a1f7a, #7a1024, #7a5a1e);
+  }
+  .seed-archive-back { margin-top: 18px; color: rgba(20,16,12,0.42); }
+
   /* Password prompt — appears inline after a tab is clicked */
   .password-prompt {
     position: relative;
@@ -2337,6 +2362,34 @@
   }
   .seed-blurb p + p { margin-top: 0.7em; }
   .hl-purple { background: rgba(164,110,242,0.28); padding: 0 4px; border-radius: 3px; }
+  /* ---- Overseer: seed pathway (circles + connecting line) ---- */
+  .seed-path { margin: 0 0 30px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .seed-path::-webkit-scrollbar { display: none; }
+  .seed-path-track { display: flex; align-items: flex-start; min-width: 600px; }
+  .seed-path-stop { position: relative; flex: 1 1 0; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 0 4px; }
+  .seed-path-link { position: absolute; top: 9px; left: calc(-50% + 16px); width: calc(100% - 32px); height: 12px; display: block; pointer-events: none; }
+  .seed-path-dot { display: block; width: 30px; height: 30px; background: transparent; flex: none; }
+  .seed-path-label { margin-top: 9px; font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif; font-size: 9.5px; letter-spacing: 0.12em; text-transform: uppercase; line-height: 1.55; color: rgba(20,16,12,0.7); max-width: 96px; }
+  .seed-path-sub { display: block; margin-top: 4px; font-size: 8.5px; letter-spacing: 0.03em; text-transform: none; font-style: italic; color: rgba(20,16,12,0.5); }
+  /* ---- Overseer: song-title divider slides ---- */
+  .journey-songcard { display: flex; flex-direction: column; justify-content: center; min-height: 180px; text-align: center; }
+  .journey-songnum { font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif; font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(20,16,12,0.5); margin: 0 0 10px; }
+  .journey-songtitle { font-family: 'Courier Prime', 'Courier New', monospace; font-weight: 700; font-size: clamp(20px, 5.5vw, 26px); letter-spacing: 0.01em; color: #0c0a08; margin: 0; }
+  .journey-songtitle-multi { background: linear-gradient(95deg, #4a1f7a, #7a1024, #944a18, #7a5a1e); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
+  /* ---- Overseer: diagram index grid ---- */
+  .journey-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px 14px; width: 100%; max-width: 420px; margin: 0 auto; }
+  .jg-cell { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 7px; }
+  .jg-cell:last-child:nth-child(odd) { grid-column: 1 / -1; }
+  .journey-grid .journey-diagram { width: 100%; max-width: 150px; height: 64px; }
+  .jg-label { font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif; font-size: 9.5px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(20,16,12,0.6); }
+  .journey-diagram-globe { width: clamp(210px, 70vw, 300px); height: clamp(150px, 50vw, 215px); }
+  /* ---- journeys: tighter feel on phones ---- */
+  @media (max-width: 480px) {
+    .journey-slide { min-height: 46vh; gap: 22px; padding: 10px 4px; }
+    .journey-songcard { min-height: 140px; }
+    .journey-grid { gap: 14px 10px; }
+    .journey-grid .journey-diagram { height: 56px; }
+  }
   /* ---- RENEW: role picker (Director / DOP / Actor / Stylist / Producer) ---- */
   .role-intro {
     font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif;
@@ -2834,6 +2887,114 @@
   #view-particle.flooded .flood-intro { animation: floodIn 0.9s cubic-bezier(0.22,0.61,0.36,1) 0.1s forwards; }
   #view-particle.flooded .painting-card { animation: floodIn 0.6s cubic-bezier(0.22,0.61,0.36,1) forwards; }
   @keyframes floodIn { to { opacity: 1; transform: translateY(0); } }
+
+  /* ============================================================
+     DOVE HOME (2026-11-21) — the Holy Spirit as a white dove flies
+     toward you in slow motion; each wingbeat lifts the liquid
+     gradient from black toward white. Swiping up speeds the wings
+     until the light is blinding and covers the dove. Then the
+     white section: each project is a ring of moving particles.
+     ============================================================ */
+  #view-home { display: block; background: #000; }
+  .dv-scroll {
+    position: absolute; inset: 0;
+    overflow-y: auto; overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: none;
+  }
+  .dv-hero { position: relative; height: 320vh; }
+  .dv-stage {
+    position: sticky; top: 0;
+    height: 100vh; height: 100dvh;
+    overflow: hidden; background: #000;
+  }
+  .dv-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .dv-white {   /* the white comes as a sheet swiped down from the top, with a soft lower edge */
+    position: absolute; left: 0; right: 0; top: 0; height: 135%;
+    background: linear-gradient(#fff 0, #fff 76%, rgba(255,255,255,0) 100%);
+    transform: translateY(-101%); pointer-events: none; will-change: transform;
+  }
+  .dv-hint {
+    position: absolute; left: 0; right: 0;
+    bottom: calc(30px + env(safe-area-inset-bottom));
+    margin: 0; text-align: center;
+    font-size: 11px; font-weight: 400; letter-spacing: 0.22em; text-transform: uppercase;
+    color: rgba(255,255,255,0.62);
+    opacity: 1;                      /* steady: no fading in and out (Emmanuel) */
+    pointer-events: none;
+  }
+  .dv-hint::after {                  /* a thin track with a small light sliding down it */
+    content: ""; display: block; width: 6px; height: 28px; margin: 12px auto 0;
+    background:
+      radial-gradient(circle, rgba(255,255,255,0.9) 0 1.6px, rgba(255,255,255,0) 2.4px) no-repeat,
+      linear-gradient(rgba(255,255,255,0.28), rgba(255,255,255,0.28)) no-repeat;
+    background-size: 6px 6px, 1px 100%;
+    background-position: center 0, center 0;
+    animation: dvHintSlide 1.8s cubic-bezier(.45,0,.55,1) infinite;
+  }
+  .dv-hint.gone { opacity: 0 !important; animation: none; }
+  @keyframes dvHintIn { to { opacity: 1; } }
+  @keyframes dvHintSlide { from { background-position: center 0, center 0; } to { background-position: center 100%, center 0; } }
+
+  .dv-seeds {
+    position: relative; background: #fff; color: #1a1612;
+    padding: 8vh 16px 4vh;   /* less white before the first projects */
+  }
+  .dv-dots { position: absolute; left: 0; right: 0; top: -100vh; width: 100%; height: calc(100% + 100vh); pointer-events: none; display: block; z-index: 1; }   /* reaches up into the white, for the falling dust */
+  .dv-sr {
+    position: absolute; width: 1px; height: 1px; overflow: hidden;
+    clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
+  }
+  .dv-grid {
+    position: relative;
+    display: flex; flex-wrap: wrap; justify-content: center;
+    gap: 40px 16px;
+    max-width: 1040px; margin: 0 auto;
+  }
+  .dv-seed {
+    width: calc(50% - 8px);
+    background: none; border: 0; padding: 0; margin: 0;
+    cursor: pointer; color: inherit; font: inherit;
+    display: flex; flex-direction: column; align-items: center; gap: 12px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  @media (min-width: 720px) {
+    .dv-grid { gap: 64px 32px; }
+    .dv-seed { width: calc(25% - 24px); }
+  }
+  .dv-ring { display: block; width: 86%; aspect-ratio: 1; border-radius: 50%; }
+  .dv-name {   /* the movie-script font, as on the project pages and the seed list (Emmanuel, 21 Nov) */
+    font-family: 'Courier Prime', 'Courier New', monospace;
+    font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;   /* bold (Emmanuel, 21 Nov): Courier Prime's true bold cut */
+    line-height: 1.45; text-align: center; color: rgba(26,22,18,0.78);
+    transition: color .4s ease;
+    padding: 0 4px;
+  }
+  .dv-seed:hover .dv-name, .dv-seed:focus-visible .dv-name { color: #1a1612; }
+  .dv-seed:focus-visible { outline: none; }
+  .dv-seed:focus-visible .dv-ring { outline: 1.5px solid rgba(26,22,18,0.45); outline-offset: 6px; }
+
+  /* The old home now sits at the foot of the white page */
+  #view-home .home-center {
+    flex: none; min-height: 100vh; min-height: 100dvh;
+    padding: 6vh 16px calc(8vh + env(safe-area-inset-bottom));
+    background: #fff; overflow: visible;
+  }
+  #view-home .immersive-tile {
+    box-shadow: none;   /* its row clips shadows: on white they show as a square */
+  }
+  #view-home .partner-tab, #view-home .thought-stream-btn {
+    border-color: rgba(26,22,18,0.24); color: rgba(26,22,18,0.82);
+  }
+  #view-home .partner-tab:hover, #view-home .thought-stream-btn:hover {
+    border-color: rgba(26,22,18,0.55); color: #1a1612; background: rgba(26,22,18,0.04);
+  }
+  #view-home .home-tagline { color: rgba(26,22,18,0.6); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dv-hint { animation: none; opacity: 1; }
+    .dv-hint::after { animation: none; }
+  }
 </style>
 </head>
 <body>
@@ -2903,21 +3064,52 @@
      HOMEPAGE
      ============================================================ -->
 <section id="view-home" class="view active">
-  <div class="home-center">
-    <div class="card-row" id="card-row">
-      <div class="tile-stack stack-unified">
-        <article class="immersive-tile blended-tile" id="immersive-tile" role="button" tabindex="0" aria-label="Open the threads">
-          <div class="blended-surface"></div>
-          <canvas class="home-dissolve" id="home-dissolve" aria-hidden="true"></canvas>
-        </article>
+  <div class="dv-scroll" id="dv-scroll">
+
+    <!-- 1 · The dove. A sticky stage; scrolling through the tall hero
+         drives the approach, the wingbeat speed and the light. -->
+    <div class="dv-hero" id="dv-hero">
+      <div class="dv-stage" id="dv-stage" role="img" aria-label="A white dove, the Holy Spirit, flies toward you as the darkness turns to light.">
+        <canvas class="dv-canvas" id="dv-canvas" aria-hidden="true"></canvas>
+        <div class="dv-white" id="dv-white" aria-hidden="true"></div>
+        <p class="dv-hint" id="dv-hint" aria-hidden="true">swipe up</p>
       </div>
     </div>
 
-    <div class="action-row">
-      <button class="partner-tab" id="open-partner">Partner</button>
-      <button class="thought-stream-btn" id="open-thoughts">Thought</button>
+    <!-- 2 · The projects. Each is a ring of moving particles. -->
+    <div class="dv-seeds" id="dv-seeds">
+      <canvas class="dv-dots" id="dv-dots" aria-hidden="true"></canvas>
+      <h2 class="dv-sr">Projects</h2>
+      <div class="dv-grid">
+        <!-- order (Emmanuel, 21 Nov): The Overseer, Wrestle, Selfquake first -->
+        <button class="dv-seed" type="button" data-tab="overseer"><span class="dv-ring"></span><span class="dv-name">The Overseer</span></button>
+        <button class="dv-seed" type="button" data-tab="wrestle"><span class="dv-ring"></span><span class="dv-name">Wrestle</span></button>
+        <button class="dv-seed" type="button" data-tab="selfquake"><span class="dv-ring"></span><span class="dv-name">Selfquake</span></button>
+        <button class="dv-seed" type="button" data-tab="house-pva"><span class="dv-ring"></span><span class="dv-name">HOUSE PVA</span></button>
+        <button class="dv-seed" type="button" data-tab="housepva-intro"><span class="dv-ring"></span><span class="dv-name">HOUSEPVA: An Introduction</span></button>
+        <button class="dv-seed" type="button" data-tab="housepva-usage"><span class="dv-ring"></span><span class="dv-name">HOUSEPVA: Usage</span></button>
+        <button class="dv-seed" type="button" data-tab="renew-verse"><span class="dv-ring"></span><span class="dv-name">What verse are you wearing?</span></button>
+      </div>
     </div>
-    <p class="home-tagline">powered by pvaOS<span class="tm">&#8482;</span></p>
+
+    <!-- 3 · The original home, kept at the foot of the white page. -->
+    <div class="home-center">
+      <div class="card-row" id="card-row">
+        <div class="tile-stack stack-unified">
+          <article class="immersive-tile blended-tile" id="immersive-tile" role="button" tabindex="0" aria-label="Open the threads">
+            <div class="blended-surface"></div>
+            <canvas class="home-dissolve" id="home-dissolve" aria-hidden="true"></canvas>
+          </article>
+        </div>
+      </div>
+
+      <div class="action-row">
+        <button class="partner-tab" id="open-partner">Partner</button>
+        <button class="thought-stream-btn" id="open-thoughts">Thought</button>
+      </div>
+      <p class="home-tagline">powered by pvaOS<span class="tm">&#8482;</span></p>
+    </div>
+
   </div>
 </section>
 
@@ -2950,11 +3142,19 @@
         </div>
         <div class="project-links">
           <p class="partner-tabs-header">Please select the seed you are partnering on.</p>
-          <button class="partner-tab-link" data-tab="overseer-interlude">The Overseer's Interlude <span class="tab-arrow">→</span></button>
-          <button class="partner-tab-link" data-tab="overseer">The Overseer <span class="tab-arrow">→</span></button>
-          <button class="partner-tab-link" data-tab="righthere">Right Here (Behold) <span class="tab-arrow">→</span></button>
-          <button class="partner-tab-link" data-tab="renew-verse">"What verse are you wearing?" for RENEW by PVA <span class="tab-arrow">→</span></button>
-          <button class="partner-tab-link" data-tab="house-pva">HOUSE PVA <span class="tab-arrow">→</span></button>
+          <div class="seed-list seed-list-current">
+            <button class="partner-tab-link" data-tab="overseer">THE OVERSEER <span class="tab-arrow">→</span></button>
+            <button class="partner-tab-link" data-tab="house-pva">HOUSE PVA <span class="tab-arrow">→</span></button>
+            <button class="partner-tab-link" data-tab="housepva-intro">HOUSEPVA: An Introduction <span class="tab-arrow">→</span></button>
+            <button class="partner-tab-link" data-tab="housepva-usage">HOUSEPVA: Usage <span class="tab-arrow">→</span></button>
+            <button class="partner-tab-link" data-tab="wrestle">WRESTLE <span class="tab-arrow">→</span></button>
+            <button class="partner-tab-link" data-tab="selfquake">SELFQUAKE <span class="tab-arrow">→</span></button>
+          </div>
+          <button class="seed-archive-tab seed-archive-open" type="button" data-archive="open">archive <span class="tab-arrow">→</span></button>
+          <div class="seed-list seed-list-archive">
+            <button class="partner-tab-link" data-tab="renew-verse">"What verse are you wearing?" for RENEW by PVA <span class="tab-arrow">→</span></button>
+            <button class="seed-archive-tab seed-archive-back" type="button" data-archive="close">← back</button>
+          </div>
         </div>
       </div>
 
@@ -3093,6 +3293,16 @@
 
     <div class="overseer-journey role-journey" id="overseer-roles">
       <p class="role-intro">Please click on your name to see your journey in cultivating the land around this seed.</p>
+      <div class="seed-path" aria-label="the pathway of the seed">
+        <div class="seed-path-track">
+          <div class="seed-path-stop"><canvas class="seed-path-dot seed-path-dot-seed" aria-hidden="true"></canvas><span class="seed-path-label">Seed<span class="seed-path-sub">recognising God as sovereign over our souls</span></span></div>
+          <div class="seed-path-stop"><canvas class="seed-path-link" aria-hidden="true"></canvas><canvas class="seed-path-dot" aria-hidden="true"></canvas><span class="seed-path-label">The Overseer's Interlude</span></div>
+          <div class="seed-path-stop"><canvas class="seed-path-link" aria-hidden="true"></canvas><canvas class="seed-path-dot" aria-hidden="true"></canvas><span class="seed-path-label">The Overseer</span></div>
+          <div class="seed-path-stop"><canvas class="seed-path-link" aria-hidden="true"></canvas><canvas class="seed-path-dot" aria-hidden="true"></canvas><span class="seed-path-label">Right Here (Behold)</span></div>
+          <div class="seed-path-stop"><canvas class="seed-path-link" aria-hidden="true"></canvas><canvas class="seed-path-dot" aria-hidden="true"></canvas><span class="seed-path-label">Instruction</span></div>
+          <div class="seed-path-stop"><canvas class="seed-path-link" aria-hidden="true"></canvas><canvas class="seed-path-dot" aria-hidden="true"></canvas><span class="seed-path-label">Abba Figure</span></div>
+        </div>
+      </div>
       <div class="role-tabs">
         <button class="role-tab" type="button" data-role="korby">Simon Kobina "Korby" Nyamekye Imbrah</button>
         <button class="role-tab" type="button" data-role="marika">Marika "Marika" Bastien</button>
@@ -3100,8 +3310,14 @@
       </div>
       <div class="role-panel" data-role="korby">
         <div class="journey-viewport"><div class="journey-track">
-          <div class="journey-slide"><div class="journey-overview"><p class="journey-desc"><strong>This seed is called <span class="hl-purple">The Overseer</span>.</strong></p><p class="journey-desc"><strong>THE OVERSEER is broken up into 5 parts, it's not just one song:</strong></p><p class="journey-desc"><strong>1. The Overseer's Interlude</strong></p><p class="journey-desc"><strong>2. The Overseer</strong></p><p class="journey-desc"><strong>3. Right Here (Behold)</strong></p><p class="journey-desc"><strong>4. Instruction</strong></p><p class="journey-desc"><strong>5. (praying for the appropriate name)</strong></p></div></div>
+          <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">This seed is called <strong><span class="hl-purple">THE OVERSEER</span></strong>.</p><p class="journey-desc">It is a revelation of <strong>God as sovereign over our souls</strong>.</p><p class="journey-desc">It is also a study of <strong>Psalm 24:3-4, Psalm 55:22, Psalm 135:1-3, Ezekiel 18:4, Acts 2:25-28</strong>.</p><p class="journey-desc"><strong>THE OVERSEER</strong> is broken up into <strong>5 parts</strong>, it's not just one song:</p><p class="journey-desc">1. <strong>The Overseer's Interlude</strong></p><p class="journey-desc">2. <strong>The Overseer</strong></p><p class="journey-desc">3. <strong>Right Here (Behold)</strong></p><p class="journey-desc">4. <strong>Instruction</strong></p><p class="journey-desc">5. <strong>Abba Figure</strong></p></div></div>
+          <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">Simon, you need to read:</p><p class="journey-desc"><strong>Psalm 24:3-4</strong></p><p class="journey-desc"><strong>Psalm 55:22</strong></p><p class="journey-desc"><strong>Psalm 135:1-3</strong></p><p class="journey-desc"><strong>Ezekiel 18:4</strong></p><p class="journey-desc"><strong>Acts 2:25-28</strong></p><p class="journey-desc">When you are done, read it again.</p><p class="journey-desc">And read it again.</p><p class="journey-desc">Now ask yourself, what do you see visually?</p></div></div>
           <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">Simon, your primary role is producer on this seed.</p><p class="journey-desc">Please understand you are not limited to this role.</p></div></div>
+          <div class="journey-slide"><div class="journey-overview journey-songcard"><p class="journey-songtitle journey-songtitle-multi">The Elements</p></div></div>
+          <div class="journey-slide"><div class="journey-grid"><figure class="jg-cell"><div class="journey-diagram"><canvas class="particle-diagram" data-shape="gather" aria-hidden="true"></canvas></div><figcaption class="jg-label">gathering</figcaption></figure><figure class="jg-cell"><div class="journey-diagram"><canvas class="particle-diagram" data-shape="atmosphereHarness" aria-hidden="true"></canvas></div><figcaption class="jg-label">atmosphere harnessing</figcaption></figure><figure class="jg-cell"><div class="journey-diagram"><canvas class="particle-diagram" data-shape="transitionLine" aria-hidden="true"></canvas></div><figcaption class="jg-label">transition</figcaption></figure><figure class="jg-cell"><div class="journey-diagram journey-diagram-gold"><canvas class="particle-diagram" data-shape="rings" aria-hidden="true"></canvas></div><figcaption class="jg-label">fire</figcaption></figure><figure class="jg-cell"><div class="journey-diagram"><canvas class="particle-diagram" data-shape="harness" aria-hidden="true"></canvas></div><figcaption class="jg-label">harness</figcaption></figure><figure class="jg-cell"><div class="journey-diagram"><canvas class="particle-diagram" data-shape="guide" aria-hidden="true"></canvas></div><figcaption class="jg-label">guide</figcaption></figure></div></div>
+          <div class="journey-slide"><div class="journey-overview journey-songcard"><p class="journey-songnum">part 1</p><p class="journey-songtitle">The Overseer's Interlude</p></div></div>
+          <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">This is contemplation and yearning for the Lord.</p></div></div>
+          <div class="journey-slide"><div class="journey-overview journey-songcard"><p class="journey-songnum">part 2</p><p class="journey-songtitle">The Overseer</p></div></div>
           <div class="journey-slide">
             <div class="journey-diagram"><canvas class="particle-diagram" data-shape="gather" aria-hidden="true"></canvas></div>
             <div class="journey-overview">
@@ -3120,11 +3336,7 @@
             </div>
           </div>
           <div class="journey-slide">
-            <div class="journey-duo">
-              <div class="journey-diagram"><canvas class="particle-diagram" data-shape="atmosphere" aria-hidden="true"></canvas></div>
-              <span class="journey-arrow" aria-hidden="true">&#8594;</span>
-              <div class="journey-diagram"><canvas class="particle-diagram" data-shape="harnessRing" aria-hidden="true"></canvas></div>
-            </div>
+            <div class="journey-diagram"><canvas class="particle-diagram" data-shape="atmosphereHarness" aria-hidden="true"></canvas></div>
             <div class="journey-overview">
               <p class="jo-subhead">atmosphere harnessing</p>
               <p class="journey-desc">our worship and prayer becomes the stitching that frames the song.</p>
@@ -3158,12 +3370,16 @@
               <p class="journey-desc">we end with the praise vocal harness.</p>
             </div>
           </div>
+          <div class="journey-slide"><div class="journey-overview journey-songcard"><p class="journey-songnum">part 3</p><p class="journey-songtitle">Right Here (Behold)</p></div></div>
+          <div class="journey-slide"><div class="journey-overview journey-songcard"><p class="journey-songnum">part 4</p><p class="journey-songtitle">Instruction</p></div></div>
+          <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">3 women relay what God says from <strong>Ezekiel 18:4-9</strong>.</p></div></div>
+          <div class="journey-slide"><div class="journey-overview journey-songcard"><p class="journey-songnum">part 5</p><p class="journey-songtitle">Abba Figure</p></div></div>
         </div></div>
         <div class="journey-nav"><div class="journey-dots"></div><p class="journey-hint">swipe</p></div>
       </div>
       <div class="role-panel" data-role="marika">
         <div class="journey-viewport"><div class="journey-track">
-          <div class="journey-slide"><div class="journey-overview"><p class="journey-desc"><strong>This seed is called <span class="hl-purple">The Overseer</span>.</strong></p><p class="journey-desc"><strong>THE OVERSEER is broken up into 5 parts, it's not just one song:</strong></p><p class="journey-desc"><strong>1. The Overseer's Interlude</strong></p><p class="journey-desc"><strong>2. The Overseer</strong></p><p class="journey-desc"><strong>3. Right Here (Behold)</strong></p><p class="journey-desc"><strong>4. Instruction</strong></p><p class="journey-desc"><strong>5. (praying for the appropriate name)</strong></p></div></div>
+          <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">This seed is called <strong><span class="hl-purple">THE OVERSEER</span></strong>.</p><p class="journey-desc">It is a revelation of <strong>God as sovereign over our souls</strong>.</p><p class="journey-desc">It is also a study of <strong>Psalm 24:3-4, Psalm 55:22, Psalm 135:1-3, Ezekiel 18:4, Acts 2:25-28</strong>.</p><p class="journey-desc"><strong>THE OVERSEER</strong> is broken up into <strong>5 parts</strong>, it's not just one song:</p><p class="journey-desc">1. <strong>The Overseer's Interlude</strong></p><p class="journey-desc">2. <strong>The Overseer</strong></p><p class="journey-desc">3. <strong>Right Here (Behold)</strong></p><p class="journey-desc">4. <strong>Instruction</strong></p><p class="journey-desc">5. <strong>Abba Figure</strong></p></div></div>
           <div class="journey-slide">
             <div class="journey-diagram"><canvas class="particle-diagram" data-shape="gather" aria-hidden="true"></canvas></div>
             <div class="journey-overview">
@@ -3182,11 +3398,7 @@
             </div>
           </div>
           <div class="journey-slide">
-            <div class="journey-duo">
-              <div class="journey-diagram"><canvas class="particle-diagram" data-shape="atmosphere" aria-hidden="true"></canvas></div>
-              <span class="journey-arrow" aria-hidden="true">&#8594;</span>
-              <div class="journey-diagram"><canvas class="particle-diagram" data-shape="harnessRing" aria-hidden="true"></canvas></div>
-            </div>
+            <div class="journey-diagram"><canvas class="particle-diagram" data-shape="atmosphereHarness" aria-hidden="true"></canvas></div>
             <div class="journey-overview">
               <p class="jo-subhead">atmosphere harnessing</p>
               <p class="journey-desc">our worship and prayer becomes the stitching that frames the song.</p>
@@ -3225,7 +3437,7 @@
       </div>
       <div class="role-panel" data-role="deano">
         <div class="journey-viewport"><div class="journey-track">
-          <div class="journey-slide"><div class="journey-overview"><p class="journey-desc"><strong>This seed is called <span class="hl-purple">The Overseer</span>.</strong></p><p class="journey-desc"><strong>THE OVERSEER is broken up into 5 parts, it's not just one song:</strong></p><p class="journey-desc"><strong>1. The Overseer's Interlude</strong></p><p class="journey-desc"><strong>2. The Overseer</strong></p><p class="journey-desc"><strong>3. Right Here (Behold)</strong></p><p class="journey-desc"><strong>4. Instruction</strong></p><p class="journey-desc"><strong>5. (praying for the appropriate name)</strong></p></div></div>
+          <div class="journey-slide"><div class="journey-overview"><p class="journey-desc">This seed is called <strong><span class="hl-purple">THE OVERSEER</span></strong>.</p><p class="journey-desc">It is a revelation of <strong>God as sovereign over our souls</strong>.</p><p class="journey-desc">It is also a study of <strong>Psalm 24:3-4, Psalm 55:22, Psalm 135:1-3, Ezekiel 18:4, Acts 2:25-28</strong>.</p><p class="journey-desc"><strong>THE OVERSEER</strong> is broken up into <strong>5 parts</strong>, it's not just one song:</p><p class="journey-desc">1. <strong>The Overseer's Interlude</strong></p><p class="journey-desc">2. <strong>The Overseer</strong></p><p class="journey-desc">3. <strong>Right Here (Behold)</strong></p><p class="journey-desc">4. <strong>Instruction</strong></p><p class="journey-desc">5. <strong>Abba Figure</strong></p></div></div>
           <div class="journey-slide">
             <div class="journey-diagram"><canvas class="particle-diagram" data-shape="gather" aria-hidden="true"></canvas></div>
             <div class="journey-overview">
@@ -3244,11 +3456,7 @@
             </div>
           </div>
           <div class="journey-slide">
-            <div class="journey-duo">
-              <div class="journey-diagram"><canvas class="particle-diagram" data-shape="atmosphere" aria-hidden="true"></canvas></div>
-              <span class="journey-arrow" aria-hidden="true">&#8594;</span>
-              <div class="journey-diagram"><canvas class="particle-diagram" data-shape="harnessRing" aria-hidden="true"></canvas></div>
-            </div>
+            <div class="journey-diagram"><canvas class="particle-diagram" data-shape="atmosphereHarness" aria-hidden="true"></canvas></div>
             <div class="journey-overview">
               <p class="jo-subhead">atmosphere harnessing</p>
               <p class="journey-desc">our worship and prayer becomes the stitching that frames the song.</p>
@@ -3602,11 +3810,7 @@ Lord you are Holy, Holy, Holy</p>
             <div class="journey-overview"><p class="jo-subhead">section two</p><p class="journey-desc">Describe this part of the song. (to be filled in)</p></div>
           </div>
           <div class="journey-slide">
-            <div class="journey-duo">
-              <div class="journey-diagram"><canvas class="particle-diagram" data-shape="atmosphere" aria-hidden="true"></canvas></div>
-              <span class="journey-arrow" aria-hidden="true">&#8594;</span>
-              <div class="journey-diagram"><canvas class="particle-diagram" data-shape="harnessRing" aria-hidden="true"></canvas></div>
-            </div>
+            <div class="journey-diagram"><canvas class="particle-diagram" data-shape="atmosphereHarness" aria-hidden="true"></canvas></div>
             <div class="journey-overview"><p class="jo-subhead">section three</p><p class="journey-desc">Describe this part of the song. (to be filled in)</p></div>
           </div>
           <div class="journey-slide">
@@ -3840,7 +4044,7 @@ Lord you are Holy, Holy, Holy</p>
     // overscroll bounce) to the active view, so a light page blends
     // into the phone screen instead of sitting inside black borders.
     const __pv = document.getElementById(id); const isLightView = (id === 'view-partner-welcome' || !!(__pv && __pv.classList.contains('project-view')));
-    const chromeColor = isLightView ? '#ffffff' : '#000000';
+    const chromeColor = (isLightView || (id === 'view-home' && window.__dvIsWhite && window.__dvIsWhite())) ? '#ffffff' : '#000000';
     const themeMeta = document.querySelector('meta[name="theme-color"]');
     if (themeMeta) themeMeta.setAttribute('content', chromeColor);
     document.documentElement.style.backgroundColor = chromeColor;
@@ -4200,6 +4404,20 @@ Lord you are Holy, Holy, Holy</p>
     btn.addEventListener('click', () => {
       const currentView = document.querySelector('.view.active');
 
+      // Came in through a project circle on the home page? Back goes
+      // straight home to the circles (the scroll place is kept).
+      if (window.__dvFromCircle && currentView && (currentView.id === 'view-partner-welcome' ||
+          currentView.id.startsWith('view-project-') || currentView.id === 'view-partner-shop')) {
+        window.__dvFromCircle = false;
+        if (ppInput) { ppInput.value = ''; ppInput.blur(); }
+        if (ppError) ppError.classList.remove('show');
+        flashTo(() => {
+          showView('view-home');
+          document.getElementById('view-partner-welcome').classList.remove('prompt-shown');
+        }, 'settle');
+        return;
+      }
+
       // Special case: on the partner welcome view while the password
       // prompt is open, back goes BACK to the project list (the
       // tabs-shown state), not all the way home.
@@ -4395,6 +4613,10 @@ Lord you are Holy, Holy, Holy</p>
     'overseer-interlude': 'yearning',
     'renew-verse':        'pvaostm',
     'house-pva':          'pvaOStm',
+    'housepva-intro':     'pvaOStm',
+    'housepva-usage':     'pvaOStm',
+    'wrestle':            'partner',
+    'selfquake':          'righteous',
   };
   const PARTNER_VIEWS = {
     'overseer':           'view-project-overseer',
@@ -4402,6 +4624,10 @@ Lord you are Holy, Holy, Holy</p>
     'overseer-interlude': 'view-partner-shop',
     'renew-verse':        'view-project-renew',
     'house-pva':          'view-partner-shop',
+    'housepva-intro':     'view-partner-shop',
+    'housepva-usage':     'view-partner-shop',
+    'wrestle':            'view-partner-shop',
+    'selfquake':          'view-partner-shop',
   };
   let selectedPartnerTab = null;
 
@@ -4448,6 +4674,20 @@ Lord you are Holy, Holy, Holy</p>
       setTimeout(() => document.getElementById('pp-input').focus(), 250);
     });
   });
+
+  // Seed-list archive toggle — the "archive" tab at the bottom of the
+  // project list swaps to the archived seeds; "← back" returns. These
+  // are .seed-archive-tab (not .partner-tab-link) so they never trigger
+  // the password flow.
+  (function(){
+    const wrap = document.querySelector('#view-partner-welcome .project-links');
+    if (!wrap) return;
+    wrap.querySelectorAll('.seed-archive-tab').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        wrap.classList.toggle('show-archive', btn.dataset.archive === 'open');
+      });
+    });
+  })();
 
   const ppInput = document.getElementById('pp-input');
   const ppError = document.getElementById('pp-error');
@@ -4695,7 +4935,39 @@ Lord you are Holy, Holy, Holy</p>
     pushCubic(pts, 12,78, 34,82, 52,72, 66,66, 10);
     return pts;
   }
-  var GEN={harness:harness, swell:swell, guide:guide, rings:rings, gather:gather, atmosphere:atmosphere, overview:overview, harnessRing:harnessRing, transitionLine:transitionLine, arrive:arrive};
+  function atmosphereHarness(){
+    /* the process: atmosphere gathered into the harness ring */
+    var pts=[], i, sc=0.5;
+    var a=atmosphere(); for(i=0;i<a.length;i+=2){ pts.push([36+(a[i][0]-70)*sc, 45+(a[i][1]-45)*sc]); }
+    var h=harnessRing(); for(i=0;i<h.length;i+=2){ pts.push([104+(h[i][0]-70)*sc, 45+(h[i][1]-45)*sc]); }
+    pushLine(pts, 60, 45, 82, 45, 9);
+    pushLine(pts, 82, 45, 76.5, 42.2, 3); pushLine(pts, 82, 45, 76.5, 47.8, 3);
+    return pts;
+  }
+  function unified(){
+    /* all six diagrams woven onto one sphere - each shape a latitude band,
+       gather at the crown, guide at the base; front hemisphere shown */
+    var pts=[], i, j;
+    var shapes=[gather, atmosphereHarness, transitionLine, rings, harness, guide];
+    var cx=70, cy=45, R=38, tilt=0.5;
+    for(i=0;i<shapes.length;i++){
+      var sp=shapes[i]();
+      var step=Math.max(1, Math.round(sp.length/90));
+      for(j=0;j<sp.length;j+=step){
+        var th=Math.PI*((i+sp[j][1]/90)/6), ph=sp[j][0]/140*6.2832;
+        if(Math.random()>0.3+0.7*Math.sin(th)) continue;
+        var x3=Math.sin(th)*Math.cos(ph), y3=Math.cos(th), z3=Math.sin(th)*Math.sin(ph);
+        var y2=y3*Math.cos(tilt)-z3*Math.sin(tilt);
+        var z2=y3*Math.sin(tilt)+z3*Math.cos(tilt);
+        if(z2<0.05) continue;
+        pts.push([cx+x3*R, cy-y2*R]);
+      }
+    }
+    var nb=Math.round(R*2.4);
+    for(i=0;i<nb;i++){ var a=i/nb*6.2832; pts.push([cx+Math.cos(a)*R, cy+Math.sin(a)*R]); }
+    return pts;
+  }
+  var GEN={harness:harness, swell:swell, guide:guide, rings:rings, gather:gather, atmosphere:atmosphere, overview:overview, harnessRing:harnessRing, transitionLine:transitionLine, arrive:arrive, atmosphereHarness:atmosphereHarness, unified:unified};
   var ds=[];
   function setup(c){
     var g=GEN[c.dataset.shape]; if(!g) return;
@@ -4742,6 +5014,77 @@ Lord you are Holy, Holy, Holy</p>
 })();
 </script>
 <script>
+/* Seed pathway - the Overseer pathway drawn entirely in particles: each
+   stop is a cluster of multi-colour dots, each connector a thin drift of
+   particles; the glow travels stop to stop in a loop. */
+(function(){
+  var PR = Math.min(window.devicePixelRatio || 1, 2);
+  var PALETTE = [[90,35,144],[164,110,242],[185,28,60],[180,83,9],[148,74,24],[138,109,30]];
+  var CYCLE = 7.2, STEP = 1.2;
+  var reduced = false;
+  try { reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch(e){}
+  var nodes = [];
+  function setup(c, off, link){
+    var seed = (' '+c.className+' ').indexOf(' seed-path-dot-seed ') !== -1;
+    var n = link ? 24 : (seed ? 42 : 27), ps = [];
+    for(var i=0;i<n;i++){
+      var col = PALETTE[i % PALETTE.length];
+      ps.push({ a:Math.random()*6.2832, r:Math.sqrt(Math.random()), t:(i+Math.random())/n,
+        p1:Math.random()*6.2832, p2:Math.random()*6.2832, p3:Math.random()*6.2832,
+        f1:0.5+Math.random()*0.9, f2:0.5+Math.random()*0.9, f3:0.6+Math.random()*1.0,
+        amp:0.05+Math.random()*0.09, sz:link?(0.6+Math.random()*0.7):(0.9+Math.random()*0.9), base:link?(0.35+Math.random()*0.3):(0.45+Math.random()*0.4),
+        col:'rgba('+col[0]+','+col[1]+','+col[2]+',' });
+    }
+    var d={c:c, ctx:c.getContext('2d'), ps:ps, off:off, link:link};
+    nodes.push(d); measure(d);
+    if(window.ResizeObserver){ try{ new ResizeObserver(function(){ measure(d); }).observe(c); }catch(e){} }
+  }
+  function measure(d){
+    var r=d.c.getBoundingClientRect();
+    if(r.width&&r.height){ d.c.width=Math.round(r.width*PR); d.c.height=Math.round(r.height*PR); if(reduced) draw(0); }
+    else { d.c.width=0; d.c.height=0; }
+  }
+  function draw(now){
+    for(var i=0;i<nodes.length;i++){
+      var d=nodes[i], w=d.c.width, h=d.c.height;
+      if(!w||!h) continue;
+      var ctx=d.ctx, cx=w/2, cy=h/2, R=Math.min(w,h)/2-PR;
+      var ph=(((now-d.off)%CYCLE)+CYCLE)%CYCLE, pulse= ph<STEP ? Math.sin(ph/STEP*Math.PI) : 0;
+      ctx.clearRect(0,0,w,h);
+      if(d.link){
+        for(var j=0;j<d.ps.length;j++){ var p=d.ps[j];
+          var x=p.t*w + Math.sin(now*p.f1+p.p1)*1.6*PR;
+          var y=cy + Math.cos(now*p.f2+p.p2)*(h*0.22);
+          var al=p.base*(0.6+0.4*Math.sin(now*p.f3+p.p3)+pulse*(0.1+0.45*Math.sin(now*16+p.p1*5)));
+          ctx.fillStyle=p.col+Math.max(0,Math.min(1,al)).toFixed(3)+')';
+          ctx.beginPath(); ctx.arc(x,y,p.sz*PR*(1+pulse*0.2),0,6.2832); ctx.fill();
+        }
+        continue;
+      }
+      for(var k=0;k<d.ps.length;k++){ var q=d.ps[k];
+        var pr=q.r*R*(0.78+pulse*0.08);
+        var qx=cx+Math.cos(q.a)*pr+Math.sin(now*q.f1+q.p1)*q.amp*R;
+        var qy=cy+Math.sin(q.a)*pr+Math.cos(now*q.f2+q.p2)*q.amp*R;
+        var qa=q.base*(0.6+0.4*Math.sin(now*q.f3+q.p3)+pulse*(0.12+0.5*Math.sin(now*16+q.p1*5)));
+        ctx.fillStyle=q.col+Math.max(0,Math.min(1,qa)).toFixed(3)+')';
+        ctx.beginPath(); ctx.arc(qx,qy,q.sz*PR*(1+pulse*0.18),0,6.2832); ctx.fill();
+      }
+    }
+  }
+  function loop(){ draw(performance.now()/1000); requestAnimationFrame(loop); }
+  function init(){
+    var dots=document.querySelectorAll('canvas.seed-path-dot'), i;
+    for(i=0;i<dots.length;i++) setup(dots[i], i*STEP, false);
+    var links=document.querySelectorAll('canvas.seed-path-link');
+    for(i=0;i<links.length;i++) setup(links[i], (i+0.5)*STEP, true);
+    if(!nodes.length) return;
+    window.addEventListener('resize', function(){ for(var i=0;i<nodes.length;i++) measure(nodes[i]); });
+    if(reduced){ draw(0); } else { requestAnimationFrame(loop); }
+  }
+  if(document.readyState!=='loading') init(); else document.addEventListener('DOMContentLoaded', init);
+})();
+</script>
+<script>
 /* Particle painting - on entry the painting reforms as a cloud of dim
    neutral (ash) dots which then bloom into colour (the painting's
    purple/red/gold). Next the off-thread colours dissolve and the active
@@ -4760,6 +5103,7 @@ Lord you are Holy, Holy, Holy</p>
   var COL = THREADS.map(function(t){ return 'rgb('+t.color[0]+','+t.color[1]+','+t.color[2]+')'; });
   var particles=[], homes=[], ready=false, imgAspect=1.42;
   var phase='intro', pclock=0, introVis=0, cz=0, t2=0, activeCat=0, cur=THREADS[0].color.slice();
+  var FIG=[[],[],[]], cyc=0, figMix=0;
   function categorize(r,g,b){
     var mx=Math.max(r,g,b), mn=Math.min(r,g,b), d=mx-mn;
     if(d<7) return 2;
@@ -4775,7 +5119,40 @@ Lord you are Holy, Holy, Holy</p>
   function mk(p){ return { bx:p[0], by:p[1], br:p[2], cat:p[3], fx:p[0], fy:p[1],
     p1:Math.random()*6.2832, p2:Math.random()*6.2832, p3:Math.random()*6.2832,
     f1:0.4+Math.random()*0.8, f2:0.4+Math.random()*0.8, f3:0.5+Math.random()*0.9,
-    amp:2.4+Math.random()*5.6, rad:0.55+Math.random()*0.95 }; }
+    amp:2.4+Math.random()*5.6, rad:0.55+Math.random()*0.95,
+    fr:Math.random(), cgx:p[0], cgy:p[1] }; }
+  // ---- Human-figure targets (the frame morphs into these and back) ----
+  // Points live in a 64x104 portrait viewbox; mapped into the painting
+  // box at render time with aspect compensation so proportions hold.
+  function fseg(a,x1,y1,x2,y2,n){ for(var i=0;i<=n;i++){ var t=i/n; a.push([x1+(x2-x1)*t, y1+(y2-y1)*t]); } }
+  function fcirc(a,cx,cy,r,n){ for(var i=0;i<n;i++){ var an=i/n*6.2832; a.push([cx+Math.cos(an)*r, cy+Math.sin(an)*r]); } }
+  function fblob(a,cx,cy,r,n){ for(var i=0;i<n;i++){ var an=Math.random()*6.2832, rr=r*Math.sqrt(Math.random()); a.push([cx+Math.cos(an)*rr, cy+Math.sin(an)*rr]); } }
+  // Solid-silhouette fill: evenly rasterise a union of discs, capsules
+  // and polygons so the particles form a filled body, not a wire outline.
+  function segDist(px,py,x1,y1,x2,y2){ var dx=x2-x1,dy=y2-y1,L2=dx*dx+dy*dy; if(L2===0) return Math.hypot(px-x1,py-y1); var t=Math.max(0,Math.min(1,((px-x1)*dx+(py-y1)*dy)/L2)); return Math.hypot(px-(x1+dx*t), py-(y1+dy*t)); }
+  function inPoly(px,py,pl){ var c=false,n=pl.length,j=n-1,i; for(i=0;i<n;i++){ var xi=pl[i][0],yi=pl[i][1],xj=pl[j][0],yj=pl[j][1]; if(((yi>py)!==(yj>py)) && (px<(xj-xi)*(py-yi)/(yj-yi)+xi)) c=!c; j=i; } return c; }
+  function figFill(discs,caps,polys,sp){ var a=[],x,y,i; for(y=8;y<100;y+=sp){ for(x=8;x<56;x+=sp){
+      var jx=x+(Math.random()-0.5)*sp*0.9, jy=y+(Math.random()-0.5)*sp*0.9, hit=false;
+      for(i=0;i<discs.length&&!hit;i++){ var d=discs[i]; if((jx-d[0])*(jx-d[0])+(jy-d[1])*(jy-d[1])<=d[2]*d[2]) hit=true; }
+      for(i=0;i<caps.length&&!hit;i++){ var cp=caps[i]; if(segDist(jx,jy,cp[0],cp[1],cp[2],cp[3])<=cp[4]/2) hit=true; }
+      for(i=0;i<polys.length&&!hit;i++){ if(inPoly(jx,jy,polys[i])) hit=true; }
+      if(hit) a.push([jx,jy]); } } return a; }
+  function figGrounding(){ return figFill(   /* 3/4 hunched-forward kneel, head bowed low (per reference) */
+    [[36,46,6.2],[37,70,3.4],[39,82,5.0],[25,90,3.6]],
+    [[31,42,35,47,5],[32,47,36,60,6],[36,60,37,70,5],[29,69,39,81,12],[39,82,26,90,9],[28,72,25,89,8]],
+    [[[25,46],[31,41],[39,52],[36,66],[27,65]],[[26,64],[38,64],[39,72],[27,72]]], 1.25); }
+  function figRighteous(){ return figFill(   /* Ali boxing crouch: two distinct arms, balanced limb thickness */
+    [[32,14,5.8],[38,22,4.3],[49,27,4.4],[31,36,3.6],[45,72,5.2],[22,74,5.0],[45,96,3.5],[15,96,3.7]],
+    [[31,19,31,24,4],[31,31,38,43,8],[38,43,38,22,6.2],[32,30,48,44,8],[48,44,49,27,6.2],[35,57,45,72,11],[45,73,44,95,8],[30,57,22,74,11],[22,75,15,95,8],[44,95,51,97,6],[15,95,22,97,6]],
+    [[[26,25],[34,27],[36,53],[29,54]],[[28,52],[38,52],[38,60],[29,60]]], 1.2); }
+  function figLifted(){ var a=[];      /* hands on hips: standing in authority */
+    fcirc(a,32,12,7,18); fseg(a,32,19,32,24,2);
+    fseg(a,22,25,42,25,10); fseg(a,32,25,32,56,16); fseg(a,24,56,40,56,8);
+    fseg(a,23,26,15,42,9); fseg(a,15,42,25,55,8);
+    fseg(a,41,26,49,42,9); fseg(a,49,42,39,55,8);
+    fseg(a,28,56,25,98,20); fseg(a,36,56,39,98,20);
+    fseg(a,25,98,20,99,3); fseg(a,39,98,44,99,3); return a; }
+  FIG=[figGrounding(), figRighteous(), figLifted()];
   function buildFromImage(img){
     imgAspect = img.width/img.height;
     var sw=150, sh=Math.max(1,Math.round(sw/imgAspect));
@@ -4818,7 +5195,15 @@ Lord you are Holy, Holy, Holy</p>
     t+=0.016; pclock+=0.016;
     if(phase==='intro'){ introVis=Math.min(pclock/0.7,1); cz=Math.max(0,Math.min((pclock-1.0)/1.1,1)); if(pclock>2.4){ phase='morph'; pclock=0; } }
     else if(phase==='morph'){ t2=Math.min(pclock/3.2,1); if(t2>=1){ phase='full'; cur=THREADS[0].color.slice(); } }
-    else { for(var c=0;c<3;c++) cur[c]+=(THREADS[activeCat].color[c]-cur[c])*0.09; }
+    else {
+      for(var c=0;c<3;c++) cur[c]+=(THREADS[activeCat].color[c]-cur[c])*0.09;
+      cyc+=0.016;
+      var per=10.0, HOLD=2.6, RAMP=2.4, ph2=cyc%per, u;
+      if(ph2<HOLD) figMix=0;
+      else if(ph2<HOLD+RAMP){ u=(ph2-HOLD)/RAMP; figMix=u*u*(3-2*u); }
+      else if(ph2<HOLD+HOLD+RAMP) figMix=1;
+      else { u=(ph2-(HOLD+HOLD+RAMP))/RAMP; figMix=1-u*u*(3-2*u); }
+    }
     ctx.clearRect(0,0,canvas.width,canvas.height);
     if(!ready) return;
     var fullCol='rgb('+(cur[0]|0)+','+(cur[1]|0)+','+(cur[2]|0)+')';
@@ -4841,7 +5226,13 @@ Lord you are Holy, Holy, Holy</p>
           colStr='rgb('+((cc[0]+(pcl[0]-cc[0])*t2)|0)+','+((cc[1]+(pcl[1]-cc[1])*t2)|0)+','+((cc[2]+(pcl[2]-cc[2])*t2)|0)+')';
         }
       } else {
-        if(p.cat===0){ hx=p.bx; hy=p.by; } else { hx=p.fx; hy=p.fy; }
+        var frX=(p.cat===0?p.bx:p.fx), frY=(p.cat===0?p.by:p.fy);
+        if(pw>0){
+          var kf=(0.9*ph)/104, fa=FIG[activeCat], fpt=fa[(p.fr*fa.length)|0];
+          var tnx=0.5+(fpt[0]-32)*kf/pw, tny=0.5+(fpt[1]-52)*kf/ph;
+          p.cgx+=(tnx-p.cgx)*0.09; p.cgy+=(tny-p.cgy)*0.09;
+          hx=frX+(p.cgx-frX)*figMix; hy=frY+(p.cgy-frY)*figMix;
+        } else { hx=frX; hy=frY; }
         alpha=base*tw; colStr=fullCol;
       }
       if(alpha<0.012) continue;
@@ -4891,6 +5282,8 @@ Lord you are Holy, Holy, Holy</p>
   window.paintingParticles={ start:start, stop:stop, reset:function(){
     var v=document.getElementById('view-particle'); if(v) v.classList.remove('flooded');
     phase='intro'; pclock=0; introVis=0; cz=0; t2=0; activeCat=0; cur=THREADS[0].color.slice();
+    cyc=0; figMix=0;
+    for(var i=0;i<particles.length;i++){ particles[i].cgx=particles[i].fx; particles[i].cgy=particles[i].fy; }
     assignFill();
     var l=document.getElementById('pp-thread-label'); if(l) l.textContent='grounding';
   } };
@@ -5028,6 +5421,1349 @@ Lord you are Holy, Holy, Holy</p>
     function render(pid){ var d=THANKS[pid]; if(!d||!box) return; box.innerHTML=''; var h=document.createElement('h2'); h.className='thanks-name'; h.textContent=d.name; box.appendChild(h); var w=document.createElement('div'); w.className='thanks-letter'; (d.body||[]).forEach(function(t){ var el=document.createElement('p'); el.textContent=t; w.appendChild(el); }); box.appendChild(w); }
     for(var i=0;i<pills.length;i++){ (function(btn){ btn.addEventListener('click', function(){ for(var k=0;k<pills.length;k++) pills[k].classList.toggle('is-active', pills[k]===btn); render(btn.getAttribute('data-person')); }); })(pills[i]); }
   })();
+</script>
+<!-- ============================================================
+     DOVE HOME — scene + particle rings (2026-11-21)
+     three.js r149 (MIT) from jsDelivr, pinned with an integrity hash.
+     ============================================================ -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js" integrity="sha384-RRHfJ6w1mTlKUBMYT/hvnRiOzEB/vyRV3DrQOseb6oYfvaZSfdd0byS4bHps0k2R" crossorigin="anonymous"></script>
+<script>
+(function () {
+  var scroller = document.getElementById('dv-scroll');
+  var hero = document.getElementById('dv-hero');
+  var stage = document.getElementById('dv-stage');
+  var canvas = document.getElementById('dv-canvas');
+  var whiteEl = document.getElementById('dv-white');
+  var hint = document.getElementById('dv-hint');
+  var home = document.getElementById('view-home');
+  if (!scroller || !hero || !canvas) return;
+  var reduceQ = window.matchMedia ? matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
+  // look (chosen by Emmanuel, 21 Nov): graphite dove on a thermal gradient; ?look=light = the white-light dove on black grain
+  var LOOK = /[?&]look=light\b/.test(location.search) ? 'light' : 'thermal';
+
+  function clamp(x, a, b) { return x < a ? a : x > b ? b : x; }
+  function smooth(a, b, x) { var t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); }
+
+  // ---- scroll → progress p (0 at the top, 1 when the hero is done) ----
+  var p = 0;
+  function readScroll() {
+    var max = hero.offsetHeight - scroller.clientHeight;
+    p = max > 0 ? clamp(scroller.scrollTop / max, 0, 1) : 0;
+  }
+  // Browser chrome follows the page: black while the dove is in the dark,
+  // white once the light has covered it.
+  var lastChrome = '';
+  function chrome() {
+    if (!home.classList.contains('active')) return;
+    var c = p > 0.8 ? '#ffffff' : '#000000';
+    if (c === lastChrome) return;
+    lastChrome = c;
+    var m = document.querySelector('meta[name="theme-color"]');
+    if (m) m.setAttribute('content', c);
+    document.documentElement.style.backgroundColor = c;
+    document.body.style.backgroundColor = c;
+  }
+  window.__dvIsWhite = function () { return p > 0.8; };
+  window.__dvChrome = function () { lastChrome = ''; chrome(); };
+  var holdFree = false, wantOn = false, glideId = 0;
+  // Once the dove has let go, the page glides down into the projects on its own
+  // (if you were already swiping that way), so the hand-off is one smooth move
+  // rather than a stop and a second swipe. Any touch, wheel or key takes over.
+  function glideToProjects() {
+    var seedsEl = document.getElementById('dv-seeds');
+    if (!seedsEl) return;
+    var from = scroller.scrollTop, to = seedsEl.offsetTop, t0 = performance.now(), dur = 900, id = ++glideId;
+    function stop() { glideId++; }
+    ['wheel', 'touchstart', 'keydown', 'mousedown'].forEach(function (ev) { window.addEventListener(ev, stop, { once: true, passive: true }); });
+    (function step(now) {
+      if (id !== glideId) return;
+      var k = Math.min(1, (now - t0) / dur), e = k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+      scroller.scrollTop = from + (to - from) * e;
+      if (k < 1) requestAnimationFrame(step);
+    })(t0);
+  }
+  window.__dvHoldTick = function (dust) {
+    if (wantOn && dust >= 0.86) { wantOn = false; holdFree = true; glideToProjects(); }   // go while the last dust is still falling: less time on plain white
+  };
+  // hold the page at the end of the dove until its dust has drifted away,
+  // so the projects never arrive before the dove has dispersed (Emmanuel)
+  scroller.addEventListener('scroll', function () {
+    var heroEnd = hero.offsetHeight - scroller.clientHeight;
+    if ((window.__dvDust || 0) >= 0.86) holdFree = true;                       // once dispersed, the way stays open
+    if (scroller.scrollTop < heroEnd - scroller.clientHeight * 0.4) holdFree = false;   // until you go back up into the dove
+    if (!holdFree && scroller.scrollTop > heroEnd + 1 && !reduceQ.matches && window.__dvVid && window.__dvVid.on) {
+      scroller.scrollTop = heroEnd;
+      wantOn = true;                       // you asked to go on: the page will carry you there itself
+    }
+    readScroll();
+    if (hint) hint.style.opacity = (1 - smooth(0.18, 0.42, p)).toFixed(3);   // stays until the page turns light
+    chrome();
+  }, { passive: true });
+  readScroll();
+
+  // ---- one swipe between sections (Emmanuel, 21 Nov) ----
+  // A single swipe (or wheel flick, or arrow key) on the dove plays the whole move
+  // into the projects by itself; a single swipe back at the top of the projects
+  // plays it in reverse. Further input is ignored while it plays. Inside the
+  // projects and below, the page scrolls normally. Off under Reduce Motion.
+  (function () {
+    var seedsEl = document.getElementById('dv-seeds');
+    if (!seedsEl) return;
+    var busy = false, coolUntil = 0, below = false, touchY = null;
+    function seedsTop() { return seedsEl.offsetTop; }
+    function heroEnd() { return hero.offsetHeight - scroller.clientHeight; }
+    function ease(k) { return k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2; }
+    function run(to, dur, done) {
+      var from = scroller.scrollTop, t0 = performance.now();
+      (function step(now) {
+        var k = Math.min(1, (now - t0) / dur);
+        scroller.scrollTop = from + (to - from) * ease(k);
+        if (k < 1) requestAnimationFrame(step); else done();
+      })(t0);
+    }
+    function finish(isBelow) { busy = false; below = isBelow; coolUntil = performance.now() + 450; }
+    function goDown() {
+      if (busy) return;
+      busy = true; wantOn = false;
+      var d1 = Math.max(900, 2600 * (1 - scroller.scrollTop / Math.max(1, heroEnd())));
+      run(heroEnd(), d1, function () {                    // 1 · through the dove: it grows, breaks, the colours fall
+        var t0 = performance.now();
+        (function wait(now) {                             // 2 · until the white sheet is down (it never waits long)
+          if ((window.__dvDust || 0) >= 0.86 || now - t0 > 2600) {
+            holdFree = true;
+            run(seedsTop(), 900, function () { finish(true); });   // 3 · into the projects
+          } else requestAnimationFrame(wait);
+        })(t0);
+      });
+    }
+    function goUp() {
+      if (busy) return;
+      busy = true; holdFree = true; wantOn = false;
+      window.__dvRiseGo = 1;                             // the dust rises back into the dove
+      run(0, 2400, function () { holdFree = false; finish(false); });
+    }
+    function off() { return reduceQ.matches || !home.classList.contains('active'); }
+    function intent(dir, e) {                             // dir: +1 = onward (down the page), −1 = back
+      if (off()) return;
+      var top = scroller.scrollTop, st = seedsTop();
+      if (busy || performance.now() < coolUntil) { if (top < st + 2 || busy) e.preventDefault(); return; }
+      if (top < st - 1) {                                 // on the dove
+        e.preventDefault();
+        if (dir > 0) goDown(); else if (top > 2) goUp();
+      } else if (top <= st + 1 && dir < 0) {              // at the top of the projects, heading back
+        e.preventDefault(); goUp();
+      }
+    }
+    scroller.addEventListener('wheel', function (e) {
+      if (Math.abs(e.deltaY) < 3) { if (!off() && (busy || scroller.scrollTop < seedsTop() - 1)) e.preventDefault(); return; }
+      intent(e.deltaY > 0 ? 1 : -1, e);
+    }, { passive: false });
+    scroller.addEventListener('touchstart', function (e) { touchY = e.touches[0].clientY; }, { passive: true });
+    scroller.addEventListener('touchmove', function (e) {
+      if (off() || touchY === null) return;
+      var dy = touchY - e.touches[0].clientY, top = scroller.scrollTop, st = seedsTop();
+      if (busy || top < st - 1 || (top <= st + 1 && dy < 0)) {
+        if (e.cancelable) e.preventDefault();
+        if (Math.abs(dy) > 26) { intent(dy > 0 ? 1 : -1, e); touchY = e.touches[0].clientY; }
+      }
+    }, { passive: false });
+    window.addEventListener('keydown', function (e) {
+      if (off() || /INPUT|TEXTAREA/.test((e.target && e.target.tagName) || '')) return;
+      var k = e.key;
+      if (k === 'ArrowDown' || k === 'PageDown' || k === ' ') intent(1, e);
+      else if (k === 'ArrowUp' || k === 'PageUp') intent(-1, e);
+    });
+    // anything that slips past (a scrollbar drag, momentum): if you end up back
+    // above the projects after having been in them, finish the trip to the dove
+    scroller.addEventListener('scroll', function () {
+      if (busy || off()) return;
+      var top = scroller.scrollTop, st = seedsTop();
+      if (top >= st - 1) below = true;
+      else if (below && top > 2) goUp();
+      else if (top <= 2) below = false;
+    }, { passive: true });
+  })();
+
+  // ---- no WebGL / no three.js: keep the journey, without the dove ----
+  function fallback() {
+    canvas.style.display = 'none';
+    (function loop() {
+      var v = Math.round(255 * smooth(0, 0.9, p));
+      stage.style.background = 'rgb(' + v + ',' + v + ',' + v + ')';
+      whiteEl.style.transform = 'translateY(' + (-(1 - smooth(0.72, 0.96, p)) * 101).toFixed(2) + '%)';
+      requestAnimationFrame(loop);
+    })();
+  }
+  var THREE = window.THREE;
+  var renderer;
+  try {
+    if (!THREE) throw new Error('three.js missing');
+    renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: false, powerPreference: 'high-performance' });
+  } catch (e) { fallback(); return; }
+
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.0;
+  renderer.autoClear = true;
+
+  var scene = new THREE.Scene();
+  var camera = new THREE.PerspectiveCamera(36, 1, 0.1, 200);
+  camera.position.set(0, 0, 8);
+  camera.lookAt(0, 0.35, 0);
+
+  // ---- the liquid gradient behind the dove (domain-warped fbm, the same
+  //      family as the liquid squares), lifted from black to white ----
+  var bgMat = new THREE.ShaderMaterial({
+    depthTest: false, depthWrite: false,
+    uniforms: {
+      uT: { value: 0 }, uBT: { value: 0 }, uB: { value: 0 }, uPulse: { value: 0 },
+      uRes: { value: new THREE.Vector2(1, 1) },
+      uDove: { value: new THREE.Vector2(0.5, 0.6) }, uDoveR: { value: 0.2 },
+      uThermal: { value: LOOK === 'thermal' ? 1 : 0 },
+      uSwap: { value: /[?&]bleed=red\b/.test(location.search) ? 0 : 1 },   // default = purple on top, red below (Emmanuel: 'this is the one', 21 Nov); ?bleed=red = red on top
+      uVidOn: { value: 0 }, uVidA: { value: null }, uVidB: { value: null }, uVidMix: { value: 0 },
+      uVidFit: { value: new THREE.Vector2(1, 1) }, uDpr: { value: 1 }, uMorph: { value: 0 },
+      uGlass: { value: /[?&]start=glass\b/.test(location.search) ? 1 : 0 },   /* particles from the start (Emmanuel); ?start=glass = the liquid-glass trial */
+      uZ: { value: 2.0 }, uCtr: { value: new THREE.Vector2(0.5, 0.5) }
+    },
+    vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.9999, 1.0); }',
+    fragmentShader: [
+      'precision highp float;',
+      'uniform float uT, uBT, uB, uPulse, uDoveR, uThermal, uVidOn, uVidMix, uDpr, uMorph, uGlass, uZ; uniform vec2 uRes, uDove, uVidFit, uCtr; uniform sampler2D uVidA, uVidB; varying vec2 vUv;',
+      'uniform float uSwap;',
+      'vec3 thermal(float h){ h = clamp(h, 0.0, 1.0);',                     /* the site colours: purple, red, white */
+      /* trial (?bleed=swap): the same shape with the two colours changed over —
+         purple at the top, red beneath it, black at the foot */
+      '  if (uSwap > 0.5) {',
+      '    vec3 k = mix(vec3(0.04,0.012,0.02), vec3(0.27,0.04,0.06), smoothstep(0.0, 0.18, h));',
+      '    k = mix(k, vec3(0.61,0.11,0.13), smoothstep(0.14, 0.34, h));',   /* #9c1b22 Righteous red */
+      '    k = mix(k, vec3(0.35,0.14,0.56), smoothstep(0.30, 0.50, h));',   /* #5a2390 Grounding purple */
+      '    k = mix(k, vec3(0.64,0.43,0.95), smoothstep(0.46, 0.66, h));',   /* #a46ef2 bright purple */
+      '    k = mix(k, vec3(0.93,0.88,0.99), smoothstep(0.64, 0.86, h));',   /* pale lilac: after the purple comes white */
+      '    return mix(k, vec3(1.0), smoothstep(0.86, 1.0, h));',
+      '  }',
+      '  vec3 c = mix(vec3(0.03,0.012,0.05), vec3(0.17,0.05,0.29), smoothstep(0.0, 0.18, h));',
+      '  c = mix(c, vec3(0.35,0.14,0.56), smoothstep(0.14, 0.34, h));',     /* #5a2390 Grounding purple */
+      '  c = mix(c, vec3(0.61,0.11,0.13), smoothstep(0.30, 0.50, h));',     /* #9c1b22 Righteous red */
+      '  c = mix(c, vec3(0.93,0.34,0.38), smoothstep(0.46, 0.66, h));',     /* #ec5660 bright red */
+      '  c = mix(c, vec3(0.98,0.86,0.89), smoothstep(0.64, 0.86, h));',     /* blush */
+      '  return mix(c, vec3(1.0), smoothstep(0.86, 1.0, h)); }',
+      'float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1,311.7))) * 43758.5453); }',
+      'float noise(vec2 p){ vec2 i = floor(p), f = fract(p); vec2 u = f*f*(3.0-2.0*f);',
+      '  return mix(mix(hash(i), hash(i+vec2(1.0,0.0)), u.x), mix(hash(i+vec2(0.0,1.0)), hash(i+vec2(1.0,1.0)), u.x), u.y); }',
+      'float fbm(vec2 p){ float v = 0.0, a = 0.5; for (int i = 0; i < 4; i++){ v += a*noise(p); p = p*2.02 + vec2(1.7,9.2); a *= 0.5; } return v; }',
+      /* the page behind the dove, as a function, so the glass can look through it at bent positions */
+      'vec3 scene(vec2 uv){',
+      '  vec2 asp = vec2(uRes.x/uRes.y, 1.0);',
+      '  vec2 d = (uv - uDove)*asp; float r2 = dot(d, d);',
+      '  float glow = exp(-r2/(uDoveR*uDoveR*1.6));',
+      '  float halo = exp(-r2/(uDoveR*uDoveR*9.0));',
+      '  float b = uB;',
+      '  float lum = b*1.08 + (uv.y - 0.5)*0.35*b*(1.0 - b) + (glow*0.14 + halo*0.18)*b;',
+      '  lum = clamp(lum, 0.0, 1.0);',
+      '  vec3 col = mix(vec3(0.0), vec3(1.0, 0.988, 0.962), lum);',
+      '  float sx = uv.x*asp.x;',
+      '  float streak = fbm(vec2(sx*13.0, uBT*0.05));',                        /* fine vertical streaks */
+      '  float sway = noise(vec2(sx*1.7 + uBT*0.03, 3.7));',                    /* a slow liquid bend */
+      '  float edge = 0.6 - b*1.25 + (streak - 0.5)*0.5 + (sway - 0.5)*0.28;',   /* the bleed reaches low from the start, then falls */
+      '  float curtain = smoothstep(edge - 0.34, edge + 0.04, uv.y);',
+      /* a thermal feel at rest (Emmanuel, 21 Nov): slow, soft hot patches drift through
+         the bleed, so purple blends into red and, at the hottest spots near the top, white */
+      '  float hot = fbm(vec2(sx*1.5 + uBT*0.022, uv.y*1.7 - uBT*0.03) + 7.3);',
+      '  hot = smoothstep(0.34, 0.74, hot);',
+      '  float rise = 0.42 + 0.9*pow(clamp(uv.y, 0.0, 1.0), 1.4);',           /* hotter toward the top */
+      '  float restHeat = min(curtain*0.4*rise*(0.9 + 0.2*hot), 0.56);',   /* red, purple and black only: red at the top, purple below it, black at the foot (Emmanuel) */              /* the thermal look while it waits */
+      /* bleed to white, as it first was (Emmanuel, 21 Nov): the streaked curtain comes
+         down the page and the colour changes in clean layers behind its front —
+         purple at the leading edge, red behind it, then blush, then white */
+      '  float deep = smoothstep(edge - 0.15, edge + 0.95, uv.y);',           /* how far behind the front */
+      '  float late = smoothstep(0.74, 1.0, b);',                             /* white only in the last part of the swipe */
+      '  float fallHeat = curtain*(0.3 + 0.3*deep + 0.1*b + 0.5*late);',                /* red at the front, purple behind it, then white */
+      '  float heat = mix(restHeat, fallHeat, smoothstep(0.03, 0.4, b)) + late*0.45;',   /* at rest no white (capped above); on the swipe white follows the purple */
+      '  return mix(col, thermal(heat), uThermal);',
+      '}',
+      'float filmL(vec2 vu){ vec2 t = vec2(vu.x, 1.0 - vu.y); return mix(texture2D(uVidA, t).r, texture2D(uVidB, t).r, uVidMix); }',
+      'void main(){',
+      '  float b = uB;',
+      '  vec3 col = scene(vUv);',
+      '  if (uVidOn > 0.5 && uGlass > 0.5) {',                  /* the liquid-glass dove (Emmanuel, 21 Nov) */
+      '    vec2 vu = uCtr + (vUv - vec2(0.5, 0.53))*uVidFit*uZ;',          /* same place and size as the particles */
+      '    float inF = step(0.0, vu.x) * step(vu.x, 1.0) * step(0.0, vu.y) * step(vu.y, 1.0);',
+      '    vec2 e = vec2(2.2/400.0, 2.2/225.0);',
+      '    float hc = filmL(vu), hl = filmL(vu - vec2(e.x, 0.0)), hr = filmL(vu + vec2(e.x, 0.0));',
+      '    float hd = filmL(vu - vec2(0.0, e.y)), hu = filmL(vu + vec2(0.0, e.y));',
+      '    float h = (hc*2.0 + hl + hr + hd + hu)/6.0;',                      /* a softened height field */
+      '    float mask = smoothstep(0.04, 0.13, h) * inF;',
+      '    if (mask > 0.001) {',
+      '      vec3 n = normalize(vec3((hl - hr)*3.2, (hd - hu)*3.2, 1.0));',  /* the glass surface tilt */
+      '      float thick = smoothstep(0.04, 0.55, h);',
+      '      vec2 off = n.xy * 0.085 * (0.35 + thick);',
+      '      vec3 refr = vec3(scene(vUv + off).r, scene(vUv + off*1.18).g, scene(vUv + off*1.36).b);',   /* bent light, split into colour */
+      '      vec3 Ld = normalize(vec3(-0.45, 0.62, 0.65));',
+      '      float spec = pow(max(dot(n, normalize(Ld + vec3(0.0, 0.0, 1.0))), 0.0), 40.0) + 0.5*pow(max(dot(n, normalize(vec3(0.5, -0.3, 0.8))), 0.0), 90.0);',   /* key light + a second glint */
+      '      float fres = pow(1.0 - clamp(n.z, 0.0, 1.0), 1.6);',
+      '      vec3 glass = refr*0.9 + vec3(0.06, 0.06, 0.09) + spec*1.25 + fres*0.75 + (hc - 0.45)*0.16;',
+      '      glass += mask * (1.0 - smoothstep(0.13, 0.3, h)) * 0.32;',      /* a bright line round the silhouette */
+      '      float th = 0.04 + 0.92*clamp((fbm(vu*vec2(7.0, 3.9) + 3.1) - 0.3)/0.4, 0.0, 1.0);',
+      '      float rv = smoothstep(th - 0.05, th + 0.05, uMorph);',           /* the glass breaks into particles */
+      '      col = mix(col, glass, mask * (1.0 - rv));',
+      '      col += vec3(1.0, 0.92, 0.96) * mask * rv * (1.0 - rv) * 4.0 * 0.55;',   /* glinting edge as it breaks */
+      '    }',
+      '  }',
+      '  col = mix(col, vec3(1.0), smoothstep(0.82, 1.0, b)*(1.0 - uThermal));',
+      /* luxurious grain (Emmanuel, 21 Nov: 'this grain looks weird — make it like a
+         luxurious grain'): no square blocks. A film-fine dust at the screen's own
+         pixels with a soft (triangular) spread, a rounder grain a few pixels across,
+         and a faint clouding like vellum. It tints the colour rather than speckling
+         it, so the blacks stay deep. Still at rest, alive on the swipe. */
+      '  vec2 gs = floor(uBT*24.0)*vec2(17.0, 31.0);',
+      '  float fine = hash(gl_FragCoord.xy + gs) + hash(gl_FragCoord.xy*1.31 + gs + 4.7) - 1.0;',
+      '  float round = noise(gl_FragCoord.xy/(2.6*uDpr) + gs*0.37) - 0.5;',
+      '  float cloud = fbm(gl_FragCoord.xy/(90.0*uDpr) + 3.0) - 0.5;',
+      '  float gr = fine*0.016 + round*0.018 + cloud*0.016;',   /* reduced twice at Emmanuel's request (21 Nov): now barely there */
+      '  col = col*(1.0 + gr*1.7) + gr*0.03;',
+      '  gl_FragColor = vec4(col, 1.0);',
+      '}'
+    ].join('\n')
+  });
+  var bg = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), bgMat);
+  bg.frustumCulled = false; bg.renderOrder = -1;
+  scene.add(bg);
+
+  // ---- light ----
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x9c938a, 0.9));
+  var key = new THREE.DirectionalLight(0xfff5e6, 1.5); key.position.set(2.5, 6, 5); scene.add(key);
+  var front = new THREE.DirectionalLight(0xfffaf2, 0.9); front.position.set(0, -1.5, 8); scene.add(front);
+  var rim = new THREE.DirectionalLight(0xfff0d4, 1.6); rim.position.set(-1.5, 3, -6); scene.add(rim);
+
+  // ---- materials ----
+  var featherMat = new THREE.MeshStandardMaterial({
+    color: 0xffffff, roughness: 0.92, metalness: 0, side: THREE.DoubleSide,
+    vertexColors: true, emissive: 0x2a2620, polygonOffset: true, polygonOffsetFactor: -1
+  });
+  var bodyMat = new THREE.MeshStandardMaterial({ color: 0xfdfbf7, roughness: 0.78, metalness: 0, emissive: 0x2a2620 });
+  var darkMat = new THREE.MeshStandardMaterial({ color: 0x2c2628, roughness: 0.45, metalness: 0 });
+  var beakMat = new THREE.MeshStandardMaterial({ color: 0x8f8584, roughness: 0.6, metalness: 0 });
+  var legMat = new THREE.MeshStandardMaterial({ color: 0xc08f92, roughness: 0.6, metalness: 0 });
+
+  // ---- a feather: a cambered vane, base at the origin, tip toward -Z ----
+  function featherGeo(L, W, curl) {
+    var g = new THREE.PlaneGeometry(W, L, 2, 10);
+    g.translate(0, L / 2, 0);
+    var pos = g.attributes.position, col = [];
+    for (var i = 0; i < pos.count; i++) {
+      var x = pos.getX(i), y = pos.getY(i), t = y / L;
+      var f = t < 0.78 ? 0.38 + 0.62 * Math.sin(Math.min(1, t / 0.78) * Math.PI / 2)
+                       : Math.sqrt(Math.max(0, 1 - Math.pow((t - 0.78) / 0.22, 2)));
+      var side = x > 0 ? 1.18 : 0.82;                 // trailing vane wider
+      pos.setX(i, x * f * side);
+      pos.setZ(i, 0.06 * L * Math.sin(Math.PI * t) - (curl || 0.05) * L * t * t);
+      var shade = 0.84 + 0.16 * t;
+      if (Math.abs(x) < 1e-6) shade -= 0.06;         // the quill
+      col.push(shade, shade, shade * 0.985);
+    }
+    g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
+    g.rotateX(-Math.PI / 2);                           // length → -Z, camber → +Y
+    g.computeVertexNormals();
+    return g;
+  }
+  function feather(parent, x, y, z, L, W, fan, _unused, curl) {
+    var m = new THREE.Mesh(featherGeo(L, W, curl), featherMat);
+    m.position.set(x, y, z);
+    m.rotation.y = fan;
+    m.rotation.x = 0.04;
+    parent.add(m);
+    return m;
+  }
+  function bone(parent, len, thick, ahead) {
+    var m = new THREE.Mesh(new THREE.SphereGeometry(1, 20, 12), bodyMat);
+    m.scale.set(len / 2, thick, thick * 1.5);
+    m.position.set(len / 2, 0, ahead);
+    parent.add(m);
+  }
+
+  // ---- a wing, built along +X from the shoulder ----
+  function buildWing() {
+    var root = new THREE.Group();
+    var arm = new THREE.Group(); root.add(arm);
+    var fore = new THREE.Group(); fore.position.x = 0.5; arm.add(fore);
+    var hand = new THREE.Group(); hand.position.x = 0.62; fore.add(hand);
+    bone(arm, 0.56, 0.075, 0.03);
+    bone(fore, 0.66, 0.06, 0.04);
+    bone(hand, 0.5, 0.042, 0.03);
+    var i, t, prim = [];
+    // marginal + lesser coverts over the arm (top layer)
+    for (i = 0; i < 6; i++) { t = i / 5; feather(arm, 0.04 + t * 0.44, 0.03, 0.06, 0.34 + 0.06 * t, 0.17, -0.05 * t, 0, 0.03); }
+    // secondaries under the forearm
+    for (i = 0; i < 10; i++) { t = i / 9; feather(fore, -0.02 + t * 0.62, -0.012, 0.02, 0.8 - 0.1 * t, 0.27, -0.04 - 0.1 * t, 0, 0.05); }
+    // greater coverts over the secondaries
+    for (i = 0; i < 9; i++) { t = i / 8; feather(fore, t * 0.6, 0.018, 0.05, 0.42 - 0.04 * t, 0.22, -0.06 - 0.08 * t, 0, 0.03); }
+    // primaries fanning from the hand — they spread like fingers
+    for (i = 0; i < 10; i++) {
+      t = i / 9;
+      var f = feather(hand, t * 0.48, -0.02 + 0.004 * i, 0.02 - 0.01 * t, 0.86 + 0.32 * Math.sin(t * Math.PI * 0.62), 0.21 - 0.04 * t, 0, 0, 0.07);
+      f.userData.base = -0.18 - 1.18 * Math.pow(t, 1.15);
+      f.rotation.y = f.userData.base;
+      prim.push(f);
+    }
+    // primary coverts
+    for (i = 0; i < 6; i++) { t = i / 5; feather(hand, t * 0.36, 0.016, 0.04, 0.34 - 0.06 * t, 0.15, -0.2 - 0.7 * t, 0, 0.03); }
+    return { root: root, arm: arm, fore: fore, hand: hand, prim: prim };
+  }
+
+  // ---- the dove: head toward +Z (toward you) ----
+  var dove = new THREE.Group();
+  var body = new THREE.Group(); dove.add(body);
+  (function () {
+    var prof = [[0, -1.02], [0.07, -0.96], [0.15, -0.8], [0.25, -0.52], [0.33, -0.2], [0.36, 0.08], [0.33, 0.34], [0.25, 0.54], [0.13, 0.7], [0, 0.76]];
+    var pts = prof.map(function (q) { return new THREE.Vector2(q[0], q[1]); });
+    var g = new THREE.LatheGeometry(pts, 36);
+    g.rotateX(Math.PI / 2);          // axis Y → Z
+    g.scale(1.0, 0.86, 1.0);
+    var torso = new THREE.Mesh(g, bodyMat);
+    torso.position.y = 0;
+    body.add(torso);
+    var head = new THREE.Mesh(new THREE.SphereGeometry(0.2, 32, 20), bodyMat);
+    head.position.set(0, 0.24, 0.74); head.scale.set(1, 0.95, 1.08); body.add(head);
+    var neck = new THREE.Mesh(new THREE.SphereGeometry(0.22, 24, 16), bodyMat);
+    neck.position.set(0, 0.12, 0.56); neck.scale.set(1, 1.05, 1.15); body.add(neck);
+    var beak = new THREE.Mesh(new THREE.ConeGeometry(0.038, 0.15, 16), beakMat);
+    beak.rotation.x = Math.PI / 2; beak.position.set(0, 0.21, 0.98); body.add(beak);
+    var cere = new THREE.Mesh(new THREE.SphereGeometry(0.035, 12, 10), bodyMat);
+    cere.position.set(0, 0.235, 0.92); cere.scale.set(1.2, 0.8, 1.2); body.add(cere);
+    [-1, 1].forEach(function (s) {
+      var eye = new THREE.Mesh(new THREE.SphereGeometry(0.026, 12, 10), darkMat);
+      eye.position.set(0.125 * s, 0.29, 0.83); body.add(eye);
+    });
+    // tail: a soft fan behind
+    var tail = new THREE.Group(); tail.position.set(0, 0.04, -0.9); tail.rotation.x = -0.08; body.add(tail);
+    for (var i = 0; i < 9; i++) {
+      var t = i / 8 - 0.5;
+      feather(tail, t * 0.12, -0.004 * Math.abs(t * 8), 0, 0.72 - Math.abs(t) * 0.12, 0.24, -t * 0.98, 0, 0.02);
+    }
+    body.userData.tail = tail;
+    // feet, reaching toward you as it comes in to land
+    [-1, 1].forEach(function (sd) {
+      var leg = new THREE.Group(); leg.position.set(0.1 * sd, -0.24, 0.02); leg.rotation.x = 0.55; body.add(leg);
+      var shin = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.03, 0.26, 10), legMat);
+      shin.position.y = -0.13; leg.add(shin);
+      var foot = new THREE.Group(); foot.position.y = -0.26; leg.add(foot);
+      [-0.45, 0, 0.45, Math.PI].forEach(function (ang) {
+        var toe = new THREE.Mesh(new THREE.CylinderGeometry(0.009, 0.014, ang === Math.PI ? 0.09 : 0.13, 8), legMat);
+        var g = new THREE.Group(); g.rotation.set(Math.PI / 2 - 0.35, 0, 0); g.rotation.y = ang; foot.add(g);
+        toe.position.z = 0; toe.position.y = (ang === Math.PI ? 0.045 : 0.065); g.add(toe);
+      });
+    });
+  })();
+  var wingR = buildWing(); wingR.root.position.set(0.2, 0.14, 0.18); body.add(wingR.root);
+  var wingL = buildWing(); wingL.root.position.set(-0.2, 0.14, 0.18); wingL.root.scale.x = -1; body.add(wingL.root);
+  dove.scale.setScalar(1.5);      // larger, at Emmanuel's request
+  scene.add(dove);
+
+  // ---- particle dove (chosen by Emmanuel, 2026-11-21; ?dove=solid shows the solid one) ----
+  // The same dove, the same wingbeat — but every surface is drawn as
+  // points of light sampled across it, so the dove is made of light.
+  var DOVE_MODE = /[?&]dove=solid\b/.test(location.search) ? 'solid' : 'particles';
+  var ptMat = null;
+  if (DOVE_MODE === 'particles') {
+    ptMat = new THREE.ShaderMaterial({
+      transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+      blending: LOOK === 'thermal' ? THREE.NormalBlending : THREE.AdditiveBlending,
+      uniforms: { uT: { value: 0 }, uScale: { value: 1000 }, uSize: { value: LOOK === 'thermal' ? 0.03 : 0.026 }, uGraphite: { value: LOOK === 'thermal' ? 1 : 0 } },
+      vertexShader: [
+        'attribute float aR; attribute float aTone; uniform float uT, uScale, uSize;',
+        'varying float vA; varying float vTone; varying float vR;',
+        'void main(){',
+        '  vR = aR;',
+        '  vec3 p = position;',
+        '  p += 0.006 * vec3(sin(uT*0.6 + aR*31.0), sin(uT*0.5 + aR*17.0), sin(uT*0.7 + aR*23.0));',
+        '  vec4 mv = modelViewMatrix * vec4(p, 1.0);',
+        '  gl_Position = projectionMatrix * mv;',
+        '  gl_PointSize = max(1.0, uSize * (0.55 + 0.9*fract(aR*7.13)) * uScale / -mv.z);',
+        '  vA = 0.55 + 0.45 * sin(uT*(0.8 + 2.2*fract(aR*3.7)) + aR*40.0);',
+        '  vTone = aTone;',
+        '}'].join('\n'),
+      fragmentShader: [
+        'uniform float uGraphite; varying float vA; varying float vTone; varying float vR;',
+        'void main(){',
+        '  float d = length(gl_PointCoord - 0.5);',
+        '  float a = smoothstep(0.5, 0.05, d) * vA;',
+        '  vec3 light = vec3(1.0, 0.985, 0.95) * vTone;',
+        '  float glint = step(0.93, vR);',                                /* a few metal flecks */
+        '  vec3 graphite = mix(vec3(0.16, 0.165, 0.18) + 0.2*fract(vR*13.7), vec3(0.82, 0.84, 0.88), glint * vA) * (0.65 + 0.35*vTone);',
+        '  float ga = smoothstep(0.5, 0.15, d) * (0.82 + 0.18*vA);',
+        '  gl_FragColor = mix(vec4(light, a), vec4(graphite, ga), uGraphite);',
+        '}'].join('\n')
+    });
+    var hidden = new THREE.MeshBasicMaterial({ visible: false });
+    var meshes = [], areas = [], total = 0;
+    var va = new THREE.Vector3(), vb = new THREE.Vector3(), vc = new THREE.Vector3(), e1 = new THREE.Vector3(), e2 = new THREE.Vector3();
+    dove.updateMatrixWorld(true);
+    dove.traverse(function (o) {
+      if (!o.isMesh) return;
+      if (o.material === darkMat) { o.visible = false; return; }       // eyes: left as dark gaps
+      var g = o.geometry, pos = g.attributes.position, idx = g.index;
+      var n = idx ? idx.count : pos.count, cum = [], acc = 0;
+      // world scale of this mesh, so density is even across parts
+      var s = new THREE.Vector3(); o.getWorldScale(s);
+      for (var i = 0; i < n; i += 3) {
+        var ia = idx ? idx.getX(i) : i, ib = idx ? idx.getX(i + 1) : i + 1, ic = idx ? idx.getX(i + 2) : i + 2;
+        va.fromBufferAttribute(pos, ia).multiply(s); vb.fromBufferAttribute(pos, ib).multiply(s); vc.fromBufferAttribute(pos, ic).multiply(s);
+        acc += e1.subVectors(vb, va).cross(e2.subVectors(vc, va)).length() / 2;
+        cum.push(acc);
+      }
+      meshes.push({ o: o, cum: cum, idx: idx, pos: pos, area: acc });
+      total += acc;
+    });
+    var TOTAL = (window.innerWidth < 720 ? 16000 : 26000);
+    meshes.forEach(function (m) {
+      var count = Math.max(24, Math.round(TOTAL * m.area / total));
+      var out = new Float32Array(count * 3), rnd = new Float32Array(count), tone = new Float32Array(count);
+      var tv = m.o.material === beakMat ? 0.45 : m.o.material === legMat ? 0.6 : 1.0;
+      for (var k = 0; k < count; k++) {
+        var r = Math.random() * m.area, lo = 0, hi = m.cum.length - 1;
+        while (lo < hi) { var mid = (lo + hi) >> 1; if (m.cum[mid] < r) lo = mid + 1; else hi = mid; }
+        var t3 = lo * 3, ia = m.idx ? m.idx.getX(t3) : t3, ib = m.idx ? m.idx.getX(t3 + 1) : t3 + 1, ic = m.idx ? m.idx.getX(t3 + 2) : t3 + 2;
+        var u = Math.random(), v = Math.random(); if (u + v > 1) { u = 1 - u; v = 1 - v; }
+        va.fromBufferAttribute(m.pos, ia); vb.fromBufferAttribute(m.pos, ib); vc.fromBufferAttribute(m.pos, ic);
+        va.multiplyScalar(1 - u - v).addScaledVector(vb, u).addScaledVector(vc, v);
+        out[k * 3] = va.x; out[k * 3 + 1] = va.y; out[k * 3 + 2] = va.z;
+        rnd[k] = Math.random(); tone[k] = tv * (0.7 + 0.3 * Math.random());
+      }
+      var pg = new THREE.BufferGeometry();
+      pg.setAttribute('position', new THREE.BufferAttribute(out, 3));
+      pg.setAttribute('aR', new THREE.BufferAttribute(rnd, 1));
+      pg.setAttribute('aTone', new THREE.BufferAttribute(tone, 1));
+      var pts = new THREE.Points(pg, ptMat);
+      pts.frustumCulled = false;
+      m.o.material = hidden;        // the surface goes; its children (the points) stay
+      m.o.add(pts);
+    });
+  }
+
+  // ---- wingbeat pose. phase φ: sin φ = +1 wings up, −1 wings down ----
+  function pose(phi) {
+    var s = Math.sin(phi), c = Math.cos(phi);
+    var up = Math.pow(0.5 + 0.5 * c, 1.6);       // rising: the wing folds a little (smooth, no corner)
+    [wingR, wingL].forEach(function (w) {
+      // landing: the stroke comes forward, toward you, and the wings rise
+      // high above the head between beats
+      var down = Math.pow(0.5 - 0.5 * s, 1.6);
+      w.arm.rotation.z = 0.22 + 1.1 * s;
+      w.arm.rotation.y = 0.06 + 0.18 * up - 0.42 * down;
+      w.arm.rotation.x = -0.12 * c;             // the leading edge leads on the downstroke
+      w.fore.rotation.z = -0.22 * Math.sin(phi - 0.5);
+      w.fore.rotation.y = 0.12 + 0.42 * up;
+      w.hand.rotation.z = -0.38 * Math.sin(phi - 0.95);
+      w.hand.rotation.y = 0.08 + 0.7 * up;
+      w.hand.rotation.x = 0.18 * c;
+      for (var i = 0; i < w.prim.length; i++) w.prim[i].rotation.y = w.prim[i].userData.base * (1 - 0.55 * up);
+    });
+    body.position.y = -0.07 * s;
+    body.rotation.x = 0.04 * c;
+    body.userData.tail.rotation.x = -0.26 + 0.07 * c;   // fanned and braking
+  }
+
+  // ---- size ----
+  var W = 1, H = 1;
+  function resize() {
+    W = stage.clientWidth || window.innerWidth;
+    H = stage.clientHeight || window.innerHeight;
+    renderer.setSize(W, H, false);
+    camera.aspect = W / H;
+    // portrait phones: widen the view so the wings fit while the dove is far
+    camera.fov = W / H < 0.75 ? 48 : 36;
+    camera.updateProjectionMatrix();
+    if (ptMat) ptMat.uniforms.uScale.value = renderer.getPixelRatio() * H / (2 * Math.tan(camera.fov * Math.PI / 360));
+    bgMat.uniforms.uRes.value.set(W, H);
+    readScroll();
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  // ---- the real dove (2026-11-21): dove.mp4 (Google Flow; since 21 Nov evening the slow-motion hovering clip, old one kept as dove-v2-flight.mp4) ----
+  // Every frame of the filmed dove is read once into memory as brightness,
+  // then drawn by the background shader as graphite specks over the fire.
+  // Time in the clip creeps forward in slow motion at rest and runs faster
+  // as you swipe. ?dove=3d keeps the code-built dove instead.
+  var VID = window.__dvVid = { on: false, frames: [], dur: 8, T: 0, autoT: 0, capPhase: 0, W: 400, H: 225, ia: -1, ib: -1 };
+  var TEXFMT = renderer.capabilities.isWebGL2 ? THREE.RedFormat : THREE.LuminanceFormat;   // one channel: brightness
+  var texA = new THREE.DataTexture(new Uint8Array(VID.W * VID.H), VID.W, VID.H, TEXFMT, THREE.UnsignedByteType);
+  var texB = new THREE.DataTexture(new Uint8Array(VID.W * VID.H), VID.W, VID.H, TEXFMT, THREE.UnsignedByteType);
+  texA.unpackAlignment = texB.unpackAlignment = 1;
+  [texA, texB].forEach(function (t) { t.minFilter = t.magFilter = THREE.LinearFilter; t.generateMipmaps = false; t.needsUpdate = true; });
+  bgMat.uniforms.uVidA.value = texA; bgMat.uniforms.uVidB.value = texB;
+  function vidFit() {
+    var A = W / H, V = 16 / 9;   // cover the screen, centred
+    if (A > V) bgMat.uniforms.uVidFit.value.set(1, V / A); else bgMat.uniforms.uVidFit.value.set(A / V, 1);
+    bgMat.uniforms.uDpr.value = renderer.getPixelRatio();
+  }
+  window.addEventListener('resize', vidFit); vidFit();
+  if (!/[?&]dove=3d\b/.test(location.search)) (function () {
+    var v = document.createElement('video');
+    v.muted = true; v.playsInline = true; v.setAttribute('playsinline', ''); v.preload = 'auto';
+    /* The whole film is fetched first and played from memory. Read straight from the
+       server, a seek could land before that part had arrived (or on a server that
+       cannot serve part of a file) and every frame came out the same: a frozen dove. */
+    function setSrc(u) { v.src = u; }
+    if (window.fetch && window.URL && URL.createObjectURL) {
+      fetch('dove.mp4').then(function (r) { if (!r.ok) throw 0; return r.blob(); })
+        .then(function (b) { setSrc(URL.createObjectURL(b)); }, function () { setSrc('dove.mp4'); });
+    } else setSrc('dove.mp4');
+    var cv = document.createElement('canvas'); cv.width = VID.W; cv.height = VID.H;
+    var cx = cv.getContext('2d', { willReadFrequently: true });
+    var lastT = -1;
+    function grab(t) {
+      if (t <= lastT + 0.001) return;
+      lastT = t;
+      cx.drawImage(v, 0, 0, VID.W, VID.H);
+      var px = cx.getImageData(0, 0, VID.W, VID.H).data, n = VID.W * VID.H, lum = new Uint8Array(n);
+      var sx = 0, sy = 0, sw = 0, sxx = 0;
+      for (var i = 0, j = 0; i < n; i++, j += 4) {
+        var l = (px[j] * 0.3 + px[j + 1] * 0.59 + px[j + 2] * 0.11) | 0;
+        lum[i] = l;
+        if (l > 60) { var x = i % VID.W, y = (i / VID.W) | 0; sx += x * l; sy += y * l; sw += l; sxx += (x - VID.W / 2) * (x - VID.W / 2) * l; }
+      }
+      VID.frames.push({ t: t, lum: lum, cx: sw ? sx / sw / VID.W : 0.5, cy: sw ? sy / sw / VID.H : 0.5, sp: sw ? Math.sqrt(sxx / sw) / VID.W : 0.1 });
+      if (!VID.on && VID.frames.length > 2) { VID.on = true; dove.visible = false; bgMat.uniforms.uVidOn.value = 1; }
+    }
+    // step through the clip 24 times a second and read each frame (works even
+    // when the page is in the background and autoplay is refused)
+    var FPS = 24, k = 0;
+    v.style.cssText = 'position:fixed;left:0;top:0;width:2px;height:2px;opacity:0;pointer-events:none';
+    document.body.appendChild(v);
+    function seekNext() {
+      var t = k / FPS;
+      if (t > VID.dur - 0.02) { VID.loaded = true; v.removeAttribute('src'); v.load(); v.remove(); if (worker && pending === 0) worker.terminate(); return; }
+      v.currentTime = Math.max(0.001, t);   // a seek to 0 at 0 would never report back
+    }
+    // Reading pixels on the page's own thread made the first seconds stutter, so
+    // each frame is handed to a small worker as a bitmap and read there.
+    var worker = null, pending = 0;
+    try {
+      if (window.Worker && window.OffscreenCanvas && window.createImageBitmap) {
+        var src = 'var W=' + VID.W + ',H=' + VID.H + ',oc=new OffscreenCanvas(W,H),c=oc.getContext("2d",{willReadFrequently:true});' +
+          'onmessage=function(e){c.drawImage(e.data.b,0,0,W,H);e.data.b.close();var px=c.getImageData(0,0,W,H).data,n=W*H,lum=new Uint8Array(n),sx=0,sy=0,sw=0,sxx=0;' +
+          'for(var i=0,j=0;i<n;i++,j+=4){var l=(px[j]*0.3+px[j+1]*0.59+px[j+2]*0.11)|0;lum[i]=l;if(l>60){var x=i%W,y=(i/W)|0;sx+=x*l;sy+=y*l;sw+=l;sxx+=(x-W/2)*(x-W/2)*l;}}' +
+          'postMessage({t:e.data.t,lum:lum,cx:sw?sx/sw/W:0.5,cy:sw?sy/sw/H:0.5,sp:sw?Math.sqrt(sxx/sw)/W:0.1},[lum.buffer]);};';
+        worker = new Worker(URL.createObjectURL(new Blob([src], { type: 'text/javascript' })));
+        worker.onmessage = function (e) {
+          pending--;
+          VID.frames.push(e.data);
+          if (!VID.on && VID.frames.length > 2) { VID.on = true; dove.visible = false; bgMat.uniforms.uVidOn.value = 1; }
+          if (VID.loaded && pending === 0) worker.terminate();
+        };
+      }
+    } catch (e) { worker = null; }
+    v.addEventListener('seeked', function () {
+      /* give the browser a moment to put the new picture up before reading it */
+      var done = false, go = function () { if (done) return; done = true; onSeeked(); };
+      if (v.requestVideoFrameCallback) v.requestVideoFrameCallback(go);
+      setTimeout(go, v.requestVideoFrameCallback ? 30 : 0);
+    });
+    function onSeeked() {
+      var t = k / FPS; k++;
+      if (!worker) { grab(t); seekNext(); return; }
+      createImageBitmap(v, { resizeWidth: VID.W, resizeHeight: VID.H, resizeQuality: 'medium' }).then(function (bm) {
+        pending++; worker.postMessage({ t: t, b: bm }, [bm]);
+        // pace the reading so the page always has time to draw
+        setTimeout(seekNext, pending > 3 ? 40 : 0);
+      }, function () { worker = null; grab(t); seekNext(); });
+    }
+    v.addEventListener('loadedmetadata', function () { VID.dur = v.duration || 8; seekNext(); });
+    v.addEventListener('error', function () { /* stay with the code-built dove */ });
+  })();
+
+  // ---- dissolve into particles, then dust (after the Spark library in the
+  //      "5 GitHub libraries" reel, Df7mTtgxcId: a scan that dissolves to dust).
+  // A grid of points covers the film. Each point reads the dove's brightness
+  // at its spot. Where the solid dove has dissolved (same noise field as the
+  // shader), the point appears as a graphite speck holding the dove's shape;
+  // near the end of the swipe the specks lift and scatter like dust.
+  // points are laid over the screen (one every ~2.3 px), so the dove is dense on any shape of screen
+  var dGeo = new THREE.BufferGeometry();
+  // particle style: glow (chosen by Emmanuel, 21 Nov); ?dots=graphite | halftone | bokeh to compare
+  var DOTS = (location.search.match(/[?&]dots=(\w+)/) || [])[1] || 'glow';
+  var STYLE = { graphite: { n: 0, sp: 3.6, jit: 1 }, glow: { n: 1, sp: 2.4, jit: 1 }, halftone: { n: 2, sp: 5.5, jit: 0 }, bokeh: { n: 3, sp: 8, jit: 1 } }[DOTS] || { n: 1, sp: 2.4, jit: 1 };
+  function buildDust() {
+    var sp = STYLE.sp, GX = Math.max(40, Math.round(W / sp)), GY = Math.max(40, Math.round(H / sp)), dN = GX * GY;
+    var dUv = new Float32Array(dN * 2), dR = new Float32Array(dN);
+    for (var gy = 0, q = 0; gy < GY; gy++) for (var gx = 0; gx < GX; gx++, q++) {
+      var jx = STYLE.jit ? Math.random() : 0.5, jy = STYLE.jit ? Math.random() : 0.5;
+      dUv[q * 2] = (gx + jx) / GX; dUv[q * 2 + 1] = (gy + jy) / GY; dR[q] = Math.random();
+    }
+    dGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(dN * 3), 3));
+    dGeo.setAttribute('aUv', new THREE.BufferAttribute(dUv, 2));
+    dGeo.setAttribute('aR', new THREE.BufferAttribute(dR, 1));
+    var av = new THREE.BufferAttribute(new Float32Array(dN), 1); av.setUsage(THREE.DynamicDrawUsage); dGeo.setAttribute('aVis', av);
+    var al = new THREE.BufferAttribute(new Float32Array(dN), 1); al.setUsage(THREE.DynamicDrawUsage); dGeo.setAttribute('aL', al);
+    dGeo.setDrawRange(0, dN);
+  }
+  buildDust();
+  var dustT = 0;
+  window.addEventListener('resize', function () { clearTimeout(dustT); dustT = setTimeout(buildDust, 250); });
+  var NOISE_GLSL = [
+    'float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1,311.7))) * 43758.5453); }',
+    'float noise(vec2 p){ vec2 i = floor(p), f = fract(p); vec2 u = f*f*(3.0-2.0*f);',
+    '  return mix(mix(hash(i), hash(i+vec2(1.0,0.0)), u.x), mix(hash(i+vec2(0.0,1.0)), hash(i+vec2(1.0,1.0)), u.x), u.y); }',
+    'float fbm(vec2 p){ float v = 0.0, a = 0.5; for (int i = 0; i < 4; i++){ v += a*noise(p); p = p*2.02 + vec2(1.7,9.2); a *= 0.5; } return v; }'
+  ].join('\n');
+  var dustMat = new THREE.ShaderMaterial({
+    transparent: true, depthTest: false, depthWrite: false,
+    blending: STYLE.n === 3 ? THREE.AdditiveBlending : THREE.NormalBlending,   // glow uses normal blending so it can darken on a light page
+    uniforms: { uStyle: { value: STYLE.n }, uBg: bgMat.uniforms.uB, uVidA: { value: texA }, uVidB: { value: texB }, uVidMix: bgMat.uniforms.uVidMix, uFit: bgMat.uniforms.uVidFit,
+                uMorph: { value: 0 }, uDust: { value: 0 }, uT: { value: 0 }, uDpr: bgMat.uniforms.uDpr, uOn: bgMat.uniforms.uVidOn, uZ: bgMat.uniforms.uZ, uCtr: bgMat.uniforms.uCtr, uFly: { value: 0 }, uRise: { value: 0 }, uBT: bgMat.uniforms.uBT, uAsp: { value: 1 }, uBH: { value: 0.2 } },
+    vertexShader: [
+      'precision highp float;',
+      'attribute vec2 aUv; attribute float aR; attribute float aVis; attribute float aL;',
+      'uniform sampler2D uVidA, uVidB; uniform float uVidMix, uMorph, uDust, uT, uDpr, uOn, uZ, uStyle, uBg, uFly, uRise, uBT, uAsp, uBH; uniform vec2 uFit, uCtr;',
+      'varying vec3 vCol; varying float vA;',
+      NOISE_GLSL,
+      'void main(){',
+      '  vec2 vu = uCtr + (aUv - vec2(0.5, 0.53))*uFit*uZ;',              /* this point on the film, dove centred */
+      '  vec2 tu = vec2(vu.x, 1.0 - vu.y);',
+      '  float L = mix(texture2D(uVidA, tu).r, texture2D(uVidB, tu).r, uVidMix);',
+      '  float inF = step(0.0, vu.x) * step(vu.x, 1.0) * step(0.0, vu.y) * step(vu.y, 1.0);',
+      '  float body = smoothstep(0.035, 0.11, L) * inF;',                   /* the whole bird, shaded parts too */
+      '  L = smoothstep(0.07, 0.9, L) * inF;',
+      '  float th = 0.04 + 0.92*clamp((fbm(vu*vec2(7.0, 3.9) + 3.1) - 0.3)/0.4, 0.0, 1.0);',
+      '  float rv = smoothstep(th - 0.05, th + 0.05, uMorph);',
+      '  float vis = smoothstep(aR - 0.15, aR + 0.15, body*(0.62 + 0.5*L)) * rv * uOn;',   /* fills the bird; fades, not flickers */
+      '  if (uStyle > 1.5 && uStyle < 2.5) vis = body * rv * uOn;',            /* halftone: every grid dot, sized by the light */
+      '  if (uStyle > 2.5) vis *= step(0.6, body) * step(0.12, L);',          /* bokeh: only the bird itself */
+      '  if (uStyle > 0.5 && uStyle < 1.5) { L = aL; vis = aVis * rv * uOn; }',   /* glow: eased on the CPU, so specks glide in and out */
+      '  vec2 s = aUv;',
+      /* a breath of life once freed, and a small lift as each speck lets go */
+      '  vec2 flow = vec2(fbm(aUv*3.2 + vec2(uT*0.11, 0.0)) - 0.5, fbm(aUv*3.2 + vec2(5.2, -uT*0.09)) - 0.5);',   /* a slow current */
+      '  float fa = uStyle > 1.5 && uStyle < 2.5 ? 0.0 : (uStyle > 2.5 ? 1.5 : 1.0);',
+      '  s += (flow*0.016 + vec2(sin(uT*0.6 + aR*40.0), cos(uT*0.5 + aR*33.0))*0.0016) * rv * fa;',
+      '  s.y += (1.0 - rv) * 0.006;',
+      /* dust: each speck lets go at its own moment, rises and drifts outward */
+      /* the dove flies up and away as it breaks (Emmanuel, 21 Nov): the whole bird rises
+         and draws in toward its centre, as if receding, while its dust falls from it */
+      '  vec2 dc = vec2(0.5, 0.53);',
+      '  s = dc + (s - dc)*(1.0 - 0.45*uFly) + vec2(0.06*sin(uFly*3.1)*uFly, 0.95*uFly);',
+      '  float ds = clamp((uDust - aR*0.45)/0.55, 0.0, 1.0); ds = ds*ds;',
+      /* the dove does not disintegrate fully (Emmanuel): only some parts come away, in
+         soft patches; the rest holds its shape until the white takes it */
+      '  ds *= step(0.46, fbm(aUv*5.5 + 2.0) + (fract(aR*57.3) - 0.5)*0.4);',   /* about half the specks, in patches: clearly seen */
+      /* the dust falls: down the screen and off the bottom, on into the projects (Emmanuel) */
+      '  vec2 drift = vec2((fbm(aUv*5.0 + uT*0.05) - 0.5)*0.5 + (aUv.x - 0.5)*0.25, -(0.75 + 0.6*fbm(aUv*3.0 - uT*0.04)) - aR*0.35);',
+      '  s += drift * ds * (1.15 + 0.95*uFly);',   /* far enough to reach the foot even from a rising bird */
+      /* coming back from the projects (Emmanuel, 21 Nov): every speck starts below the
+         foot of the screen and rises, each at its own moment, swaying, into its place */
+      '  float rh = fract(aR*37.7), rh2 = fract(aR*91.3);',
+      '  float rt = clamp((1.0 - uRise)*1.75 - 0.5*rh - 0.25*aUv.y, 0.0, 1.0);',
+      '  float rleft = (1.0 - rt)*(1.0 - rt)*(1.0 - rt);',
+      '  s += step(0.0005, uRise) * rleft * vec2((rh2 - 0.5)*0.9 + 0.07*sin(rt*7.0 + aR*30.0), -(0.8 + 0.5*rh));',
+      '  gl_Position = vec4(s*2.0 - 1.0, 0.0, 1.0);',
+      '  float ps0 = uStyle < 0.5 ? 2.3 + 2.4*L : (uStyle < 1.5 ? 1.3 + 2.0*L : (uStyle < 2.5 ? 0.8 + 4.8*L : 5.0 + 6.0*L));',
+      '  gl_PointSize = vis > 0.01 ? ps0*uDpr*(1.0 - 0.45*ds) : 0.0;',
+      '  vec3 g = vec3(0.36, 0.37, 0.4) + 0.38*L + 0.14*fract(aR*17.3);',   /* graphite, lighter where the feathers catch light */
+      '  float fl = step(0.93, fract(aR*91.7)) * (0.6 + 0.4*sin(uT*2.0 + aR*40.0));',
+      '  vCol = mix(g, vec3(0.86, 0.88, 0.92), fl);',
+      /* the dove bleeds the way the page does (Emmanuel, 21 Nov): the same colours in
+         the same order, in a lighter key so it stands out — lilac at the top of the
+         bird, rose-red through the middle, a deep red at the foot — and the same
+         vertical streaks, which let the lower feathers trail away in tongues */
+      '  float bt = clamp(0.5 + (aUv.y - 0.53)/(2.2*uBH), 0.0, 1.0);',        /* 0 = foot of the bird, 1 = top */
+      '  float bstreak = fbm(vec2(aUv.x*uAsp*13.0, uBT*0.05));',              /* the page's own streak field */
+      '  float bedge = 0.2 + (bstreak - 0.5)*0.55;',
+      '  float bfade = 0.2 + 0.8*smoothstep(bedge - 0.16, bedge + 0.14, bt);',
+      '  if (uStyle > 0.5 && uStyle < 1.5) {',
+      '    vec3 bc = mix(vec3(0.80, 0.22, 0.26), vec3(1.0, 0.66, 0.68), smoothstep(0.02, 0.42, bt + (bstreak - 0.5)*0.3));',
+      '    bc = mix(bc, vec3(0.80, 0.68, 1.0), smoothstep(0.42, 0.82, bt + (bstreak - 0.5)*0.3));',
+      '    bc *= 0.72 + 0.34*L;',
+      '    vCol = mix(bc, vec3(0.43, 0.43, 0.45), smoothstep(0.72, 0.95, uBg));',   /* easing to a soft grey as the page turns white */
+      '  }',
+      '  if (uStyle > 1.5 && uStyle < 2.5) vCol = vec3(0.97, 0.95, 0.93);',                            /* halftone: paper white */
+      '  if (uStyle > 2.5) { vec3 t = fract(aR*5.3) < 0.5 ? vec3(0.64,0.43,0.95) : vec3(0.93,0.34,0.38); vCol = mix(t, vec3(1.0), 0.35 + 0.5*L) * 0.55; }',   /* bokeh: purple, red, white */
+      '  vA = vis * (0.85 + 0.15*L) * (1.0 - 0.35*ds) * mix(bfade, 1.0, smoothstep(0.72, 0.95, uBg));',   /* stays visible as it falls away */
+      '}'].join('\n'),
+    fragmentShader: [
+      'precision highp float; uniform float uStyle; varying vec3 vCol; varying float vA;',
+      'void main(){ float d = length(gl_PointCoord - 0.5); float a;',
+      '  if (uStyle < 0.5) a = smoothstep(0.5, 0.15, d);',
+      '  else if (uStyle < 1.5) a = exp(-d*d*16.0) * step(d, 0.5);',
+      '  else if (uStyle < 2.5) a = smoothstep(0.5, 0.4, d);',
+      '  else a = smoothstep(0.5, 0.05, d) * 0.7;',
+      '  gl_FragColor = vec4(vCol, a * vA); }'
+    ].join('\n')
+  });
+  var dust = new THREE.Points(dGeo, dustMat);
+  dust.frustumCulled = false; dust.renderOrder = 2;
+  scene.add(dust);
+
+  function frameAt(T) {
+    var f = VID.frames, lo = 0, hi = f.length - 1;
+    if (T <= f[0].t) return [0, 0, 0];
+    if (T >= f[hi].t) return [hi, hi, 0];
+    while (hi - lo > 1) { var m = (lo + hi) >> 1; if (f[m].t <= T) lo = m; else hi = m; }
+    return [lo, hi, (T - f[lo].t) / Math.max(1e-4, f[hi].t - f[lo].t)];
+  }
+  function nearest(T) { var r = frameAt(T); return r[2] < 0.5 ? r[0] : r[1]; }
+  // size and centre, smoothed over about a second, so wingbeats don't make the dove pulse
+  function steady(i) {
+    var f = VID.frames, fi = f[i];
+    if (fi.cxS !== undefined) return fi;
+    var a = Math.max(0, i - 12), b = Math.min(f.length - 1, i + 12), n = 0, cx = 0, cy = 0, sp = 0;
+    for (var j = a; j <= b; j++) { cx += f[j].cx; cy += f[j].cy; sp += f[j].sp; n++; }
+    var o = { cxS: cx / n, cyS: cy / n, spS: sp / n };
+    if (VID.loaded || b - i >= 12) { fi.cxS = o.cxS; fi.cyS = o.cyS; fi.spS = o.spS; }
+    return o;
+  }
+  // ---- a seamless loop: find the two moments where the dove's pose matches ----
+  // Each frame's silhouette is sampled on a 40×40 grid around the dove's centre,
+  // scaled by its own size, so frames compare by pose, not by size or place.
+  // The dove's body, measured where the wings can't change it: the run of bright
+  // rows down the middle of the bird, head to tail. Its length is the dove's true
+  // size in that frame and its middle is the dove's true place.
+  function axisOf(i) {
+    var f = VID.frames[i];
+    if (f.ax) return f.ax;
+    var Wv = VID.W, Hv = VID.H, c = Math.round(f.cx * (Wv - 1)), hw = Math.max(2, Math.round(Wv * 0.02));
+    var best0 = 0, best1 = -1, st = -1, gap = 0;
+    for (var y = 0; y < Hv; y++) {
+      var on = false;
+      for (var x = c - hw; x <= c + hw; x++) if (x >= 0 && x < Wv && f.lum[y * Wv + x] > 45) { on = true; break; }
+      if (on) { if (st < 0) st = y; gap = 0; if (y - st > best1 - best0) { best0 = st; best1 = y; } }
+      else if (++gap > 2) st = -1;
+    }
+    return (f.ax = { len: Math.max(0.02, (best1 - best0) / Hv), mid: (best0 + best1) / 2 / Hv, cx: f.cx });
+  }
+  function bodyOf(i) {                    // the same, averaged over a few frames either side
+    var f = VID.frames, fi = f[i];
+    if (fi.bd) return fi.bd;
+    var a = Math.max(0, i - 3), b = Math.min(f.length - 1, i + 3), n = 0, len = 0, mid = 0, cx = 0;
+    for (var j = a; j <= b; j++) { var ax = axisOf(j); len += ax.len; mid += ax.mid; cx += ax.cx; n++; }
+    return (fi.bd = { len: len / n, mid: mid / n, cx: cx / n });
+  }
+  // ---- a seamless loop: find the two moments where the dove's pose matches ----
+  // Each frame's silhouette is sampled on a 44×28 grid centred on the body and
+  // scaled by the body's length, so frames compare by pose alone.
+  function poseOf(i) {
+    var f = VID.frames[i];
+    if (f.pose) return f.pose;
+    var GXp = 44, GYp = 28, g = new Float32Array(GXp * GYp), bd = bodyOf(i), k = 0;
+    var sy = 2.4 * bd.len, sx = 5.6 * bd.len * VID.H / VID.W;          // about 2.4 body-lengths tall, 5.6 wide
+    for (var gy = 0; gy < GYp; gy++) for (var gx = 0; gx < GXp; gx++, k++) {
+      var u = bd.cx + (gx / (GXp - 1) - 0.5) * sx, v = bd.mid + (gy / (GYp - 1) - 0.5) * sy;
+      var x = Math.round(u * (VID.W - 1)), y = Math.round(v * (VID.H - 1));
+      g[k] = (x >= 0 && y >= 0 && x < VID.W && y < VID.H) ? f.lum[y * VID.W + x] / 255 : 0;
+    }
+    return (f.pose = g);
+  }
+  function poseDist(i, j) { var a = poseOf(i), b = poseOf(j), d = 0; for (var k = 0; k < a.length; k++) { var e = a[k] - b[k]; d += e * e; } return d; }
+  function findLoop() {
+    var f = VID.frames, best = 1e9, bi = -1, bj = -1;
+    for (var i = 8; i < f.length - 8; i++) {
+      if (f[i].t < 0.6 || f[i].t > 4.4) continue;
+      for (var j = i + 1; j < f.length - 8; j++) {
+        if (f[j].t < f[i].t + 2.7 || f[j].t > Math.min(7.6, f[i].t + 4.8)) continue;   // one whole wingbeat (slow-motion film: a beat lasts 3 to 4 s)
+        // same pose now, and the same pose a moment before and after: the wings
+        // must be at the same point of the beat and moving the same way
+        var d = poseDist(i, j) + 0.7 * poseDist(i - 8, j - 8) + 0.7 * poseDist(i + 8, j + 8);
+        if (d < best) { best = d; bi = i; bj = j; }
+      }
+    }
+    VID.loop = bi >= 0 ? { a: f[bi].t, b: f[bj].t } : { a: 1.2, b: 4.7 };
+    // keep the dove the size it was while the film was still loading
+    var n = 0, kk = 0;
+    for (var q = 0; q < f.length; q++) {
+      if (f[q].t < VID.loop.a || f[q].t > VID.loop.b) continue;
+      kk += bodyOf(q).len * (VID.H / VID.W) / (2 * Math.max(0.01, steady(q).spS)); n++;
+    }
+    VID.K = n ? kk / n : 1.5;
+    /* how far the bird reaches from its body's middle, in body lengths, at the widest
+       moment of the beat: used to stop it growing past the edges of the screen */
+    var Wv = VID.W, Hv = VID.H, ex = 0, eu = 0, ed = 0;
+    for (q = 0; q < f.length; q++) {
+      if (f[q].t < VID.loop.a || f[q].t > VID.loop.b) continue;
+      var bq = bodyOf(q), lu = f[q].lum, x0 = Wv, x1 = 0, y0 = Hv, y1 = 0;
+      for (var yy = 0; yy < Hv; yy += 2) for (var xx = 0; xx < Wv; xx += 2) if (lu[yy * Wv + xx] > 64) { if (xx < x0) x0 = xx; if (xx > x1) x1 = xx; if (yy < y0) y0 = yy; if (yy > y1) y1 = yy; }
+      if (x1 <= x0) continue;
+      var bl = bq.len * (Hv / Wv);
+      ex = Math.max(ex, (bq.cx - x0 / Wv) / bl, (x1 / Wv - bq.cx) / bl);
+      eu = Math.max(eu, (bq.mid - y0 / Hv) / bq.len); ed = Math.max(ed, (y1 / Hv - bq.mid) / bq.len);
+    }
+    VID.ext = { x: ex, up: eu, down: ed };
+    if (!/[?&]flow=off\b/.test(location.search)) startFlow();   // ?flow=off = the plain fade, to compare
+  }
+  // each speck eases toward the film's brightness at its spot (about 0.15 s),
+  // so the wings glide through the field instead of switching specks on and off
+  function ss(a, b, x) { if (x <= a) return 0; if (x >= b) return 1; x = (x - a) / (b - a); return x * x * (3 - 2 * x); }
+  // xa / xb = where the dove sits in each of the two film frames being blended
+  // ({z, cx, cy}); each frame is read through its own, so both land on the same
+  // spot at the same size on screen
+  // ---- smoother wings (Emmanuel, 21 Nov): motion between film frames ----
+  // The film has 24 frames a second and plays at a fifth of that, so each pair of
+  // frames is stretched over about 0.2 s. Fading one into the next makes fast
+  // wingtips dissolve instead of travel. So, for the frames of the wingbeat loop,
+  // a background worker works out where each small block of the picture moves to
+  // in the next frame (and back again). The specks then read each frame shifted
+  // part-way along that motion, so the wings slide between positions.
+  function startFlow() {
+    if (VID.flowOn || !window.Worker || !VID.loop) return;
+    VID.flowOn = true; VID.flow = {};
+    var f = VID.frames, i0 = -1, i1 = -1;
+    for (var i = 0; i < f.length; i++) { if (i0 < 0 && f[i].t >= VID.loop.a - 0.34) i0 = i; if (f[i].t <= VID.loop.b + 0.001) i1 = i; }
+    if (i0 < 0 || i1 <= i0) return;
+    var pack = [];
+    for (var j = i0; j <= i1; j++) { var bd = bodyOf(j); pack.push({ idx: j, lum: f[j].lum.slice(0), cx: bd.cx, mid: bd.mid, len: bd.len }); }
+    var src = [
+      'onmessage=function(ev){var d=ev.data,W=d.W,H=d.H,fr=d.frames,hw=W>>1,hh=H>>1,gw=Math.floor(hw/4),gh=Math.floor(hh/4);',
+      'function half(l){var o=new Float32Array(hw*hh);for(var y=0;y<hh;y++)for(var x=0;x<hw;x++){var i=(y*2)*W+x*2;o[y*hw+x]=(l[i]+l[i+1]+l[i+W]+l[i+W+1])*0.25;}return o;}',
+      'var hs=fr.map(function(f){return half(f.lum);});',
+      'function sad(a,b,x0,y0,dx,dy){var s=0;for(var y=0;y<8;y++){var ya=y0+y,yb=ya+dy,ra=ya*hw+x0;if(yb<0||yb>=hh){for(var x=0;x<8;x++)s+=a[ra+x];continue;}var rb=yb*hw+x0+dx;for(var x=0;x<8;x++){var xb=x0+x+dx,vb=(xb<0||xb>=hw)?0:b[rb+x],q=a[ra+x]-vb;s+=q<0?-q:q;}}return s;}',
+      'function match(a,b,ba,bb){var out=new Float32Array(gw*gh*2),sc=bb.len/ba.len;',
+      ' for(var gy=0;gy<gh;gy++)for(var gx=0;gx<gw;gx++){var x0=Math.min(hw-8,gx*4),y0=Math.min(hh-8,gy*4),e=0,k=(gy*gw+gx)*2;',
+      '  for(var y=0;y<8;y++)for(var x=0;x<8;x++)e+=a[(y0+y)*hw+x0+x];',
+      '  if(e<64*10)continue;',                                       // black: nothing to move
+      // where this block would land if the dove only came closer (no wing motion), in half-size pixels
+      '  var pcx=(x0+4)*2,pcy=(y0+4)*2,ex=((bb.cx-ba.cx)*W+(pcx-ba.cx*W)*(sc-1))/2,ey=((bb.mid-ba.mid)*H+(pcy-ba.mid*H)*(sc-1))/2,exi=Math.round(ex),eyi=Math.round(ey);',
+      '  var base=sad(a,b,x0,y0,exi,eyi),best=base,bx=exi,by=eyi;',
+      '  for(var dy=-8;dy<=8;dy+=2)for(var dx=-8;dx<=8;dx+=2){if(!dx&&!dy)continue;var c=sad(a,b,x0,y0,exi+dx,eyi+dy)+(Math.abs(dx)+Math.abs(dy))*3;if(c<best){best=c;bx=exi+dx;by=eyi+dy;}}',
+      '  var cx0=bx,cy0=by;',
+      '  for(var dy=-1;dy<=1;dy++)for(var dx=-1;dx<=1;dx++){if(!dx&&!dy)continue;var c=sad(a,b,x0,y0,cx0+dx,cy0+dy)+(Math.abs(cx0+dx-exi)+Math.abs(cy0+dy-eyi))*3;if(c<best){best=c;bx=cx0+dx;by=cy0+dy;}}',
+      '  if(best<base*0.88){out[k]=(bx-ex)*2;out[k+1]=(by-ey)*2;}',  // only trust a clearly better match
+      ' }',
+      ' var q=new Int8Array(out.length);',                           // soften the field so neighbours agree
+      ' for(var gy=0;gy<gh;gy++)for(var gx=0;gx<gw;gx++){var sx=0,sy=0,n=0;for(var yy=-1;yy<=1;yy++)for(var xx=-1;xx<=1;xx++){var X=gx+xx,Y=gy+yy;if(X<0||Y<0||X>=gw||Y>=gh)continue;var w=(xx||yy)?1:2,kk=(Y*gw+X)*2;sx+=out[kk]*w;sy+=out[kk+1]*w;n+=w;}',
+      '  var k2=(gy*gw+gx)*2;q[k2]=Math.max(-127,Math.min(127,Math.round(sx/n)));q[k2+1]=Math.max(-127,Math.min(127,Math.round(sy/n)));}',
+      ' return q;}',
+      'for(var i=0;i<fr.length-1;i++){var f=match(hs[i],hs[i+1],fr[i],fr[i+1]),b=match(hs[i+1],hs[i],fr[i+1],fr[i]);postMessage({i:fr[i].idx,f:f,b:b,gw:gw,gh:gh},[f.buffer,b.buffer]);}',
+      'postMessage({done:true});};'
+    ].join('\n');
+    try {
+      var wk = new Worker(URL.createObjectURL(new Blob([src], { type: 'text/javascript' })));
+      wk.onmessage = function (e) {
+        if (e.data.done) { wk.terminate(); VID.flowDone = true; return; }
+        VID.gw = e.data.gw; VID.gh = e.data.gh; VID.flow[e.data.i] = { f: e.data.f, b: e.data.b };
+      };
+      wk.postMessage({ W: VID.W, H: VID.H, frames: pack });
+    } catch (err) { VID.flow = null; }
+  }
+  function easeSpecks(dt, m, A, B, xa, xb, fit) {
+    var uvA = dGeo.attributes.aUv.array, rA = dGeo.attributes.aR.array, vA = dGeo.attributes.aVis, lA = dGeo.attributes.aL;
+    var va = vA.array, la = lA.array, n = va.length, fa = VID.frames[A].lum, fb = VID.frames[B].lum;
+    var Wv = VID.W, Hv = VID.H, k = 1 - Math.exp(-dt * 4);   // specks glide in and out over about a fifth of a second
+    var ax = fit.x * xa.z, ay = fit.y * xa.z, acx = xa.cx, acy = 1 - xa.cy;
+    var bx = fit.x * xb.z, by = fit.y * xb.z, bcx = xb.cx, bcy = 1 - xb.cy;
+    var useB = m > 0.002, onlyB = m > 0.998;
+    var fl = (B === A + 1 && VID.flow) ? VID.flow[A] : null, ff = fl ? fl.f : null, fbk = fl ? fl.b : null, gw = VID.gw, gh1 = VID.gh - 1, gw1 = gw - 1;
+    var W1 = Wv - 1, H1 = Hv - 1, mb = 1 - m, col, row, gi;
+    for (var i = 0; i < n; i++) {
+      var px = uvA[i * 2] - 0.5, py = uvA[i * 2 + 1] - 0.53, La = 0, Lb = 0, ux, uy;
+      if (!onlyB) {
+        ux = acx + px * ax; uy = acy + py * ay;
+        if (ux >= 0 && ux <= 1 && uy >= 0 && uy <= 1) {
+          col = (ux * W1) | 0; row = ((1 - uy) * H1) | 0;
+          if (ff) {                                         // read this frame shifted part-way along the wing's motion
+            gi = (((row - 4) >> 3) < 0 ? 0 : ((row - 4) >> 3) > gh1 ? gh1 : ((row - 4) >> 3)) * gw + (((col - 4) >> 3) < 0 ? 0 : ((col - 4) >> 3) > gw1 ? gw1 : ((col - 4) >> 3)); gi *= 2;
+            col = (col - m * ff[gi] + 0.5) | 0; row = (row - m * ff[gi + 1] + 0.5) | 0;
+            if (col < 0) col = 0; else if (col > W1) col = W1; if (row < 0) row = 0; else if (row > H1) row = H1;
+          }
+          La = fa[row * Wv + col];
+        }
+      }
+      if (useB) {
+        ux = bcx + px * bx; uy = bcy + py * by;
+        if (ux >= 0 && ux <= 1 && uy >= 0 && uy <= 1) {
+          col = (ux * W1) | 0; row = ((1 - uy) * H1) | 0;
+          if (fbk) {
+            gi = (((row - 4) >> 3) < 0 ? 0 : ((row - 4) >> 3) > gh1 ? gh1 : ((row - 4) >> 3)) * gw + (((col - 4) >> 3) < 0 ? 0 : ((col - 4) >> 3) > gw1 ? gw1 : ((col - 4) >> 3)); gi *= 2;
+            col = (col - mb * fbk[gi] + 0.5) | 0; row = (row - mb * fbk[gi + 1] + 0.5) | 0;
+            if (col < 0) col = 0; else if (col > W1) col = W1; if (row < 0) row = 0; else if (row > H1) row = H1;
+          }
+          Lb = fb[row * Wv + col];
+        }
+      }
+      var L = (La + (Lb - La) * m) / 255, tgt = 0, Ls = 0;
+      if (L > 0.035) {
+        Ls = ss(0.07, 0.9, L);
+        tgt = ss(rA[i] - 0.15, rA[i] + 0.15, ss(0.035, 0.11, L) * (0.62 + 0.5 * Ls));
+      }
+      va[i] += (tgt - va[i]) * k;
+      la[i] += (Ls - la[i]) * k;
+    }
+    vA.needsUpdate = true; lA.needsUpdate = true;
+  }
+  function vidStep(dt, reduce, ps, velS, approach) {
+    if (!VID.on) return false;
+    var last = VID.frames[VID.frames.length - 1].t;
+    if (VID.loaded && !VID.loop) findLoop();
+    if (VID.T < 0.4) VID.T = 0.4;
+    // slower and smoother (Emmanuel): a calm slow motion whose pace eases up and
+    // down with the swipe instead of following every twitch of the finger
+    /* the film is true slow motion now, so it plays near its own speed: every film frame is used and nothing is stretched */
+    var want = 0.7 + 0.5 * velS + 0.6 * ps;
+    VID.sp = (VID.sp || 0.7) + (want - (VID.sp || 0.7)) * (1 - Math.exp(-dt * 0.9));
+    if (!reduce) VID.T += dt * VID.sp;
+    var A, B, m, SEAM = 0.26;
+    if (VID.loop) {
+      // The loop, made invisible (Emmanuel: 'don't make it look like a loop; let
+      // the bird originate and end in the same spot'). The two ends have matching
+      // poses; over the last quarter-second the end is blended into the lead-up to
+      // the start, and every frame is placed by its own position and size (below),
+      // so the dove never moves, grows, shrinks or doubles at the join.
+      var la = VID.loop.a, lb = VID.loop.b;
+      if (VID.T >= lb) VID.T = la + (VID.T - lb);
+      if (VID.T > lb - SEAM && la - SEAM >= 0) {
+        m = (VID.T - (lb - SEAM)) / SEAM; m = m * m * (3 - 2 * m);
+        A = nearest(VID.T); B = nearest(la - (lb - VID.T));
+      } else { var r = frameAt(VID.T); A = r[0]; B = r[1]; m = r[2]; }
+    } else { VID.T = Math.min(VID.T, last); var r2 = frameAt(VID.T); A = r2[0]; B = r2[1]; m = r2[2]; }
+    if (A !== VID.ia) { texA.image.data = VID.frames[A].lum; texA.needsUpdate = true; VID.ia = A; }
+    if (B !== VID.ib) { texB.image.data = VID.frames[B].lum; texB.needsUpdate = true; VID.ib = B; }
+    bgMat.uniforms.uVidMix.value = m;
+    // the dove's place and size in a given film frame: a straight-line trend across
+    // the wingbeat (so flapping never changes it), turned into a zoom that puts the
+    // dove at one fixed size on screen — a size set only by the swipe
+    var fit = bgMat.uniforms.uVidFit.value;
+    var base = (W / H < 1 ? 0.115 : 0.062), mult = 2.6;
+    if (VID.ext && VID.K) {
+      /* never cropped (Emmanuel, 21 Nov): at its nearest the whole bird, wingtip to
+         wingtip and head to tail, still fits inside the screen */
+      var vy = (VID.W / VID.H) * (fit.x / fit.y) * VID.K;
+      var cap = Math.min(0.465 / (VID.ext.x * VID.K), 0.43 / Math.max(0.01, VID.ext.up * vy), 0.49 / Math.max(0.01, VID.ext.down * vy));
+      mult = Math.max(0.3, Math.min(2.6, cap / base - 1));
+    }
+    VID.multS = VID.multS === undefined ? mult : VID.multS + (mult - VID.multS) * (1 - Math.exp(-dt * 2));
+    var half = base * (1 + VID.multS * approach);   // starts further off, comes in further
+    dustMat.uniforms.uBH.value = half * W / H; dustMat.uniforms.uAsp.value = W / H;
+    if (VID.K) VID.kb = Math.min(1, (VID.kb || 0) + dt / 1.5);
+    function place(i) {
+      var st = steady(i);                                               // the rough placing, used while the film is still being read
+      var o = { z: Math.max(0.2, 2.0 * Math.max(0.01, st.spS) / (fit.x * half)), cx: st.cxS, cy: st.cyS };
+      if (!VID.K) return o;
+      var bd = bodyOf(i), kb = VID.kb, e = kb * kb * (3 - 2 * kb);         // then glide over to the exact one (1.5 s)
+      var zb = Math.max(0.2, bd.len * (VID.H / VID.W) / (fit.x * half * VID.K));
+      return { z: o.z + (zb - o.z) * e, cx: o.cx + (bd.cx - o.cx) * e, cy: o.cy + (bd.mid - o.cy) * e };
+    }
+    var xa = place(A), xb = place(B);
+    VID.zS = xa.z + (xb.z - xa.z) * m;
+    VID.cS = [xa.cx + (xb.cx - xa.cx) * m, xa.cy + (xb.cy - xa.cy) * m];
+    dustMat.uniforms.uZ.value = VID.zS;
+    dustMat.uniforms.uCtr.value.set(VID.cS[0], 1 - VID.cS[1]);
+    if (STYLE.n === 1) easeSpecks(dt, m, A, B, xa, xb, fit);
+    return true;
+  }
+
+  // ---- the loop ----
+  var phase = Math.PI / 2, beats = 0, prevC = 0, glowAuto = 0, autoA = 0;
+  var riseS = 0, wipeS = 0, bleedT = 0, bleedRate = 0, restA = 0, restT = 0, appS = 0, bSlow = 0, dustS = 0, ps = 0, pPrev = 0, velS = 0, freqS = 0.3, last = performance.now(), clock = 0;
+  var tmp = new THREE.Vector3();
+  var heroVisible = true;
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function (es) { heroVisible = es[0].isIntersecting; }, { root: scroller }).observe(hero);
+  }
+
+  function frame(now) {
+    requestAnimationFrame(frame);
+    var dt = Math.min(0.05, Math.max(0.001, (now - last) / 1000)); last = now;
+    if (!home.classList.contains('active') || !heroVisible) return;
+    var reduce = reduceQ.matches;
+    clock += dt;
+
+    ps += (p - ps) * (1 - Math.exp(-dt * 2.4));
+    var vel = Math.abs(p - pPrev) / dt; pPrev = p;
+    velS += (Math.min(vel, 2.5) - velS) * (1 - Math.exp(-dt * 5));
+
+    // slow motion at rest; the swipe speeds the wings
+    var freq = 0.3 + 2.1 * Math.pow(ps, 1.5) + 1.1 * velS;
+    freqS += (freq - freqS) * (1 - Math.exp(-dt * 1.8));   // the wingbeat eases between speeds
+    if (!reduce) {
+      phase += dt * freqS * Math.PI * 2;
+      var c = Math.cos(phase);
+      if (prevC > 0 && c <= 0) beats++;         // top of the stroke: a new beat
+      prevC = c;
+      autoA = Math.min(0.35, autoA + dt * 0.012);   // slowly coming to the front (~30 s)
+    }
+    // each wingbeat lifts the darkness a little
+    var glowTarget = reduce ? 0.18 : Math.min(0.3, beats * 0.04);
+    glowAuto += (glowTarget - glowAuto) * (1 - Math.exp(-dt * 1.1));
+    var b = Math.pow(smooth(0.0, 0.94, ps), 1.7);   // only the swipe lifts the dark
+    var pulse = reduce ? 0 : Math.max(0, -Math.sin(phase)) * (1 - ps);
+
+    pose(reduce ? 0.35 : phase);
+
+    // the approach: far and high, then nearer, then upon you
+    var a = autoA + (1 - autoA) * ps;
+    var z = -20 + 24.0 * (1 - Math.pow(1 - a, 1.6));
+    var y = 3.4 * Math.pow(1 - a, 1.6) + 0.12;
+    var x = reduce ? 0 : 0.35 * Math.sin(clock * 0.27) * (1 - a);
+    dove.position.set(x, y, z);
+    dove.rotation.set(-1.12 - 0.2 * a, /* upright, belly toward you: about to land on you */ reduce ? 0 : 0.08 * Math.sin(clock * 0.21) * (1 - a), reduce ? 0 : 0.05 * Math.sin(clock * 0.33));
+
+    // the light floods the scene at the end
+    renderer.toneMappingExposure = 1.0 + 2.8 * smooth(0.68, 1.0, ps);
+    // The white is a sheet swiped quickly down the screen (Emmanuel, 21 Nov): once
+    // you are near the end and the dove has begun to break, it comes down in about
+    // 0.4 s; scroll back up and it lifts away just as fast.
+    wipeS += (((ps > 0.8 && dustS > 0.38) ? 1 : 0) - wipeS) * (1 - Math.exp(-dt * 8));
+    var w = wipeS > 0.995 ? 1 : wipeS;
+    whiteEl.style.transform = 'translateY(' + (-(1 - w) * 101).toFixed(2) + '%)';
+
+    // light gathers around the dove on screen
+    tmp.set(dove.position.x, dove.position.y + 0.1, dove.position.z).project(camera);
+    bgMat.uniforms.uDove.value.set(tmp.x * 0.5 + 0.5, tmp.y * 0.5 + 0.5);
+    var dist = camera.position.z - dove.position.z;
+    bgMat.uniforms.uDoveR.value = clamp(2.6 / Math.max(dist, 0.5), 0.05, 1.4);
+    bgMat.uniforms.uT.value = reduce ? 0 : clock;
+    // the bleed holds still while the dove waits and only starts to move with the
+    // swipe (Emmanuel, 21 Nov); it eases in and out so it never starts with a jolt
+    bleedRate += ((ps > 0.006 ? 1 : 0) - bleedRate) * (1 - Math.exp(-dt * 1.6));
+    if (!reduce) bleedT += dt * bleedRate;
+    bgMat.uniforms.uBT.value = bleedT;
+    bSlow += (b - bSlow) * (1 - Math.exp(-dt * 0.8));   // the bleed eases after the swipe, slowly (Emmanuel)
+    bgMat.uniforms.uB.value = bSlow;
+    bgMat.uniforms.uPulse.value = pulse;
+    if (ptMat) ptMat.uniforms.uT.value = reduce ? 0 : clock;
+
+    bgMat.uniforms.uMorph.value = dustMat.uniforms.uMorph.value = bgMat.uniforms.uGlass.value ? smooth(0.015, 0.35, ps) : 1.2;   // particles from the start; with ?start=glass the glass breaks into particles as you swipe   // particles from the start (Emmanuel); the solid-to-particles dissolve is kept in the shader, unused
+    dustS += (smooth(0.34, 0.95, ps) - dustS) * (1 - Math.exp(-dt * (0.7 + 0.25 * smooth(0.8, 1.0, ps))));   // unhurried, so the dove's rise can be watched   // the dust lets go slowly, over a few seconds (Emmanuel)
+    if (window.__dvRiseGo) { window.__dvRiseGo = 0; riseS = 1; }
+    if (riseS > 0) {
+      dustS = 0;                                       /* nothing left hanging from the way down */
+      if (ps < 0.8 && !reduce) riseS = Math.max(0, riseS - dt / 3.2);   /* starts once the white has lifted, so all of it is seen */
+      if (reduce) riseS = 0;
+    }
+    dustMat.uniforms.uRise.value = riseS;
+    dustMat.uniforms.uDust.value = dustS;
+    dustMat.uniforms.uFly.value = 0;                 // the dove stays where it is (the fly-away was tried and dropped, 21 Nov)
+    window.__dvDust = wipeS;                         // the way on opens once the white sheet has come down
+    window.__dvHoldTick(window.__dvDust);
+    dustMat.uniforms.uT.value = reduce ? 0 : clock;
+    var grow = smooth(0.0, 0.95, ps) * 0.55 + clamp(ps / 0.95, 0, 1) * 0.45;   // gradual: it keeps growing through the whole swipe
+    // The dove is always coming toward you (Emmanuel, 21 Nov): while it waits it
+    // drifts slowly nearer (about 30 s to come a third of the way), then keeps a
+    // very slow sway in and out so it never sits dead still; the swipe brings it
+    // the rest of the way. One eased value, so the two never jerk against each other.
+    if (!reduce) restA = Math.min(1, restA + dt / 11);                 // 0 → 1 over 11 s (was 30): quicker
+    if (restA < 1) restT = clock;
+    var rs = restA * restA * restA * (restA * (restA * 6 - 15) + 10);    // starts and stops gently: smoother
+    var rest = reduce ? 0.15 : 0.34 * rs
+             + (restA >= 1 ? 0.018 * Math.sin((clock - restT) * 0.22) : 0);
+    var appT = rest + (1 - rest) * grow;
+    appS += (appT - appS) * (1 - Math.exp(-dt * 3.0));
+    vidStep(dt, reduce, ps, velS, appS);
+    if (w < 0.999) renderer.render(scene, camera);
+  }
+  requestAnimationFrame(frame);
+})();
+
+// ------------------------------------------------------------
+// Project rings — particles gather into a circle per project,
+// coloured by a slow liquid field through the threads' purple,
+// red and gold. Tap: the ring breathes out, then the project opens.
+// ------------------------------------------------------------
+(function () {
+  var sec = document.getElementById('dv-seeds');
+  var cv = document.getElementById('dv-dots');
+  var scroller = document.getElementById('dv-scroll');
+  var home = document.getElementById('view-home');
+  if (!sec || !cv) return;
+  var ctx = cv.getContext('2d');
+  var seeds = [].slice.call(sec.querySelectorAll('.dv-seed'));
+  var reduceQ = window.matchMedia ? matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
+
+  // liquid palette (deep enough to read on white)
+  /* each project has its own colours (Emmanuel, 21 Nov), keyed by its data-tab;
+     all deep enough to read on white, each still a liquid blend of three */
+  var PALS = {
+    'overseer':       [[58, 30, 120], [104, 52, 168], [176, 136, 40]],   // royal: indigo, violet, gold
+    'wrestle':        [[140, 20, 28], [204, 74, 24], [70, 14, 18]],     // ember: crimson, flame orange, oxblood
+    'selfquake':      [[12, 92, 112], [24, 58, 140], [18, 150, 140]],   // deep water: teal, ocean blue, sea green
+    'house-pva':      [[150, 104, 36], [110, 68, 30], [196, 150, 70]],  // papyrus: gold, bronze, sand
+    'housepva-intro': [[22, 104, 64], [60, 140, 60], [150, 130, 30]],   // garden: forest, leaf, olive gold
+    'housepva-usage': [[150, 30, 100], [96, 28, 110], [214, 70, 110]],  // plum, magenta, rose
+    'renew-verse':    [[24, 54, 120], [40, 120, 190], [96, 100, 130]]   // sky: navy, azure, slate
+  };
+  var FALLBACK = [[90, 35, 144], [156, 27, 34], [168, 122, 28]];
+  var BINS = 36;
+  function ramp(stops) {
+    stops = stops.concat([stops[0]]);
+    var out = [];
+    for (var k = 0; k < BINS; k++) {
+      var u = k / BINS * (stops.length - 1), i0 = Math.floor(u), f = u - i0;
+      var A = stops[i0], B = stops[Math.min(i0 + 1, stops.length - 1)];
+      out.push('rgb(' + Math.round(A[0] + (B[0] - A[0]) * f) + ',' + Math.round(A[1] + (B[1] - A[1]) * f) + ',' + Math.round(A[2] + (B[2] - A[2]) * f) + ')');
+    }
+    return out;
+  }
+  var FILL = [];   // one ramp per project, laid end to end: project r owns bins r*BINS … r*BINS+35
+  seeds.forEach(function (b) { FILL = FILL.concat(ramp(PALS[b.getAttribute('data-tab')] || FALLBACK)); });
+  var buckets = FILL.map(function () { return []; });
+
+  var W = 1, H = 1, UP = 0, dpr = 1, rings = [], parts = [], started = false, visible = false;
+  function gauss() { return (Math.random() + Math.random() + Math.random() - 1.5) / 1.5; }
+
+  function layout() {
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = sec.clientWidth; H = sec.clientHeight; UP = cv.clientHeight - H;   // UP = the part above the section
+    cv.width = Math.round(W * dpr); cv.height = Math.round((H + UP) * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, UP * dpr);
+    var sr = sec.getBoundingClientRect();
+    rings = seeds.map(function (b, i) {
+      var r = b.querySelector('.dv-ring').getBoundingClientRect();
+      var old = rings[i] || {};
+      return { x: r.left - sr.left + r.width / 2, y: r.top - sr.top + r.height / 2, R: r.width * 0.46,
+               hov: old.hov || 0, hovT: old.hovT || 0, burst: old.burst || 0, burstT: old.burstT || 0,
+               // not a perfect circle: each shape has its own soft, slowly shifting outline
+               wa: old.wa || 0.07 + Math.random() * 0.08, wb: old.wb || 0.03 + Math.random() * 0.05,
+               p1: old.p1 || Math.random() * 6.28, p2: old.p2 || Math.random() * 6.28, p3: old.p3 || Math.random() * 6.28,
+               sx: old.sx || 0.9 + Math.random() * 0.2, sy: old.sy || 0.9 + Math.random() * 0.2 };
+    });
+    if (!parts.length) build();
+  }
+  function build() {
+    var per = W < 720 ? 1500 : 2400;   // a dense filled disc, not a ring
+    parts = [];
+    rings.forEach(function (rg, ri) {
+      for (var n = 0; n < per; n++) {
+        var halo = Math.random() < 0.08;          // a few drift past the edge
+        var rIn = Math.sqrt(Math.random());       // even spread across the disc
+        parts.push({
+          ri: ri,
+          th: Math.random() * Math.PI * 2,
+          rr: halo ? 1 + Math.abs(gauss()) * 0.18 : rIn * (1 + gauss() * 0.03),
+          w: 0.05 + Math.random() * 0.12,
+          ph: Math.random() * Math.PI * 2,
+          sz: halo ? 0.7 + Math.random() * 0.4 : 0.75 + Math.random() * 0.75,   // finer, so the denser disc stays delicate
+          a: halo ? 0.3 + Math.random() * 0.25 : 0.5 + Math.random() * 0.45,
+          x: Math.random() * W, y: Math.random() * H * 0.6,   // scattered, as if out of the light
+          d: Math.random() * 0.9,                             // gathering delay
+          d2: Math.random(), dx: Math.random() * 2 - 1,       // how and when it drifts away
+          x0: Math.random() * W, y0: -10 - Math.random() * (window.innerHeight || 800) * 0.9   // where it falls from, in the white above
+        });
+      }
+    });
+  }
+
+  var t = 0, gather = 0, disp = 0, arr = 0, last = performance.now();
+  function rain() {
+    var vh = scroller.clientHeight || window.innerHeight;
+    for (var i = 0; i < parts.length; i++) {
+      var q = parts[i];
+      q.x = Math.random() * W;
+      q.y = -10 - Math.random() * vh * 0.9;                 // above the section, in the white
+      q.d = 0.1 + (-q.y / vh) * 1.2 + Math.random() * 0.35;  // higher dust lands later
+    }
+    gather = 0; disp = 0;
+  }
+  function frame(now) {
+    requestAnimationFrame(frame);
+    var dt = Math.min(0.05, (now - last) / 1000); last = now;
+    if (!visible || !home.classList.contains('active')) return;
+    var reduce = reduceQ.matches;
+    if (!reduce) t += dt;
+    gather = reduce ? 3 : gather + dt;
+    ctx.clearRect(0, -UP, W, H + UP);
+    for (var b = 0; b < buckets.length; b++) buckets[b].length = 0;
+
+    // swiping on past the projects: the shapes come apart; swiping back re-forms them
+    var srect = sec.getBoundingClientRect(), vh = window.innerHeight || H;
+    var dispT = 0;   // the shapes stay formed as you scroll on (Emmanuel, 21 Nov); they only come apart when you swipe back up to the dove
+    // the fall follows your scroll: it starts as the section rises into view and
+    // finishes as it reaches the top, so you see the dust falling into place (Emmanuel)
+    var arrT = reduce ? 1 : clamp01(1 - srect.top / (vh * 0.85));
+    arr += (arrT - arr) * (1 - Math.exp(-dt * 3));
+    disp += (dispT - disp) * (1 - Math.exp(-dt * 0.8));   // the shapes come apart slowly (Emmanuel)
+    for (var r = 0; r < rings.length; r++) {
+      var rg = rings[r];
+      rg.hov += (rg.hovT - rg.hov) * (1 - Math.exp(-dt * 6));
+      rg.burst += (rg.burstT - rg.burst) * (1 - Math.exp(-dt * 5));
+    }
+    for (var i = 0; i < parts.length; i++) {
+      var q = parts[i], g = rings[q.ri];
+      if (!reduce) q.th += dt * q.w * (1 + 1.6 * g.hov + 3 * g.burst);
+      var breathe = reduce ? 0 : (0.04 * Math.sin(t * 0.7 + q.ph + q.th * 3) + 0.02 * Math.sin(t * 1.5 + q.ph * 2.3)) * (0.35 + 0.65 * q.rr);
+      var shape = 1;   // true circles again (Emmanuel, 21 Nov); the organic outlines were dropped
+      var R = g.R * (1 + 0.06 * g.hov + 1.6 * g.burst) * (q.rr + breathe) * shape;
+      var tx = g.x + Math.cos(q.th) * R, ty = g.y + Math.sin(q.th) * R;
+      var dd = clamp01((disp - q.d2 * 0.5) / 0.5); dd = dd * dd * (3 - 2 * dd);
+      if (dd > 0) {
+        tx += (Math.cos(q.th) * g.R * 1.6 + q.dx * g.R * 2.2 + Math.sin(t * 0.4 + q.ph) * 14) * dd;
+        ty += (Math.sin(q.th) * g.R * 1.2 - (0.6 + q.d2) * g.R * 1.8) * dd;
+      }
+      var f = clamp01(arr * 1.35 - q.d2 * 0.35); f = f * f * (3 - 2 * f);
+      var fx = q.x0 + (tx - q.x0) * f, fy = q.y0 + (ty - q.y0) * f;
+      var k = reduce ? 1 : 0.18;
+      q.x += (fx - q.x) * k; q.y += (fy - q.y) * k;
+      // liquid colour field
+      var v = 0.5 + 0.5 * Math.sin(q.x * 0.0055 + 1.9 * Math.sin(q.y * 0.0047 + t * 0.32) + t * 0.22 + 1.3 * Math.sin((q.x + q.y) * 0.0028 - t * 0.17));
+      var bi = Math.min(BINS - 1, Math.floor(v * BINS));
+      buckets[q.ri * BINS + bi].push(i);
+    }
+    var fade = clamp01(gather * 0.8);
+    for (var bb = 0; bb < FILL.length; bb++) {
+      var list = buckets[bb]; if (!list.length) continue;
+      ctx.fillStyle = FILL[bb];
+      for (var j = 0; j < list.length; j++) {
+        var pp = parts[list[j]], gg = rings[pp.ri];
+        var ddd = clamp01((disp - pp.d2 * 0.4) / 0.6);
+        ctx.globalAlpha = pp.a * fade * (1 - 0.85 * gg.burst) * (1 - 0.8 * ddd) * clamp01(arr * 4);   // unseen until the section starts to rise
+        ctx.fillRect(pp.x - pp.sz / 2, pp.y - pp.sz / 2, pp.sz, pp.sz);
+      }
+    }
+    ctx.globalAlpha = 1;
+  }
+  function clamp01(x) { return x < 0 ? 0 : x > 1 ? 1 : x; }
+
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function (es) {
+      var was = visible;
+      visible = es[0].isIntersecting;
+      // arriving from the dove above: the dust falls down the white page and
+      // settles into each project's shape (Emmanuel)
+      started = true;
+    }, { root: scroller, threshold: 0.05 }).observe(sec);
+  } else { visible = true; }
+  window.addEventListener('resize', layout);
+  if (window.ResizeObserver) new ResizeObserver(layout).observe(sec);
+  layout();
+  requestAnimationFrame(frame);
+
+  // ---- open a project: the same password door the Partner list uses ----
+  var openPartner = document.getElementById('open-partner');
+  if (openPartner) openPartner.addEventListener('click', function () { window.__dvFromCircle = false; });
+  function openSeed(tab) {
+    window.__dvFromCircle = true;
+    var dest = (typeof PARTNER_VIEWS !== 'undefined' && PARTNER_VIEWS[tab]) || 'view-partner-shop';
+    var authed = typeof isViewAuthed === 'function' && isViewAuthed(dest);
+    if (authed) {
+      flashTo(function () { showView(dest); var el = document.getElementById(dest); if (el) el.scrollTop = 0; }, 'wash');
+      return;
+    }
+    var wv = document.getElementById('view-partner-welcome');
+    flashTo(function () {
+      showView('view-partner-welcome');
+      wv.classList.remove('firing', 'continue-shown', 'tabs-shown');
+      wv.classList.add('list-shown');
+    }, 'lift');
+    var link = document.querySelector('.partner-tab-link[data-tab="' + tab + '"]');
+    if (link) link.click();
+  }
+
+  seeds.forEach(function (btn, i) {
+    btn.addEventListener('pointerenter', function () { if (rings[i]) rings[i].hovT = 1; });
+    btn.addEventListener('pointerleave', function () { if (rings[i]) rings[i].hovT = 0; });
+    btn.addEventListener('focus', function () { if (rings[i]) rings[i].hovT = 1; });
+    btn.addEventListener('blur', function () { if (rings[i]) rings[i].hovT = 0; });
+    btn.addEventListener('click', function () {
+      if (btn.dataset.busy) return;
+      btn.dataset.busy = '1';
+      var rg = rings[i];
+      if (rg && !reduceQ.matches) rg.burstT = 1;
+      setTimeout(function () {
+        openSeed(btn.dataset.tab);
+        // the ring re-forms by the time you come back
+        setTimeout(function () { if (rg) rg.burstT = 0; delete btn.dataset.busy; }, 900);
+      }, reduceQ.matches ? 0 : 520);
+    });
+  });
+})();
 </script>
 </body>
 </html>
