@@ -6001,6 +6001,11 @@ Lord you are Holy, Holy, Holy</p>
   }
   window.addEventListener('resize', vidFit); vidFit();
   if (!/[?&]dove=3d\b/.test(location.search)) (function () {
+    /* Open on the filmed dove only (Emmanuel, 21 Nov): the old code-built dove used to
+       show while the film was still downloading. Now nothing but the colours shows
+       until the film is ready, then the dove fades in. The code-built one comes back
+       only if the film cannot load at all. */
+    dove.visible = false;
     var v = document.createElement('video');
     v.muted = true; v.playsInline = true; v.setAttribute('playsinline', ''); v.preload = 'auto';
     /* The whole film is fetched first and played from memory. Read straight from the
@@ -6026,7 +6031,7 @@ Lord you are Holy, Holy, Holy</p>
         if (l > 60) { var x = i % VID.W, y = (i / VID.W) | 0; sx += x * l; sy += y * l; sw += l; sxx += (x - VID.W / 2) * (x - VID.W / 2) * l; }
       }
       VID.frames.push({ t: t, lum: lum, cx: sw ? sx / sw / VID.W : 0.5, cy: sw ? sy / sw / VID.H : 0.5, sp: sw ? Math.sqrt(sxx / sw) / VID.W : 0.1 });
-      if (!VID.on && VID.frames.length > 2) { VID.on = true; dove.visible = false; bgMat.uniforms.uVidOn.value = 1; }
+      if (!VID.on && VID.frames.length > 2) { VID.on = true; dove.visible = false; }
     }
     // step through the clip 24 times a second and read each frame (works even
     // when the page is in the background and autoplay is refused)
@@ -6051,7 +6056,7 @@ Lord you are Holy, Holy, Holy</p>
         worker.onmessage = function (e) {
           pending--;
           VID.frames.push(e.data);
-          if (!VID.on && VID.frames.length > 2) { VID.on = true; dove.visible = false; bgMat.uniforms.uVidOn.value = 1; }
+          if (!VID.on && VID.frames.length > 2) { VID.on = true; dove.visible = false; }
           if (VID.loaded && pending === 0) worker.terminate();
         };
       }
@@ -6072,7 +6077,7 @@ Lord you are Holy, Holy, Holy</p>
       }, function () { worker = null; grab(t); seekNext(); });
     }
     v.addEventListener('loadedmetadata', function () { VID.dur = v.duration || 8; seekNext(); });
-    v.addEventListener('error', function () { /* stay with the code-built dove */ });
+    v.addEventListener('error', function () { if (!VID.on) dove.visible = true; /* no film: the code-built dove after all */ });
   })();
 
   // ---- dissolve into particles, then dust (after the Spark library in the
@@ -6391,6 +6396,8 @@ Lord you are Holy, Holy, Holy</p>
   }
   function vidStep(dt, reduce, ps, velS, approach) {
     if (!VID.on) return false;
+    /* the dove fades in over about a second once the film is ready */
+    bgMat.uniforms.uVidOn.value = reduce ? 1 : Math.min(1, bgMat.uniforms.uVidOn.value + dt / 1.1);
     var last = VID.frames[VID.frames.length - 1].t;
     if (VID.loaded && !VID.loop) findLoop();
     if (VID.T < 0.4) VID.T = 0.4;
