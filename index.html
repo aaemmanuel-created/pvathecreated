@@ -2951,7 +2951,9 @@
   }
   /* One circle at a time (Emmanuel, 22 Nov): the projects are a sideways slider;
      swipe (or use the arrows, the dots or the arrow keys) to move between them */
-  .dv-seeds { min-height: 100vh; min-height: 100svh; display: flex; flex-direction: column; justify-content: center; padding: 6vh 0 5vh; }
+  /* 22 Nov (later): the cloud and its words fill the screen; the bars and arrows are pinned
+     to the foot (the large faint number was tried and removed the same day) */
+  .dv-seeds { min-height: 100vh; min-height: 100svh; display: flex; flex-direction: column; justify-content: center; padding: 3vh 0 calc(84px + env(safe-area-inset-bottom)); }
   .dv-grid {
     position: relative; z-index: 2;
     display: flex; flex-wrap: nowrap; gap: 0;
@@ -2967,25 +2969,46 @@
     scroll-snap-align: center; scroll-snap-stop: always;
     background: none; border: 0; padding: 0; margin: 0;
     cursor: pointer; color: inherit; font: inherit;
-    display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 30px;   /* room for the orb's shadow */
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 8px;
     -webkit-tap-highlight-color: transparent;
   }
-  .dv-ring { display: block; width: min(76vw, 54vh, 470px); aspect-ratio: 1; border-radius: 50%; }
-  .dv-pager { position: relative; z-index: 2; display: flex; align-items: center; justify-content: center; gap: 18px; margin-top: 4vh; }
+  .dv-ring { display: flex; align-items: center; justify-content: center; width: min(90vw, 58vh, 600px); aspect-ratio: 1; border-radius: 50%; }
+  .dv-desc { font: 400 15px/1.5 Helvetica, 'Helvetica Neue', Arial, sans-serif;   /* Helvetica (Emmanuel, 22 Nov); titles and Enter stay in Courier Prime */ color: rgba(26,22,18,0.72); max-width: 30ch; text-align: center; padding: 0 16px; }
+  .dv-desc:empty { display: none; }
+  .dv-swipe { position: absolute; left: 0; right: 0; bottom: calc(66px + env(safe-area-inset-bottom)); margin: 0; z-index: 2; text-align: center; font: 400 10px/1 'Courier Prime', monospace; letter-spacing: 0.3em; text-transform: uppercase; color: rgba(26,22,18,0.6); opacity: 0; transition: opacity .6s ease; pointer-events: none; }
+  .dv-swipe::before { content: "\2190\00a0\00a0"; } .dv-swipe::after { content: "\00a0\00a0\2192"; }
+  .dv-swipe.on { opacity: 1; }
+  /* word-by-word reveal (Emmanuel, 22 Nov, after reel DgBPH9DEfsP '20 things to make your website
+     look less AI-made', no. 10): words waiting to appear sit faint and blurred; each sharpens
+     into place in turn when its project comes into view */
+  .dv-w { display: inline-block; opacity: 0.1; filter: blur(7px); transform: translateY(0.18em);
+    transition: opacity 1.1s cubic-bezier(.22,1,.36,1), filter 1.1s cubic-bezier(.22,1,.36,1), transform 1.1s cubic-bezier(.22,1,.36,1);   /* slower (Emmanuel, 22 Nov) */
+    transition-delay: 0s; will-change: opacity, filter; }
+  .dv-in .dv-w { opacity: 1; filter: blur(0); transform: none; transition-delay: var(--d, 0s); }
+  .dv-w.dv-ws { transition-duration: 1.9s, 1.9s, 1.9s; }   /* the line under the title reveals more slowly (Emmanuel, 22 Nov) */
+  /* 'Yahweh' shimmers in many colours (Emmanuel, 22 Nov): a slow band of colours travels through the letters */
+  .dv-yah { font-weight: 700; color: #5a2390;
+    background: linear-gradient(100deg, #5a2390 0%, #9c1b22 14%, #c8862a 28%, #2a8a6e 42%, #2f5fb8 56%, #8a3fc0 70%, #d23c6a 84%, #5a2390 100%);
+    background-size: 300% 100%; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    animation: dvYah 6s linear infinite; }
+  @keyframes dvYah { from { background-position: 0% 50%; } to { background-position: 300% 50%; } }
+  @media (prefers-reduced-motion: reduce) { .dv-yah { animation: none; } }
+  @media (prefers-reduced-motion: reduce) { .dv-w { opacity: 1; filter: none; transform: none; transition: none; } }
+  @media (hover: hover) and (pointer: fine) { .dv-swipe { display: none; } }
+  .dv-pager { position: absolute; left: 0; right: 0; bottom: calc(14px + env(safe-area-inset-bottom)); z-index: 2; display: flex; align-items: center; justify-content: center; gap: 18px; margin: 0; }
   .dv-dotsnav { display: flex; gap: 0; }
   /* thin bars, not dots (Emmanuel, 22 Nov); each keeps a 44px-tall touch area */
   .dv-dot { width: 26px; height: 44px; border: 0; padding: 0; background: none; cursor: pointer; position: relative; -webkit-tap-highlight-color: transparent; }
   .dv-dot::after { content: ""; position: absolute; left: 4px; right: 4px; top: 50%; height: 2px; margin-top: -1px; border-radius: 1px; background: rgba(26,22,18,0.2); transition: background .35s ease, transform .35s ease; transform-origin: center; }
-  .dv-dot[aria-current="true"]::after { background: rgba(26,22,18,0.82); }
-  .dv-arrow { width: 30px; height: 30px; border-radius: 50%; border: 1px solid rgba(26,22,18,0.18); background: rgba(255,255,255,0.6); color: rgba(26,22,18,0.7); font: 400 13px/1 'Courier Prime', monospace; cursor: pointer; position: relative; transition: border-color .3s ease, color .3s ease, opacity .3s ease; }
+  .dv-dot[aria-current="true"]::after { background: var(--cur, rgba(26,22,18,0.82)); height: 3px; margin-top: -1.5px; }   /* the bar in view takes its project's colour */
+  .dv-arrow { width: 30px; height: 30px; border: 0; background: none; color: rgba(26,22,18,0.7); font: 400 20px/1 'Courier Prime', monospace;   /* no circle (Emmanuel, 22 Nov) */ cursor: pointer; position: relative; transition: border-color .3s ease, color .3s ease, opacity .3s ease; }
   .dv-arrow::before { content: ""; position: absolute; inset: -7px; }   /* a 44px area to press */
-  .dv-arrow:hover { border-color: rgba(26,22,18,0.5); color: #1a1612; }
+  .dv-arrow:hover { color: #1a1612; }
   .dv-arrow:disabled { opacity: .25; cursor: default; }
-  .dv-count { position: relative; z-index: 2; text-align: center; margin: 1.4vh 0 0; font: 400 11px/1 'Courier Prime', monospace; letter-spacing: .2em; color: rgba(26,22,18,0.55); }
   @media (hover: none) { .dv-arrow { display: none; } }
   .dv-name {   /* the movie-script font, as on the project pages and the seed list (Emmanuel, 21 Nov) */
     font-family: 'Courier Prime', 'Courier New', monospace;
-    font-size: 16px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;   /* bold (Emmanuel, 21 Nov): Courier Prime's true bold cut */
+    font-size: clamp(17px, 2.3vw, 22px); font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;   /* bold (Emmanuel, 21 Nov): Courier Prime's true bold cut */
     line-height: 1.45; text-align: center; color: rgba(26,22,18,0.78);
     transition: color .4s ease;
     padding: 0 4px;
@@ -2996,8 +3019,9 @@
 
   /* The old home now sits at the foot of the white page */
   #view-home .home-center {
-    flex: none; min-height: 100vh; min-height: 100dvh;
-    padding: 6vh 16px calc(8vh + env(safe-area-inset-bottom));
+    flex: none; min-height: 0;   /* a compact close to the page, not another full screen (22 Nov) */
+    padding: 9vh 16px calc(9vh + env(safe-area-inset-bottom));
+    border-top: 1px solid rgba(26,22,18,0.08);
     background: #fff; overflow: visible;   /* the same white as the projects */
   }
   #view-home .immersive-tile {
@@ -3118,21 +3142,23 @@ window.__tint = function (top, bot) {
       <canvas class="dv-dots" id="dv-dots" aria-hidden="true"></canvas>
       <h2 class="dv-sr">Projects</h2>
       <div class="dv-grid" id="dv-grid" aria-roledescription="carousel" aria-label="Projects">
-        <!-- order (Emmanuel, 21 Nov): The Overseer, Wrestle, Selfquake first -->
-        <button class="dv-seed" type="button" data-tab="overseer"><span class="dv-ring"></span><span class="dv-name">The Overseer</span></button>
-        <button class="dv-seed" type="button" data-tab="wrestle"><span class="dv-ring"></span><span class="dv-name">Wrestle</span></button>
-        <button class="dv-seed" type="button" data-tab="selfquake"><span class="dv-ring"></span><span class="dv-name">Selfquake</span></button>
-        <button class="dv-seed" type="button" data-tab="house-pva"><span class="dv-ring"></span><span class="dv-name">HOUSE PVA</span></button>
-        <button class="dv-seed" type="button" data-tab="housepva-intro"><span class="dv-ring"></span><span class="dv-name">HOUSEPVA: An Introduction</span></button>
-        <button class="dv-seed" type="button" data-tab="housepva-usage"><span class="dv-ring"></span><span class="dv-name">HOUSEPVA: Usage</span></button>
-        <button class="dv-seed" type="button" data-tab="renew-verse"><span class="dv-ring"></span><span class="dv-name">What verse are you wearing?</span></button>
+        <!-- order (Emmanuel, 21 Nov): The Overseer, Wrestle, Selfquake first.
+             .dv-desc = one line about the project, in its own page's words; empty until Emmanuel gives one (22 Nov) -->
+        <button class="dv-seed" type="button" data-tab="overseer"><span class="dv-ring"></span><span class="dv-name">The Overseer</span><span class="dv-desc">Yahweh revealed as sovereign over our souls.</span></button>
+        <button class="dv-seed" type="button" data-tab="wrestle"><span class="dv-ring"></span><span class="dv-name">Wrestle</span><span class="dv-desc">Yahweh revealed as new wineskins stitching.</span></button>
+        <button class="dv-seed" type="button" data-tab="selfquake"><span class="dv-ring"></span><span class="dv-name">Selfquake</span><span class="dv-desc">Yahweh revealed as the point of stability.</span></button>
+        <button class="dv-seed" type="button" data-tab="house-pva"><span class="dv-ring"></span><span class="dv-name">HOUSE PVA</span><span class="dv-desc"></span></button>
+        <button class="dv-seed" type="button" data-tab="housepva-intro"><span class="dv-ring"></span><span class="dv-name">HOUSEPVA: An Introduction</span><span class="dv-desc"></span></button>
+        <button class="dv-seed" type="button" data-tab="housepva-usage"><span class="dv-ring"></span><span class="dv-name">HOUSEPVA: Usage</span><span class="dv-desc"></span></button>
+        <button class="dv-seed" type="button" data-tab="renew-verse"><span class="dv-ring"></span><span class="dv-name">What verse are you wearing?</span><span class="dv-desc">A campaign for RENEW by PVA, the scripture meditation app.</span></button>
       </div>
       <div class="dv-pager" id="dv-pager">
         <button class="dv-arrow" type="button" id="dv-prev" aria-label="Previous project">&#8249;</button>
         <div class="dv-dotsnav" id="dv-dotsnav" role="group" aria-label="Choose a project"></div>
         <button class="dv-arrow" type="button" id="dv-next" aria-label="Next project">&#8250;</button>
       </div>
-      <p class="dv-count" id="dv-count" aria-live="polite">01 / 07</p>
+      <p class="dv-swipe" id="dv-swipe" aria-hidden="true">swipe</p>
+      <p class="dv-count dv-sr" id="dv-count" aria-live="polite">01 / 07</p>
     </div>
 
     <!-- 3 · The original home, kept at the foot of the white page. -->
@@ -6621,6 +6647,14 @@ Lord you are Holy, Holy, Holy</p>
     });
     if (!parts.length) build();
   }
+  /* Every project's dots gather loosely into the same shape: the house, as HOUSE PVA
+     first had (Emmanuel, 22 Nov: 'make them all the same shape'). A crown, two figures,
+     a tremor line, an open door, a key and a T-shirt were tried the same night; they are
+     in backups/index.before-all-houses-2026-11-22.html. */
+  function housePoint() {   // a point inside a simple house (roof + walls), y downward, about ±0.75
+    if (Math.random() < 0.3) { var u = Math.random(), v = Math.random(); if (u + v > 1) { u = 1 - u; v = 1 - v; } return [-0.78 + u * 0.78 + v * 1.56, -0.1 - u * 0.65]; }
+    return [-0.6 + Math.random() * 1.2, -0.1 + Math.random() * 0.8];
+  }
   function build() {
     /* 22 Nov: the same total as before, shared out by each circle's area, so the
        larger first three are as dense as the rest */
@@ -6633,13 +6667,13 @@ Lord you are Holy, Holy, Holy</p>
         /* 22 Nov: a place on the surface of a ball (spread evenly over the sphere,
            which seen from the front gathers naturally at the edge: a clean outline);
            a very few float just off the surface */
-        var halo = Math.random() < 0.02;
+        var halo = Math.random() < 0.02, hp = housePoint();
         var uz = Math.random() * 2 - 1, phi = Math.random() * Math.PI * 2, rxy = Math.sqrt(1 - uz * uz);
         parts.push({
           ri: ri,
           sx: rxy * Math.cos(phi), sy: uz, sz3: rxy * Math.sin(phi),
           rv: Math.cbrt(Math.random()) * (1 + 0.32 * Math.abs(gauss())),   /* shapeless (22 Nov): through the whole cloud, thinning out softly past its edge */
-          f: 0.5,
+          f: 0.5, hx: hp[0], hy: hp[1],
           ph: Math.random() * Math.PI * 2,
           sz: halo ? 0.7 + Math.random() * 0.4 : 0.8 + Math.random() * 0.9,
           a: halo ? 0.25 + Math.random() * 0.2 : 0.6 + Math.random() * 0.4,
@@ -6688,6 +6722,9 @@ Lord you are Holy, Holy, Holy</p>
     // finishes as it reaches the top, so you see the dust falling into place (Emmanuel)
     var arrT = reduce ? 1 : clamp01(1 - srect.top / (vh * 0.85));
     arr += (arrT - arr) * (1 - Math.exp(-dt * 3));
+    if (arr > 0.97 && !hintQ) { hintQ = true; setTimeout(hintOn, 900); }
+    if (arr > 0.85 && !revealOn) { revealOn = true; reveal(Math.max(0, shown)); }
+    if (arr < 0.3 && revealOn) { revealOn = false; reveal(-1); }   /* leaving for the dove: hide again, so it replays next time */
     /* on a touch screen (no hover) the circle nearest the middle of the screen
        gently breathes and brightens, so it is clear the circles can be tapped */
     var near = -1;
@@ -6718,11 +6755,17 @@ Lord you are Holy, Holy, Holy</p>
          slowly in a few places, and a flowing current carries the dots around inside */
       var ang = Math.atan2(y2, x1);
       var lump = 1 + 0.22 * Math.sin(2 * ang + t * 0.29 + g.p1) + 0.14 * Math.sin(3 * ang - t * 0.21 + g.p2) + 0.08 * Math.sin(5 * ang + t * 0.37 + g.p3);
-      var R = g.R * 0.92 * q.rv * lump * (1 - 0.06 * g.hov + 0.04 * g.pulse * Math.sin(t * 1.6) + 1.6 * g.burst);   /* hover gathers it in; the one in view breathes */
+      var R = g.R * 0.98 * q.rv * lump * (1 - 0.06 * g.hov + 0.04 * g.pulse * Math.sin(t * 1.6));   /* hover gathers it in; the one in view breathes */
       var wo = g.R * (0.35 + 0.65 * q.rv);
       var tx = g.x + x1 * R + wo * (0.15 * Math.sin(y2 * 2.4 + t * 0.33 + g.p1) + 0.07 * Math.sin(x1 * 3.3 - t * 0.47 + g.p3));
       var ty = g.y + y2 * R + wo * (0.13 * Math.sin(x1 * 2.2 - t * 0.27 + g.p2) + 0.06 * Math.sin(y2 * 3.6 + t * 0.41 + g.p1));
-      q.f = (z2 + 1) * 0.5;                                  /* 1 = the near side, 0 = the far side */
+      /* the dots gather loosely into the house; a fifth of the cloud's own
+         drift is kept, so the picture breathes instead of standing still */
+      var ox = tx - g.x, oy = ty - g.y;
+      ox = ox * 0.2 + q.hx * g.R * 0.86; oy = oy * 0.2 + q.hy * g.R * 0.86;
+      var bm = 1 + 1.6 * g.burst;                            /* a tap bursts it outward */
+      tx = g.x + ox * bm; ty = g.y + oy * bm;
+      q.f = (z2 + 1) * 0.5;      /* 1 = the near side, 0 = the far side */
       var lam = x1 * LX + y2 * LY + z2 * LZ; if (lam < 0) lam = 0;
       var f = clamp01(arr * 1.35 - q.d2 * 0.35); f = f * f * (3 - 2 * f);
       var fx = q.x0 + (tx - q.x0) * f, fy = q.y0 + (ty - q.y0) * f;
@@ -6735,27 +6778,16 @@ Lord you are Holy, Holy, Holy</p>
       buckets[q.ri * BINS + bi].push(i);
     }
     var fade = clamp01(gather * 0.8);
-    /* a soft glow in each project's own colours behind its specks */
-    var ga = fade * clamp01(arr * 2.5 - 0.6);
-    if (ga > 0.01) for (var gr = 0; gr < rings.length; gr++) {
-      if (rings[gr].x < -rings[gr].R * 1.3 || rings[gr].x > W + rings[gr].R * 1.3) continue;
-      var G = rings[gr], c0 = G.pal[0], c1 = G.pal[1], lift = 1 + 0.6 * G.hov + 0.5 * G.pulse;
-      var gR = G.R * (1.22 + 0.04 * G.pulse * Math.sin(t * 2.2));
-      var gg0 = ctx.createRadialGradient(G.x - G.R * 0.14, G.y - G.R * 0.17, 0, G.x, G.y, gR);
-      gg0.addColorStop(0, 'rgba(' + c1[0] + ',' + c1[1] + ',' + c1[2] + ',' + (0.13 * lift).toFixed(3) + ')');
-      gg0.addColorStop(0.45, 'rgba(' + c0[0] + ',' + c0[1] + ',' + c0[2] + ',' + (0.07 * lift).toFixed(3) + ')');
-      gg0.addColorStop(1, 'rgba(' + c0[0] + ',' + c0[1] + ',' + c0[2] + ',0)');
-      ctx.globalAlpha = ga * (1 - 0.85 * G.burst);
-      ctx.fillStyle = gg0;
-      ctx.fillRect(G.x - gR, G.y - gR, gR * 2, gR * 2);
-    }
+    /* no tinted disc behind the cloud: the page stays pure white (22 Nov) */
     for (var bb = 0; bb < FILL.length; bb++) {
       var list = buckets[bb]; if (!list.length) continue;
       ctx.fillStyle = FILL[bb];
       for (var j = 0; j < list.length; j++) {
         var pp = parts[list[j]], gg = rings[pp.ri];
         if (pp.x < -4 || pp.x > W + 4) continue;
+        var low = (pp.y - (gg.y + gg.R * 0.98)) / (gg.R * 0.2); if (low >= 1 && !gg.burst) continue;   /* the dots thin out before the title */
         ctx.globalAlpha = Math.min(1, pp.a * (0.45 + 0.55 * pp.f) * (pp.rv > 1 ? Math.max(0.15, 1.6 - 0.6 * pp.rv) : 1) * (1 + 0.3 * gg.hov + 0.25 * gg.pulse)) * fade * (1 - 0.85 * gg.burst) * clamp01(arr * 4);   // unseen until the section starts to rise
+        if (low > 0) ctx.globalAlpha *= Math.max(0, 1 - low);
         var zs = pp.sz * gg.szK * (0.65 + 0.5 * pp.f);
         ctx.fillRect(pp.x - zs / 2, pp.y - zs / 2, zs, zs);
       }
@@ -6815,7 +6847,45 @@ Lord you are Holy, Holy, Holy</p>
     track.scrollTo({ left: i * track.clientWidth, behavior: reduceQ.matches ? 'auto' : 'smooth' });
   }
   function pad(n) { return (n < 10 ? '0' : '') + n; }
-  var shown = -1;
+  var shown = -1, revealOn = false;
+  /* split each project's words into spans once; the reveal plays down the title, the line
+     and the Enter link as one sentence, about a tenth of a second per word */
+  seeds.forEach(function (b) {
+    var n = 0, nTitle = 0;
+    [b.querySelector('.dv-name'), b.querySelector('.dv-desc')].forEach(function (el) {
+      if (!el || !el.textContent.trim()) return;
+      var slow = el.classList.contains('dv-desc');
+      if (slow) nTitle = n;
+      var arrow = el.querySelector('[aria-hidden]'), label = el.getAttribute('aria-label');
+      var words = (arrow ? el.firstChild.textContent : el.textContent).trim().split(/\s+/);
+      el.setAttribute('aria-label', label || el.textContent.trim());
+      el.textContent = '';
+      words.forEach(function (w, i) {
+        var sp = document.createElement('span'); sp.className = 'dv-w'; sp.setAttribute('aria-hidden', 'true');
+        sp.textContent = w; sp.style.setProperty('--d', (0.2 + n * 0.2 + (slow ? (n - nTitle) * 0.25 : 0)).toFixed(3) + 's'); n++;
+        if (slow) sp.classList.add('dv-ws');
+        if (/^yahweh\b/i.test(w)) sp.classList.add('dv-yah');
+        el.appendChild(sp); if (i < words.length - 1) el.appendChild(document.createTextNode(' '));
+      });
+      if (arrow) { el.appendChild(document.createTextNode(' ')); arrow.className = 'dv-w'; arrow.style.setProperty('--d', (0.2 + n++ * 0.2).toFixed(3) + 's'); el.appendChild(arrow); }
+    });
+  });
+  function reveal(c) {
+    seeds.forEach(function (b, i) { b.classList.toggle('dv-in', i === c); });
+  }
+  /* each project's Enter link and bar take its own (darkest) colour */
+  seeds.forEach(function (b) {
+    var pal = (PALS[b.getAttribute('data-tab')] || FALLBACK).slice().sort(function (a, c2) { return lum(a) - lum(c2); })[0];
+    b.style.setProperty('--pc', 'rgb(' + pal[0] + ',' + pal[1] + ',' + pal[2] + ')');
+  });
+  /* first visit: a small 'swipe' label and one gentle sideways nudge of the first cloud */
+  var swipeEl = document.getElementById('dv-swipe'), hinted = false, hintDone = false, hintQ = false;
+  function hintOff() { hintDone = true; if (swipeEl) swipeEl.classList.remove('on'); }
+  function hintOn() {
+    if (hinted || hintDone || reduceQ.matches) return; hinted = true;
+    if (swipeEl) swipeEl.classList.add('on');
+    if (noHover && track.scrollLeft < 2) { track.scrollTo({ left: 54, behavior: 'smooth' }); setTimeout(function () { if (!hintDone && track.scrollLeft < 80) track.scrollTo({ left: 0, behavior: 'smooth' }); }, 520); }
+  }
   function mark() {
     var c = cur(); if (want !== null && Math.abs(track.scrollLeft - want * track.clientWidth) < 2) want = null;
     if (c === shown) return; shown = c;
@@ -6823,6 +6893,9 @@ Lord you are Holy, Holy, Holy</p>
     seeds.forEach(function (b, i) { b.tabIndex = i === c ? 0 : -1; b.setAttribute('aria-hidden', i === c ? 'false' : 'true'); });
     prevB.disabled = c === 0; nextB.disabled = c === seeds.length - 1;
     countEl.textContent = pad(c + 1) + ' / ' + pad(seeds.length);
+    var pg = document.getElementById('dv-pager'); if (pg) pg.style.setProperty('--cur', seeds[c].style.getPropertyValue('--pc') || '');
+    if (c > 0) hintOff();
+    if (revealOn) reveal(c);
   }
   track.addEventListener('scroll', mark, { passive: true });
   prevB.addEventListener('click', function () { goTo(at() - 1); });
