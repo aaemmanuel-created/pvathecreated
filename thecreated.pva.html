@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>thecreated</title>
 <meta name="description" content="thecreated — Powered by pvaOS™." />
-<meta name="theme-color" content="#000000" />
+<meta name="theme-color" content="#5a2f9a" />
 <link rel="canonical" href="https://pvathecreated.co/" />
 
 <!-- Favicon + iOS Add-to-Home-Screen icon -->
@@ -3023,6 +3023,23 @@
 </style>
 </head>
 <body>
+<!-- iPhone Safari (iOS 26) colours its top and bottom bars from whatever is pinned
+     to those edges of the page. These two thin strips carry the page's own colour
+     there (set by window.__tint), so the bars match. -->
+<div id="tint-top" aria-hidden="true" style="position:fixed;top:0;left:0;right:0;height:6px;background-color:#5a2f9a;pointer-events:none;z-index:2147483000"></div>
+<div id="tint-bot" aria-hidden="true" style="position:fixed;bottom:0;left:0;right:0;height:6px;background-color:#000000;pointer-events:none;z-index:2147483000"></div>
+<style>@media (hover: hover) and (pointer: fine) { #tint-top, #tint-bot { display: none; } }</style>   <!-- phones and tablets only -->
+<script>
+window.__tint = function (top, bot) {
+  /* Safari reads the strips' colour when they are put on the page, not when the
+     colour is changed, so on a change each strip is replaced by a fresh copy */
+  [['tint-top', top], ['tint-bot', bot]].forEach(function (x) {
+    var el = document.getElementById(x[0]); if (!el || el.getAttribute('data-c') === x[1]) return;
+    var n = el.cloneNode(false); n.style.backgroundColor = x[1]; n.setAttribute('data-c', x[1]);
+    el.parentNode.replaceChild(n, el);
+  });
+};
+</script>
 
 <!-- SVG defs: lens / pointy-oval clip path used by the strip,
      plus the painting ripple filter (animated displacement map). -->
@@ -4080,6 +4097,8 @@ Lord you are Holy, Holy, Holy</p>
     if (themeMeta) themeMeta.setAttribute('content', chromeColor);
     document.documentElement.style.backgroundColor = chromeColor;
     document.body.style.backgroundColor = chromeColor;
+    if (window.__tint) window.__tint(chromeColor, chromeColor);
+    if (id === 'view-home' && window.__dvChrome) window.__dvChrome();   /* the dove page sets its own top and foot colours */
     // Returning home? restore the pills + tagline that dusted away.
     if (id === 'view-home' && typeof restoreDust === 'function') restoreDust();
     // Animate the particle diagrams only while the Overseer page is open.
@@ -5486,13 +5505,20 @@ Lord you are Holy, Holy, Holy</p>
   var lastChrome = '';
   function chrome() {
     if (!home.classList.contains('active')) return;
-    var c = p > 0.8 ? '#ffffff' : '#000000';
+    /* 22 Nov (Emmanuel: 'the tool bar and bottom bar don't change colour to match'):
+       the phone's top bar takes the colour at the top of the picture and the bottom
+       bar the colour at its foot, read from the drawn frame a few times a second;
+       on the paper pages both are paper */
+    var light = p > 0.8, e = window.__dvEdge;
+    var top = light ? '#faf7f1' : (e ? e.top : '#5a2f9a'), bot = light ? '#faf7f1' : (e ? e.bot : '#000000');
+    var c = top + bot;
     if (c === lastChrome) return;
     lastChrome = c;
     var m = document.querySelector('meta[name="theme-color"]');
-    if (m) m.setAttribute('content', c);
-    document.documentElement.style.backgroundColor = c;
-    document.body.style.backgroundColor = c;
+    if (m) m.setAttribute('content', top);
+    document.documentElement.style.backgroundColor = bot;
+    document.body.style.backgroundColor = bot;
+    if (window.__tint) window.__tint(top, bot);
   }
   window.__dvIsWhite = function () { return p > 0.8; };
   window.__dvChrome = function () { lastChrome = ''; chrome(); };
@@ -6045,21 +6071,52 @@ Lord you are Holy, Holy, Holy</p>
        server, a seek could land before that part had arrived (or on a server that
        cannot serve part of a file) and every frame came out the same: a frozen dove. */
     function setSrc(u) { v.src = u; }
-    if (window.fetch && window.URL && URL.createObjectURL) {
-      fetch('dove.mp4').then(function (r) { if (!r.ok) throw 0; return r.blob(); })
-        .then(function (b) { setSrc(URL.createObjectURL(b)); }, function () { setSrc('dove.mp4'); });
-    } else setSrc('dove.mp4');
+    function startFilm() {
+      if (window.fetch && window.URL && URL.createObjectURL) {
+        fetch('dove.mp4').then(function (r) { if (!r.ok) throw 0; return r.blob(); })
+          .then(function (b) { setSrc(URL.createObjectURL(b)); }, function () { setSrc('dove.mp4'); });
+      } else setSrc('dove.mp4');
+    }
+    /* Phones (Emmanuel, 22 Nov: 'on the phone the dove isn't shown'): an iPhone will
+       not step through a hidden film, so no frames ever arrived. The wingbeat's
+       frames are now also kept as one picture, dove-frames.jpg (98 frames of
+       400×225 in a 10-wide grid, made from dove.mp4), which every browser can read,
+       and quickly. The film is used only if the picture cannot load. If dove.mp4
+       is ever replaced, the picture must be made again (see Design-System.md). */
+    var ATLAS = { src: 'dove-frames.jpg', k0: 81, n: 98, cols: 10, a: 3.8333333333333335, b: 7.416666666666667 };
+    (function () {
+      var im = new Image(), failed = false;
+      function fail() { if (failed) return; failed = true; VID.frames.length = 0; VID.preLoop = null; startFilm(); }
+      im.onload = function () {
+        if (im.naturalWidth < ATLAS.cols * VID.W) return fail();
+        var i = 0;
+        VID.preLoop = { a: ATLAS.a, b: ATLAS.b };
+        (function step() {
+          try {
+            for (var end = Math.min(ATLAS.n, i + 5); i < end; i++) {
+              cx.drawImage(im, (i % ATLAS.cols) * VID.W, Math.floor(i / ATLAS.cols) * VID.H, VID.W, VID.H, 0, 0, VID.W, VID.H);
+              lastT = -1; grab((ATLAS.k0 + i) / 24, true);
+            }
+          } catch (e) { return fail(); }
+          if (i < ATLAS.n) setTimeout(step, 0);
+          else { VID.loaded = true; v.remove(); }
+        })();
+      };
+      im.onerror = fail;
+      im.src = ATLAS.src;
+    })();
     var cv = document.createElement('canvas'); cv.width = VID.W; cv.height = VID.H;
     var cx = cv.getContext('2d', { willReadFrequently: true });
     var lastT = -1;
-    function grab(t) {
+    function grab(t, drawn) {
       if (t <= lastT + 0.001) return;
       lastT = t;
-      cx.drawImage(v, 0, 0, VID.W, VID.H);
+      if (!drawn) cx.drawImage(v, 0, 0, VID.W, VID.H);
       var px = cx.getImageData(0, 0, VID.W, VID.H).data, n = VID.W * VID.H, lum = new Uint8Array(n);
       var sx = 0, sy = 0, sw = 0, sxx = 0;
       for (var i = 0, j = 0; i < n; i++, j += 4) {
         var l = (px[j] * 0.3 + px[j + 1] * 0.59 + px[j + 2] * 0.11) | 0;
+        if (drawn && l < 7) l = 0;   /* the picture's black is kept truly black */
         lum[i] = l;
         if (l > 60) { var x = i % VID.W, y = (i / VID.W) | 0; sx += x * l; sy += y * l; sw += l; sxx += (x - VID.W / 2) * (x - VID.W / 2) * l; }
       }
@@ -6295,7 +6352,7 @@ Lord you are Holy, Holy, Holy</p>
   function poseDist(i, j) { var a = poseOf(i), b = poseOf(j), d = 0; for (var k = 0; k < a.length; k++) { var e = a[k] - b[k]; d += e * e; } return d; }
   function findLoop() {
     var f = VID.frames, best = 1e9, bi = -1, bj = -1;
-    for (var i = 8; i < f.length - 8; i++) {
+    for (var i = 8; !VID.preLoop && i < f.length - 8; i++) {
       if (f[i].t < 0.6 || f[i].t > 4.4) continue;
       for (var j = i + 1; j < f.length - 8; j++) {
         if (f[j].t < f[i].t + 2.7 || f[j].t > Math.min(7.6, f[i].t + 4.8)) continue;   // one whole wingbeat (slow-motion film: a beat lasts 3 to 4 s)
@@ -6305,7 +6362,7 @@ Lord you are Holy, Holy, Holy</p>
         if (d < best) { best = d; bi = i; bj = j; }
       }
     }
-    VID.loop = bi >= 0 ? { a: f[bi].t, b: f[bj].t } : { a: 1.2, b: 4.7 };
+    VID.loop = VID.preLoop ? VID.preLoop : (bi >= 0 ? { a: f[bi].t, b: f[bj].t } : { a: 1.2, b: 4.7 });   /* the picture comes with its loop already chosen */
     // keep the dove the size it was while the film was still loading
     var n = 0, kk = 0;
     for (var q = 0; q < f.length; q++) {
@@ -6433,7 +6490,8 @@ Lord you are Holy, Holy, Holy</p>
     bgMat.uniforms.uVidOn.value = reduce ? 1 : Math.min(1, bgMat.uniforms.uVidOn.value + dt / 1.1);
     var last = VID.frames[VID.frames.length - 1].t;
     if (VID.loaded && !VID.loop) findLoop();
-    if (VID.T < 0.4) VID.T = 0.4;
+    var firstT = Math.max(0.4, VID.frames[0].t + 0.02);
+    if (VID.T < firstT) VID.T = VID.preLoop ? VID.preLoop.a : firstT;
     // slower and smoother (Emmanuel): a calm slow motion whose pace eases up and
     // down with the swipe instead of following every twitch of the finger
     /* the film is true slow motion now, so it plays near its own speed: every film frame is used and nothing is stretched */
@@ -6492,6 +6550,8 @@ Lord you are Holy, Holy, Holy</p>
 
   // ---- the loop ----
   var phase = Math.PI / 2, beats = 0, prevC = 0, glowAuto = 0, autoA = 0;
+  var edgeN = 0, edgePx = new Uint8Array(4);
+  function edgeHex(q) { function h(v) { v = Math.min(255, Math.round(v / 6) * 6); return (v < 16 ? '0' : '') + v.toString(16); } return '#' + h(q[0]) + h(q[1]) + h(q[2]); }
   var riseS = 0, wipeS = 0, bleedT = 0, bleedRate = 0, restA = 0, restT = 0, appS = 0, bSlow = 0, dustS = 0, ps = 0, pPrev = 0, velS = 0, freqS = 0.3, last = performance.now(), clock = 0;
   var tmp = new THREE.Vector3();
   var heroVisible = true;
@@ -6588,7 +6648,17 @@ Lord you are Holy, Holy, Holy</p>
     var appT = rest + (1 - rest) * grow;
     appS += (appT - appS) * (1 - Math.exp(-dt * 3.0));
     vidStep(dt, reduce, ps, velS, appS);
-    if (w < 0.999) renderer.render(scene, camera);
+    if (w < 0.999) {
+      renderer.render(scene, camera);
+      if ((edgeN++ % 12) === 0) {   /* read the colours at the top and foot for the phone's bars */
+        try {
+          var gl = renderer.getContext(), bw = gl.drawingBufferWidth, bh = gl.drawingBufferHeight;
+          gl.readPixels(bw >> 1, bh - 4, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, edgePx); var tq = edgeHex(edgePx);
+          gl.readPixels(bw >> 1, 3, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, edgePx); var bq = edgeHex(edgePx);
+          if (!window.__dvEdge || window.__dvEdge.top !== tq || window.__dvEdge.bot !== bq) { window.__dvEdge = { top: tq, bot: bq }; if (window.__dvChrome) window.__dvChrome(); }
+        } catch (e2) {}
+      }
+    }
   }
   requestAnimationFrame(frame);
 })();
