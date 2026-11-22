@@ -2889,11 +2889,10 @@
   @keyframes floodIn { to { opacity: 1; transform: translateY(0); } }
 
   /* ============================================================
-     DOVE HOME (2026-11-21) — the Holy Spirit as a white dove flies
-     toward you in slow motion; each wingbeat lifts the liquid
-     gradient from black toward white. Swiping up speeds the wings
-     until the light is blinding and covers the dove. Then the
-     white section: each project is a ring of moving particles.
+     DOVE HOME (2026-11-21) — the Holy Spirit as a white dove made of
+     points of light, hovering over a purple, red and black bleed. One
+     swipe plays the move into the white projects section, where each
+     project is a cloud of moving dots, one at a time.
      ============================================================ */
   #view-home { display: block; background: #000; }
   .dv-scroll {
@@ -3107,22 +3106,22 @@ window.__tint = function (top, bot) {
     <!-- 1 · The dove. A sticky stage; scrolling through the tall hero
          drives the approach, the wingbeat speed and the light. -->
     <div class="dv-hero" id="dv-hero">
-      <div class="dv-stage" id="dv-stage" role="img" aria-label="A white dove, the Holy Spirit, flies toward you as the darkness turns to light.">
+      <div class="dv-stage" id="dv-stage" role="img" aria-label="A white dove, the Holy Spirit, made of points of light, hovers before you. Swipe up to go on to the projects.">
         <canvas class="dv-canvas" id="dv-canvas" aria-hidden="true"></canvas>
         <div class="dv-white" id="dv-white" aria-hidden="true"></div>
         <p class="dv-hint" id="dv-hint" aria-hidden="true">swipe up</p>
       </div>
     </div>
 
-    <!-- 2 · The projects. Each is a ring of moving particles. -->
+    <!-- 2 · The projects. One at a time, each a cloud of moving dots; swipe sideways between them. -->
     <div class="dv-seeds" id="dv-seeds">
       <canvas class="dv-dots" id="dv-dots" aria-hidden="true"></canvas>
       <h2 class="dv-sr">Projects</h2>
       <div class="dv-grid" id="dv-grid" aria-roledescription="carousel" aria-label="Projects">
         <!-- order (Emmanuel, 21 Nov): The Overseer, Wrestle, Selfquake first -->
-        <button class="dv-seed dv-lead" type="button" data-tab="overseer"><span class="dv-ring"></span><span class="dv-name">The Overseer</span></button>
-        <button class="dv-seed dv-lead" type="button" data-tab="wrestle"><span class="dv-ring"></span><span class="dv-name">Wrestle</span></button>
-        <button class="dv-seed dv-lead" type="button" data-tab="selfquake"><span class="dv-ring"></span><span class="dv-name">Selfquake</span></button>
+        <button class="dv-seed" type="button" data-tab="overseer"><span class="dv-ring"></span><span class="dv-name">The Overseer</span></button>
+        <button class="dv-seed" type="button" data-tab="wrestle"><span class="dv-ring"></span><span class="dv-name">Wrestle</span></button>
+        <button class="dv-seed" type="button" data-tab="selfquake"><span class="dv-ring"></span><span class="dv-name">Selfquake</span></button>
         <button class="dv-seed" type="button" data-tab="house-pva"><span class="dv-ring"></span><span class="dv-name">HOUSE PVA</span></button>
         <button class="dv-seed" type="button" data-tab="housepva-intro"><span class="dv-ring"></span><span class="dv-name">HOUSEPVA: An Introduction</span></button>
         <button class="dv-seed" type="button" data-tab="housepva-usage"><span class="dv-ring"></span><span class="dv-name">HOUSEPVA: Usage</span></button>
@@ -5484,8 +5483,6 @@ Lord you are Holy, Holy, Holy</p>
   var home = document.getElementById('view-home');
   if (!scroller || !hero || !canvas) return;
   var reduceQ = window.matchMedia ? matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
-  // look (chosen by Emmanuel, 21 Nov): graphite dove on a thermal gradient; ?look=light = the white-light dove on black grain
-  var LOOK = /[?&]look=light\b/.test(location.search) ? 'light' : 'thermal';
 
   function clamp(x, a, b) { return x < a ? a : x > b ? b : x; }
   function smooth(a, b, x) { var t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); }
@@ -5518,36 +5515,7 @@ Lord you are Holy, Holy, Holy</p>
   }
   window.__dvIsWhite = function () { return p > 0.8; };
   window.__dvChrome = function () { lastChrome = ''; chrome(); };
-  var holdFree = false, wantOn = false, glideId = 0;
-  // Once the dove has let go, the page glides down into the projects on its own
-  // (if you were already swiping that way), so the hand-off is one smooth move
-  // rather than a stop and a second swipe. Any touch, wheel or key takes over.
-  function glideToProjects() {
-    var seedsEl = document.getElementById('dv-seeds');
-    if (!seedsEl) return;
-    var from = scroller.scrollTop, to = seedsEl.offsetTop, t0 = performance.now(), dur = 900, id = ++glideId;
-    function stop() { glideId++; }
-    ['wheel', 'touchstart', 'keydown', 'mousedown'].forEach(function (ev) { window.addEventListener(ev, stop, { once: true, passive: true }); });
-    (function step(now) {
-      if (id !== glideId) return;
-      var k = Math.min(1, (now - t0) / dur), e = k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
-      scroller.scrollTop = from + (to - from) * e;
-      if (k < 1) requestAnimationFrame(step);
-    })(t0);
-  }
-  window.__dvHoldTick = function (dust) {
-    if (wantOn && dust >= 0.86) { wantOn = false; holdFree = true; glideToProjects(); }   // go while the last dust is still falling: less time on plain white
-  };
-  // hold the page at the end of the dove until its dust has drifted away,
-  // so the projects never arrive before the dove has dispersed (Emmanuel)
   scroller.addEventListener('scroll', function () {
-    var heroEnd = hero.offsetHeight - scroller.clientHeight;
-    if ((window.__dvDust || 0) >= 0.86) holdFree = true;                       // once dispersed, the way stays open
-    if (scroller.scrollTop < heroEnd - scroller.clientHeight * 0.4) holdFree = false;   // until you go back up into the dove
-    if (!holdFree && scroller.scrollTop > heroEnd + 1 && !reduceQ.matches && window.__dvVid && window.__dvVid.on) {
-      scroller.scrollTop = heroEnd;
-      wantOn = true;                       // you asked to go on: the page will carry you there itself
-    }
     readScroll();
     if (hint) hint.style.opacity = (1 - smooth(0.18, 0.42, p)).toFixed(3);   // stays until the page turns light
     chrome();
@@ -5577,13 +5545,12 @@ Lord you are Holy, Holy, Holy</p>
     function finish(isBelow) { busy = false; below = isBelow; coolUntil = performance.now() + 450; }
     function goDown() {
       if (busy) return;
-      busy = true; wantOn = false;
+      busy = true;
       var d1 = Math.max(700, 1700 * (1 - scroller.scrollTop / Math.max(1, heroEnd())));   /* quicker (Emmanuel, 22 Nov): was up to 2.6 s */
       run(heroEnd(), d1, function () {                    // 1 · through the dove: it grows, breaks, the colours fall
         var t0 = performance.now();
         (function wait(now) {                             // 2 · until the white sheet is down (it never waits long)
           if ((window.__dvDust || 0) >= 0.86 || now - t0 > 1500) {
-            holdFree = true;
             run(seedsTop(), 650, function () { finish(true); });   // 3 · into the projects
           } else requestAnimationFrame(wait);
         })(t0);
@@ -5591,9 +5558,9 @@ Lord you are Holy, Holy, Holy</p>
     }
     function goUp() {
       if (busy) return;
-      busy = true; holdFree = true; wantOn = false;
+      busy = true;
       window.__dvRiseGo = 1;                             // the dust rises back into the dove
-      run(0, 1700, function () { holdFree = false; finish(false); });
+      run(0, 1700, function () { finish(false); });
     }
     function off() { return reduceQ.matches || !home.classList.contains('active'); }
     function intent(dir, e) {                             // dir: +1 = onward (down the page), −1 = back
@@ -5675,35 +5642,22 @@ Lord you are Holy, Holy, Holy</p>
       uT: { value: 0 }, uBT: { value: 0 }, uB: { value: 0 }, uPulse: { value: 0 },
       uRes: { value: new THREE.Vector2(1, 1) },
       uDove: { value: new THREE.Vector2(0.5, 0.6) }, uDoveR: { value: 0.2 },
-      uThermal: { value: LOOK === 'thermal' ? 1 : 0 },
-      uSwap: { value: /[?&]bleed=red\b/.test(location.search) ? 0 : 1 },   // default = purple on top, red below (Emmanuel: 'this is the one', 21 Nov); ?bleed=red = red on top
       uVidOn: { value: 0 }, uVidA: { value: null }, uVidB: { value: null }, uVidMix: { value: 0 },
-      uVidFit: { value: new THREE.Vector2(1, 1) }, uDpr: { value: 1 }, uMorph: { value: 0 },
-      uGlass: { value: /[?&]start=glass\b/.test(location.search) ? 1 : 0 },   /* particles from the start (Emmanuel); ?start=glass = the liquid-glass trial */
+      uVidFit: { value: new THREE.Vector2(1, 1) }, uDpr: { value: 1 },
       uZ: { value: 2.0 }, uCtr: { value: new THREE.Vector2(0.5, 0.5) }
     },
     vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.9999, 1.0); }',
     fragmentShader: [
       'precision highp float;',
-      'uniform float uT, uBT, uB, uPulse, uDoveR, uThermal, uVidOn, uVidMix, uDpr, uMorph, uGlass, uZ; uniform vec2 uRes, uDove, uVidFit, uCtr; uniform sampler2D uVidA, uVidB; varying vec2 vUv;',
-      'uniform float uSwap;',
+      'uniform float uT, uBT, uB, uPulse, uDoveR, uVidOn, uVidMix, uDpr, uZ; uniform vec2 uRes, uDove, uVidFit, uCtr; uniform sampler2D uVidA, uVidB; varying vec2 vUv;',
       'vec3 thermal(float h){ h = clamp(h, 0.0, 1.0);',                     /* the site colours: purple, red, white */
-      /* trial (?bleed=swap): the same shape with the two colours changed over —
-         purple at the top, red beneath it, black at the foot */
-      '  if (uSwap > 0.5) {',
-      '    vec3 k = mix(vec3(0.04,0.012,0.02), vec3(0.27,0.04,0.06), smoothstep(0.0, 0.18, h));',
-      '    k = mix(k, vec3(0.61,0.11,0.13), smoothstep(0.14, 0.34, h));',   /* #9c1b22 Righteous red */
-      '    k = mix(k, vec3(0.35,0.14,0.56), smoothstep(0.30, 0.50, h));',   /* #5a2390 Grounding purple */
-      '    k = mix(k, vec3(0.64,0.43,0.95), smoothstep(0.46, 0.66, h));',   /* #a46ef2 bright purple */
-      '    k = mix(k, vec3(0.93,0.88,0.99), smoothstep(0.64, 0.86, h));',   /* pale lilac: after the purple comes white */
-      '    return mix(k, vec3(1.0), smoothstep(0.86, 1.0, h));',   /* ends in the projects' paper (#faf7f1), not pure white (Emmanuel, 22 Nov) */
-      '  }',
-      '  vec3 c = mix(vec3(0.03,0.012,0.05), vec3(0.17,0.05,0.29), smoothstep(0.0, 0.18, h));',
-      '  c = mix(c, vec3(0.35,0.14,0.56), smoothstep(0.14, 0.34, h));',     /* #5a2390 Grounding purple */
-      '  c = mix(c, vec3(0.61,0.11,0.13), smoothstep(0.30, 0.50, h));',     /* #9c1b22 Righteous red */
-      '  c = mix(c, vec3(0.93,0.34,0.38), smoothstep(0.46, 0.66, h));',     /* #ec5660 bright red */
-      '  c = mix(c, vec3(0.98,0.86,0.89), smoothstep(0.64, 0.86, h));',     /* blush */
-      '  return mix(c, vec3(1.0), smoothstep(0.86, 1.0, h)); }',
+      /* purple at the top, red beneath it, black at the foot (Emmanuel: 'this is the one') */
+      '  vec3 k = mix(vec3(0.04,0.012,0.02), vec3(0.27,0.04,0.06), smoothstep(0.0, 0.18, h));',
+      '  k = mix(k, vec3(0.61,0.11,0.13), smoothstep(0.14, 0.34, h));',   /* #9c1b22 Righteous red */
+      '  k = mix(k, vec3(0.35,0.14,0.56), smoothstep(0.30, 0.50, h));',   /* #5a2390 Grounding purple */
+      '  k = mix(k, vec3(0.64,0.43,0.95), smoothstep(0.46, 0.66, h));',   /* #a46ef2 bright purple */
+      '  k = mix(k, vec3(0.93,0.88,0.99), smoothstep(0.64, 0.86, h));',   /* pale lilac: after the purple comes white */
+      '  return mix(k, vec3(1.0), smoothstep(0.86, 1.0, h)); }',   /* ends in the same white as the projects page */
       'float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1,311.7))) * 43758.5453); }',
       'float noise(vec2 p){ vec2 i = floor(p), f = fract(p); vec2 u = f*f*(3.0-2.0*f);',
       '  return mix(mix(hash(i), hash(i+vec2(1.0,0.0)), u.x), mix(hash(i+vec2(0.0,1.0)), hash(i+vec2(1.0,1.0)), u.x), u.y); }',
@@ -5711,13 +5665,7 @@ Lord you are Holy, Holy, Holy</p>
       /* the page behind the dove, as a function, so the glass can look through it at bent positions */
       'vec3 scene(vec2 uv){',
       '  vec2 asp = vec2(uRes.x/uRes.y, 1.0);',
-      '  vec2 d = (uv - uDove)*asp; float r2 = dot(d, d);',
-      '  float glow = exp(-r2/(uDoveR*uDoveR*1.6));',
-      '  float halo = exp(-r2/(uDoveR*uDoveR*9.0));',
       '  float b = uB;',
-      '  float lum = b*1.08 + (uv.y - 0.5)*0.35*b*(1.0 - b) + (glow*0.14 + halo*0.18)*b;',
-      '  lum = clamp(lum, 0.0, 1.0);',
-      '  vec3 col = mix(vec3(0.0), vec3(1.0, 0.988, 0.962), lum);',
       '  float sx = uv.x*asp.x;',
       '  float streak = fbm(vec2(sx*13.0, uBT*0.05));',                        /* fine vertical streaks */
       '  float sway = noise(vec2(sx*1.7 + uBT*0.03, 3.7));',                    /* a slow liquid bend */
@@ -5736,49 +5684,11 @@ Lord you are Holy, Holy, Holy</p>
       '  float late = smoothstep(0.74, 1.0, b);',                             /* white only in the last part of the swipe */
       '  float fallHeat = curtain*(0.3 + 0.3*deep + 0.1*b + 0.5*late);',                /* red at the front, purple behind it, then white */
       '  float heat = mix(restHeat, fallHeat, smoothstep(0.03, 0.4, b)) + late*0.45;',   /* at rest no white (capped above); on the swipe white follows the purple */
-      '  return mix(col, thermal(heat), uThermal);',
+      '  return thermal(heat);',
       '}',
-      'float filmL(vec2 vu){ vec2 t = vec2(vu.x, 1.0 - vu.y); return mix(texture2D(uVidA, t).r, texture2D(uVidB, t).r, uVidMix); }',
       'void main(){',
       '  float b = uB;',
       '  vec3 col = scene(vUv);',
-      '  if (uVidOn > 0.5 && uGlass > 0.5) {',                  /* the liquid-glass dove (Emmanuel, 21 Nov) */
-      '    vec2 vu = uCtr + (vUv - vec2(0.5, 0.53))*uVidFit*uZ;',          /* same place and size as the particles */
-      '    float inF = step(0.0, vu.x) * step(vu.x, 1.0) * step(0.0, vu.y) * step(vu.y, 1.0);',
-      '    vec2 e = vec2(2.2/400.0, 2.2/225.0);',
-      '    float hc = filmL(vu), hl = filmL(vu - vec2(e.x, 0.0)), hr = filmL(vu + vec2(e.x, 0.0));',
-      '    float hd = filmL(vu - vec2(0.0, e.y)), hu = filmL(vu + vec2(0.0, e.y));',
-      '    float h = (hc*2.0 + hl + hr + hd + hu)/6.0;',                      /* a softened height field */
-      '    float mask = smoothstep(0.04, 0.13, h) * inF;',
-      '    if (mask > 0.001) {',
-      '      vec3 n = normalize(vec3((hl - hr)*3.2, (hd - hu)*3.2, 1.0));',  /* the glass surface tilt */
-      '      float thick = smoothstep(0.04, 0.55, h);',
-      '      vec2 off = n.xy * 0.085 * (0.35 + thick);',
-      '      vec3 refr = vec3(scene(vUv + off).r, scene(vUv + off*1.18).g, scene(vUv + off*1.36).b);',   /* bent light, split into colour */
-      '      vec3 Ld = normalize(vec3(-0.45, 0.62, 0.65));',
-      '      float spec = pow(max(dot(n, normalize(Ld + vec3(0.0, 0.0, 1.0))), 0.0), 40.0) + 0.5*pow(max(dot(n, normalize(vec3(0.5, -0.3, 0.8))), 0.0), 90.0);',   /* key light + a second glint */
-      '      float fres = pow(1.0 - clamp(n.z, 0.0, 1.0), 1.6);',
-      '      vec3 glass = refr*0.9 + vec3(0.06, 0.06, 0.09) + spec*1.25 + fres*0.75 + (hc - 0.45)*0.16;',
-      '      glass += mask * (1.0 - smoothstep(0.13, 0.3, h)) * 0.32;',      /* a bright line round the silhouette */
-      '      float th = 0.04 + 0.92*clamp((fbm(vu*vec2(7.0, 3.9) + 3.1) - 0.3)/0.4, 0.0, 1.0);',
-      '      float rv = smoothstep(th - 0.05, th + 0.05, uMorph);',           /* the glass breaks into particles */
-      '      col = mix(col, glass, mask * (1.0 - rv));',
-      '      col += vec3(1.0, 0.92, 0.96) * mask * rv * (1.0 - rv) * 4.0 * 0.55;',   /* glinting edge as it breaks */
-      '    }',
-      '  }',
-      '  col = mix(col, vec3(1.0), smoothstep(0.82, 1.0, b)*(1.0 - uThermal));',
-      '  col = mix(col, min(col, vec3(1.0)), smoothstep(0.5, 0.9, b));',   /* nothing brighter than the paper as the light arrives */
-      /* luxurious grain (Emmanuel, 21 Nov: 'this grain looks weird — make it like a
-         luxurious grain'): no square blocks. A film-fine dust at the screen's own
-         pixels with a soft (triangular) spread, a rounder grain a few pixels across,
-         and a faint clouding like vellum. It tints the colour rather than speckling
-         it, so the blacks stay deep. Still at rest, alive on the swipe. */
-      '  vec2 gs = floor(uBT*24.0)*vec2(17.0, 31.0);',
-      '  float fine = hash(gl_FragCoord.xy + gs) + hash(gl_FragCoord.xy*1.31 + gs + 4.7) - 1.0;',
-      '  float round = noise(gl_FragCoord.xy/(2.6*uDpr) + gs*0.37) - 0.5;',
-      '  float cloud = fbm(gl_FragCoord.xy/(90.0*uDpr) + 3.0) - 0.5;',
-      '  float gr = fine*0.016 + round*0.018 + cloud*0.016;',   /* reduced twice at Emmanuel's request (21 Nov): now barely there */
-      /* no grain (Emmanuel, 22 Nov: 'remove all grain on the background'); the lines above are kept in case it is wanted back */
       '  gl_FragColor = vec4(col, 1.0);',
       '}'
     ].join('\n')
@@ -5920,13 +5830,13 @@ Lord you are Holy, Holy, Holy</p>
   // ---- particle dove (chosen by Emmanuel, 2026-11-21; ?dove=solid shows the solid one) ----
   // The same dove, the same wingbeat — but every surface is drawn as
   // points of light sampled across it, so the dove is made of light.
-  var DOVE_MODE = /[?&]dove=solid\b/.test(location.search) ? 'solid' : 'particles';
+  var DOVE_MODE = 'particles';   /* the code-built dove (shown only if the film and its picture both fail) is always the particle one */
   var ptMat = null;
   if (DOVE_MODE === 'particles') {
     ptMat = new THREE.ShaderMaterial({
       transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
-      blending: LOOK === 'thermal' ? THREE.NormalBlending : THREE.AdditiveBlending,
-      uniforms: { uT: { value: 0 }, uScale: { value: 1000 }, uSize: { value: LOOK === 'thermal' ? 0.03 : 0.026 }, uGraphite: { value: LOOK === 'thermal' ? 1 : 0 } },
+      blending: THREE.NormalBlending,
+      uniforms: { uT: { value: 0 }, uScale: { value: 1000 }, uSize: { value: 0.03 }, uGraphite: { value: 1 } },
       vertexShader: [
         'attribute float aR; attribute float aTone; uniform float uT, uScale, uSize;',
         'varying float vA; varying float vTone; varying float vR;',
@@ -6056,7 +5966,7 @@ Lord you are Holy, Holy, Holy</p>
     bgMat.uniforms.uDpr.value = renderer.getPixelRatio();
   }
   window.addEventListener('resize', vidFit); vidFit();
-  if (!/[?&]dove=3d\b/.test(location.search)) (function () {
+  (function () {
     /* Open on the filmed dove only (Emmanuel, 21 Nov): the old code-built dove used to
        show while the film was still downloading. Now nothing but the colours shows
        until the film is ready, then the dove fades in. The code-built one comes back
@@ -6176,13 +6086,12 @@ Lord you are Holy, Holy, Holy</p>
   // points are laid over the screen (one every ~2.3 px), so the dove is dense on any shape of screen
   var dGeo = new THREE.BufferGeometry();
   // particle style: glow (chosen by Emmanuel, 21 Nov); ?dots=graphite | halftone | bokeh to compare
-  var DOTS = (location.search.match(/[?&]dots=(\w+)/) || [])[1] || 'glow';
-  var STYLE = { graphite: { n: 0, sp: 3.6, jit: 1 }, glow: { n: 1, sp: 2.4, jit: 1 }, halftone: { n: 2, sp: 5.5, jit: 0 }, bokeh: { n: 3, sp: 8, jit: 1 } }[DOTS] || { n: 1, sp: 2.4, jit: 1 };
+  var STYLE = { sp: 2.4 };   /* Glow (Emmanuel's pick): one soft point every 2.4 px */
   function buildDust() {
     var sp = STYLE.sp, GX = Math.max(40, Math.round(W / sp)), GY = Math.max(40, Math.round(H / sp)), dN = GX * GY;
     var dUv = new Float32Array(dN * 2), dR = new Float32Array(dN);
     for (var gy = 0, q = 0; gy < GY; gy++) for (var gx = 0; gx < GX; gx++, q++) {
-      var jx = STYLE.jit ? Math.random() : 0.5, jy = STYLE.jit ? Math.random() : 0.5;
+      var jx = Math.random(), jy = Math.random();
       dUv[q * 2] = (gx + jx) / GX; dUv[q * 2 + 1] = (gy + jy) / GY; dR[q] = Math.random();
     }
     dGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(dN * 3), 3));
@@ -6203,46 +6112,31 @@ Lord you are Holy, Holy, Holy</p>
   ].join('\n');
   var dustMat = new THREE.ShaderMaterial({
     transparent: true, depthTest: false, depthWrite: false,
-    blending: STYLE.n === 3 ? THREE.AdditiveBlending : THREE.NormalBlending,   // glow uses normal blending so it can darken on a light page
-    uniforms: { uStyle: { value: STYLE.n }, uBg: bgMat.uniforms.uB, uVidA: { value: texA }, uVidB: { value: texB }, uVidMix: bgMat.uniforms.uVidMix, uFit: bgMat.uniforms.uVidFit,
-                uMorph: { value: 0 }, uDust: { value: 0 }, uT: { value: 0 }, uDpr: bgMat.uniforms.uDpr, uOn: bgMat.uniforms.uVidOn, uZ: bgMat.uniforms.uZ, uCtr: bgMat.uniforms.uCtr, uFly: { value: 0 }, uRise: { value: 0 }, uBT: bgMat.uniforms.uBT, uAsp: { value: 1 }, uBH: { value: 0.2 } },
+    blending: THREE.NormalBlending,   // normal blending, so the points can darken on a light page
+    uniforms: { uBg: bgMat.uniforms.uB, uVidA: { value: texA }, uVidB: { value: texB }, uVidMix: bgMat.uniforms.uVidMix, uFit: bgMat.uniforms.uVidFit,
+                uDust: { value: 0 }, uT: { value: 0 }, uDpr: bgMat.uniforms.uDpr, uOn: bgMat.uniforms.uVidOn, uZ: bgMat.uniforms.uZ, uCtr: bgMat.uniforms.uCtr, uRise: { value: 0 }, uBT: bgMat.uniforms.uBT, uAsp: { value: 1 }, uBH: { value: 0.2 } },
     vertexShader: [
       'precision highp float;',
       'attribute vec2 aUv; attribute float aR; attribute float aVis; attribute float aL;',
-      'uniform sampler2D uVidA, uVidB; uniform float uVidMix, uMorph, uDust, uT, uDpr, uOn, uZ, uStyle, uBg, uFly, uRise, uBT, uAsp, uBH; uniform vec2 uFit, uCtr;',
+      'uniform sampler2D uVidA, uVidB; uniform float uVidMix, uDust, uT, uDpr, uOn, uZ, uBg, uRise, uBT, uAsp, uBH; uniform vec2 uFit, uCtr;',
       'varying vec3 vCol; varying float vA;',
       NOISE_GLSL,
       'void main(){',
-      '  vec2 vu = uCtr + (aUv - vec2(0.5, 0.53))*uFit*uZ;',              /* this point on the film, dove centred */
-      '  vec2 tu = vec2(vu.x, 1.0 - vu.y);',
-      '  float L = mix(texture2D(uVidA, tu).r, texture2D(uVidB, tu).r, uVidMix);',
-      '  float inF = step(0.0, vu.x) * step(vu.x, 1.0) * step(0.0, vu.y) * step(vu.y, 1.0);',
-      '  float body = smoothstep(0.035, 0.11, L) * inF;',                   /* the whole bird, shaded parts too */
-      '  L = smoothstep(0.07, 0.9, L) * inF;',
-      '  float th = 0.04 + 0.92*clamp((fbm(vu*vec2(7.0, 3.9) + 3.1) - 0.3)/0.4, 0.0, 1.0);',
-      '  float rv = smoothstep(th - 0.05, th + 0.05, uMorph);',
-      '  float vis = smoothstep(aR - 0.15, aR + 0.15, body*(0.62 + 0.5*L)) * rv * uOn;',   /* fills the bird; fades, not flickers */
-      '  if (uStyle > 1.5 && uStyle < 2.5) vis = body * rv * uOn;',            /* halftone: every grid dot, sized by the light */
-      '  if (uStyle > 2.5) vis *= step(0.6, body) * step(0.12, L);',          /* bokeh: only the bird itself */
-      '  if (uStyle > 0.5 && uStyle < 1.5) { L = aL; vis = aVis * rv * uOn; }',   /* glow: eased on the CPU, so specks glide in and out */
+      /* each point's brightness and visibility are eased on the CPU (easeSpecks), so the wings glide */
+      '  float L = aL;',
+      '  float vis = aVis * uOn;',
       '  vec2 s = aUv;',
       /* a breath of life once freed, and a small lift as each speck lets go */
       '  vec2 flow = vec2(fbm(aUv*3.2 + vec2(uT*0.11, 0.0)) - 0.5, fbm(aUv*3.2 + vec2(5.2, -uT*0.09)) - 0.5);',   /* a slow current */
-      '  float fa = uStyle > 1.5 && uStyle < 2.5 ? 0.0 : (uStyle > 2.5 ? 1.5 : 1.0);',
-      '  s += (flow*0.016 + vec2(sin(uT*0.6 + aR*40.0), cos(uT*0.5 + aR*33.0))*0.0016) * rv * fa;',
-      '  s.y += (1.0 - rv) * 0.006;',
+      '  s += flow*0.016 + vec2(sin(uT*0.6 + aR*40.0), cos(uT*0.5 + aR*33.0))*0.0016;',
       /* dust: each speck lets go at its own moment, rises and drifts outward */
-      /* the dove flies up and away as it breaks (Emmanuel, 21 Nov): the whole bird rises
-         and draws in toward its centre, as if receding, while its dust falls from it */
-      '  vec2 dc = vec2(0.5, 0.53);',
-      '  s = dc + (s - dc)*(1.0 - 0.45*uFly) + vec2(0.06*sin(uFly*3.1)*uFly, 0.95*uFly);',
       '  float ds = clamp((uDust - aR*0.45)/0.55, 0.0, 1.0); ds = ds*ds;',
       /* the dove does not disintegrate fully (Emmanuel): only some parts come away, in
          soft patches; the rest holds its shape until the white takes it */
       '  ds *= step(0.46, fbm(aUv*5.5 + 2.0) + (fract(aR*57.3) - 0.5)*0.4);',   /* about half the specks, in patches: clearly seen */
       /* the dust falls: down the screen and off the bottom, on into the projects (Emmanuel) */
       '  vec2 drift = vec2((fbm(aUv*5.0 + uT*0.05) - 0.5)*0.5 + (aUv.x - 0.5)*0.25, -(0.75 + 0.6*fbm(aUv*3.0 - uT*0.04)) - aR*0.35);',
-      '  s += drift * ds * (1.15 + 0.95*uFly);',   /* far enough to reach the foot even from a rising bird */
+      '  s += drift * ds * 1.15;',   /* far enough to reach the foot */
       /* coming back from the projects (Emmanuel, 21 Nov): every speck starts below the
          foot of the screen and rises, each at its own moment, swaying, into its place */
       '  float rh = fract(aR*37.7), rh2 = fract(aR*91.3);',
@@ -6250,11 +6144,8 @@ Lord you are Holy, Holy, Holy</p>
       '  float rleft = (1.0 - rt)*(1.0 - rt)*(1.0 - rt);',
       '  s += step(0.0005, uRise) * rleft * vec2((rh2 - 0.5)*0.9 + 0.07*sin(rt*7.0 + aR*30.0), -(0.8 + 0.5*rh));',
       '  gl_Position = vec4(s*2.0 - 1.0, 0.0, 1.0);',
-      '  float ps0 = uStyle < 0.5 ? 2.3 + 2.4*L : (uStyle < 1.5 ? 1.3 + 2.0*L : (uStyle < 2.5 ? 0.8 + 4.8*L : 5.0 + 6.0*L));',
+      '  float ps0 = 1.3 + 2.0*L;',
       '  gl_PointSize = vis > 0.01 ? ps0*uDpr*(1.0 - 0.45*ds) : 0.0;',
-      '  vec3 g = vec3(0.36, 0.37, 0.4) + 0.38*L + 0.14*fract(aR*17.3);',   /* graphite, lighter where the feathers catch light */
-      '  float fl = step(0.93, fract(aR*91.7)) * (0.6 + 0.4*sin(uT*2.0 + aR*40.0));',
-      '  vCol = mix(g, vec3(0.86, 0.88, 0.92), fl);',
       /* the dove bleeds the way the page does (Emmanuel, 21 Nov): the same colours in
          the same order, in a lighter key so it stands out — lilac at the top of the
          bird, rose-red through the middle, a deep red at the foot — and the same
@@ -6263,23 +6154,16 @@ Lord you are Holy, Holy, Holy</p>
       '  float bstreak = fbm(vec2(aUv.x*uAsp*13.0, uBT*0.05));',              /* the page's own streak field */
       '  float bedge = 0.2 + (bstreak - 0.5)*0.55;',
       '  float bfade = 0.2 + 0.8*smoothstep(bedge - 0.16, bedge + 0.14, bt);',
-      '  if (uStyle > 0.5 && uStyle < 1.5) {',
-      '    vec3 bc = mix(vec3(0.80, 0.22, 0.26), vec3(1.0, 0.66, 0.68), smoothstep(0.02, 0.42, bt + (bstreak - 0.5)*0.3));',
-      '    bc = mix(bc, vec3(0.80, 0.68, 1.0), smoothstep(0.42, 0.82, bt + (bstreak - 0.5)*0.3));',
-      '    bc *= 0.72 + 0.34*L;',
-      '    vCol = mix(bc, vec3(0.43, 0.43, 0.45), smoothstep(0.72, 0.95, uBg));',   /* easing to a soft grey as the page turns white */
-      '  }',
-      '  if (uStyle > 1.5 && uStyle < 2.5) vCol = vec3(0.97, 0.95, 0.93);',                            /* halftone: paper white */
-      '  if (uStyle > 2.5) { vec3 t = fract(aR*5.3) < 0.5 ? vec3(0.64,0.43,0.95) : vec3(0.93,0.34,0.38); vCol = mix(t, vec3(1.0), 0.35 + 0.5*L) * 0.55; }',   /* bokeh: purple, red, white */
+      '  vec3 bc = mix(vec3(0.80, 0.22, 0.26), vec3(1.0, 0.66, 0.68), smoothstep(0.02, 0.42, bt + (bstreak - 0.5)*0.3));',
+      '  bc = mix(bc, vec3(0.80, 0.68, 1.0), smoothstep(0.42, 0.82, bt + (bstreak - 0.5)*0.3));',
+      '  bc *= 0.72 + 0.34*L;',
+      '  vCol = mix(bc, vec3(0.43, 0.43, 0.45), smoothstep(0.72, 0.95, uBg));',   /* easing to a soft grey as the page turns white */
       '  vA = vis * (0.85 + 0.15*L) * (1.0 - 0.35*ds) * mix(bfade, 1.0, smoothstep(0.72, 0.95, uBg));',   /* stays visible as it falls away */
       '}'].join('\n'),
     fragmentShader: [
-      'precision highp float; uniform float uStyle; varying vec3 vCol; varying float vA;',
-      'void main(){ float d = length(gl_PointCoord - 0.5); float a;',
-      '  if (uStyle < 0.5) a = smoothstep(0.5, 0.15, d);',
-      '  else if (uStyle < 1.5) a = exp(-d*d*16.0) * step(d, 0.5);',
-      '  else if (uStyle < 2.5) a = smoothstep(0.5, 0.4, d);',
-      '  else a = smoothstep(0.5, 0.05, d) * 0.7;',
+      'precision highp float; varying vec3 vCol; varying float vA;',
+      'void main(){ float d = length(gl_PointCoord - 0.5);',
+      '  float a = exp(-d*d*16.0) * step(d, 0.5);',   /* a soft round glow */
       '  gl_FragColor = vec4(vCol, a * vA); }'
     ].join('\n')
   });
@@ -6380,7 +6264,7 @@ Lord you are Holy, Holy, Holy</p>
       eu = Math.max(eu, (bq.mid - y0 / Hv) / bq.len); ed = Math.max(ed, (y1 / Hv - bq.mid) / bq.len);
     }
     VID.ext = { x: ex, up: eu, down: ed };
-    if (!/[?&]flow=off\b/.test(location.search)) startFlow();   // ?flow=off = the plain fade, to compare
+    startFlow();
   }
   // each speck eases toward the film's brightness at its spot (about 0.15 s),
   // so the wings glide through the field instead of switching specks on and off
@@ -6509,8 +6393,6 @@ Lord you are Holy, Holy, Holy</p>
         A = nearest(VID.T); B = nearest(la - (lb - VID.T));
       } else { var r = frameAt(VID.T); A = r[0]; B = r[1]; m = r[2]; }
     } else { VID.T = Math.min(VID.T, last); var r2 = frameAt(VID.T); A = r2[0]; B = r2[1]; m = r2[2]; }
-    if (A !== VID.ia) { texA.image.data = VID.frames[A].lum; texA.needsUpdate = true; VID.ia = A; }
-    if (B !== VID.ib) { texB.image.data = VID.frames[B].lum; texB.needsUpdate = true; VID.ib = B; }
     bgMat.uniforms.uVidMix.value = m;
     // the dove's place and size in a given film frame: a straight-line trend across
     // the wingbeat (so flapping never changes it), turned into a zoom that puts the
@@ -6541,7 +6423,7 @@ Lord you are Holy, Holy, Holy</p>
     VID.cS = [xa.cx + (xb.cx - xa.cx) * m, xa.cy + (xb.cy - xa.cy) * m];
     dustMat.uniforms.uZ.value = VID.zS;
     dustMat.uniforms.uCtr.value.set(VID.cS[0], 1 - VID.cS[1]);
-    if (STYLE.n === 1) easeSpecks(dt, m, A, B, xa, xb, fit);
+    easeSpecks(dt, m, A, B, xa, xb, fit);
     return true;
   }
 
@@ -6618,7 +6500,6 @@ Lord you are Holy, Holy, Holy</p>
     bgMat.uniforms.uPulse.value = pulse;
     if (ptMat) ptMat.uniforms.uT.value = reduce ? 0 : clock;
 
-    bgMat.uniforms.uMorph.value = dustMat.uniforms.uMorph.value = bgMat.uniforms.uGlass.value ? smooth(0.015, 0.35, ps) : 1.2;   // particles from the start; with ?start=glass the glass breaks into particles as you swipe   // particles from the start (Emmanuel); the solid-to-particles dissolve is kept in the shader, unused
     dustS += (smooth(0.34, 0.95, ps) - dustS) * (1 - Math.exp(-dt * (1.5 + 0.9 * smooth(0.8, 1.0, ps))));   // unhurried, so the dove's rise can be watched   // the dust lets go slowly, over a few seconds (Emmanuel)
     if (window.__dvRiseGo) { window.__dvRiseGo = 0; riseS = 1; }
     if (riseS > 0) {
@@ -6628,9 +6509,7 @@ Lord you are Holy, Holy, Holy</p>
     }
     dustMat.uniforms.uRise.value = riseS;
     dustMat.uniforms.uDust.value = dustS;
-    dustMat.uniforms.uFly.value = 0;                 // the dove stays where it is (the fly-away was tried and dropped, 21 Nov)
     window.__dvDust = wipeS;                         // the way on opens once the white sheet has come down
-    window.__dvHoldTick(window.__dvDust);
     /* The phone's bars change smoothly (Emmanuel, 22 Nov): each bar's colour eases
        toward what is on screen at its edge instead of jumping. The white sheet
        comes from the top, so the top bar turns to paper as it starts down and the
@@ -6703,16 +6582,6 @@ Lord you are Holy, Holy, Holy</p>
   };
   var FALLBACK = [[90, 35, 144], [156, 27, 34], [168, 122, 28]];
   var BINS = 36;
-  function ramp(stops) {
-    stops = stops.concat([stops[0]]);
-    var out = [];
-    for (var k = 0; k < BINS; k++) {
-      var u = k / BINS * (stops.length - 1), i0 = Math.floor(u), f = u - i0;
-      var A = stops[i0], B = stops[Math.min(i0 + 1, stops.length - 1)];
-      out.push('rgb(' + Math.round(A[0] + (B[0] - A[0]) * f) + ',' + Math.round(A[1] + (B[1] - A[1]) * f) + ',' + Math.round(A[2] + (B[2] - A[2]) * f) + ')');
-    }
-    return out;
-  }
   var FILL = [];   // one ramp per project, laid end to end: project r owns bins r*BINS … r*BINS+35
   /* 22 Nov: each project's ramp now runs from its deep shadow colour to a light,
      lit tint, so the side light can shade the sphere in the project's own colours */
@@ -6731,7 +6600,7 @@ Lord you are Holy, Holy, Holy</p>
   seeds.forEach(function (b) { FILL = FILL.concat(shadeRamp(PALS[b.getAttribute('data-tab')] || FALLBACK)); });
   var buckets = FILL.map(function () { return []; });
 
-  var W = 1, H = 1, UP = 0, dpr = 1, rings = [], parts = [], started = false, visible = false;
+  var W = 1, H = 1, UP = 0, dpr = 1, rings = [], parts = [], visible = false;
   function gauss() { return (Math.random() + Math.random() + Math.random() - 1.5) / 1.5; }
 
   function layout() {
@@ -6745,12 +6614,10 @@ Lord you are Holy, Holy, Holy</p>
       var old = rings[i] || {};
       var pal = PALS[b.getAttribute('data-tab')] || FALLBACK;
       return { x: r.left - sr.left + r.width / 2, y: r.top - sr.top + r.height / 2, R: r.width * 0.46,
-               pal: pal, pulse: old.pulse || 0, lead: b.classList.contains('dv-lead'),
+               pal: pal, pulse: old.pulse || 0,
                hov: old.hov || 0, hovT: old.hovT || 0, burst: old.burst || 0, burstT: old.burstT || 0,
-               // not a perfect circle: each shape has its own soft, slowly shifting outline
-               wa: old.wa || 0.07 + Math.random() * 0.08, wb: old.wb || 0.03 + Math.random() * 0.05,
-               p1: old.p1 || Math.random() * 6.28, p2: old.p2 || Math.random() * 6.28, p3: old.p3 || Math.random() * 6.28,
-               sx: old.sx || 0.9 + Math.random() * 0.2, sy: old.sy || 0.9 + Math.random() * 0.2 };
+               /* three slow phases for the cloud's shifting outline */
+               p1: old.p1 || Math.random() * 6.28, p2: old.p2 || Math.random() * 6.28, p3: old.p3 || Math.random() * 6.28 };
     });
     if (!parts.length) build();
   }
@@ -6771,7 +6638,6 @@ Lord you are Holy, Holy, Holy</p>
         parts.push({
           ri: ri,
           sx: rxy * Math.cos(phi), sy: uz, sz3: rxy * Math.sin(phi),
-          sh: halo ? 1.04 + Math.random() * 0.14 : 1 + gauss() * 0.012,
           rv: Math.cbrt(Math.random()) * (1 + 0.32 * Math.abs(gauss())),   /* shapeless (22 Nov): through the whole cloud, thinning out softly past its edge */
           f: 0.5,
           ph: Math.random() * Math.PI * 2,
@@ -6779,16 +6645,15 @@ Lord you are Holy, Holy, Holy</p>
           a: halo ? 0.25 + Math.random() * 0.2 : 0.6 + Math.random() * 0.4,
           x: Math.random() * W, y: Math.random() * H * 0.6,   // scattered, as if out of the light
           d: Math.random() * 0.9,                             // gathering delay
-          d2: Math.random(), dx: Math.random() * 2 - 1,       // how and when it drifts away
+          d2: Math.random(),                                  // when it lands, as the dust falls in
           x0: Math.random() * W, y0: -10 - Math.random() * (window.innerHeight || 800) * 0.9   // where it falls from, in the white above
         });
       }
     });
   }
 
-  var t = 0, gather = 0, disp = 0, arr = 0, last = performance.now(), lastSL = 0;
+  var t = 0, gather = 0, arr = 0, last = performance.now(), lastSL = 0;
   var TC = Math.cos(-0.36), TS = Math.sin(-0.36);   /* seen a little from above */
-  var SOLID = /[?&]orbs=sphere\b/.test(location.search);   /* shapeless clouds by default (22 Nov); ?orbs=sphere = the lit spheres with shadow */
   var LX = -0.42, LY = -0.5, LZ = 0.757;            /* 2 · light from the top left, in front */
   function rain() {
     var vh = scroller.clientHeight || window.innerHeight;
@@ -6798,7 +6663,7 @@ Lord you are Holy, Holy, Holy</p>
       q.y = -10 - Math.random() * vh * 0.9;                 // above the section, in the white
       q.d = 0.1 + (-q.y / vh) * 1.2 + Math.random() * 0.35;  // higher dust lands later
     }
-    gather = 0; disp = 0;
+    gather = 0;
   }
   function frame(now) {
     requestAnimationFrame(frame);
@@ -6819,12 +6684,10 @@ Lord you are Holy, Holy, Holy</p>
 
     // swiping on past the projects: the shapes come apart; swiping back re-forms them
     var srect = sec.getBoundingClientRect(), vh = window.innerHeight || H;
-    var dispT = 0;   // the shapes stay formed as you scroll on (Emmanuel, 21 Nov); they only come apart when you swipe back up to the dove
     // the fall follows your scroll: it starts as the section rises into view and
     // finishes as it reaches the top, so you see the dust falling into place (Emmanuel)
     var arrT = reduce ? 1 : clamp01(1 - srect.top / (vh * 0.85));
     arr += (arrT - arr) * (1 - Math.exp(-dt * 3));
-    disp += (dispT - disp) * (1 - Math.exp(-dt * 0.8));   // the shapes come apart slowly (Emmanuel)
     /* on a touch screen (no hover) the circle nearest the middle of the screen
        gently breathes and brightens, so it is clear the circles can be tapped */
     var near = -1;
@@ -6859,37 +6722,24 @@ Lord you are Holy, Holy, Holy</p>
       var wo = g.R * (0.35 + 0.65 * q.rv);
       var tx = g.x + x1 * R + wo * (0.15 * Math.sin(y2 * 2.4 + t * 0.33 + g.p1) + 0.07 * Math.sin(x1 * 3.3 - t * 0.47 + g.p3));
       var ty = g.y + y2 * R + wo * (0.13 * Math.sin(x1 * 2.2 - t * 0.27 + g.p2) + 0.06 * Math.sin(y2 * 3.6 + t * 0.41 + g.p1));
-      if (SOLID) { R = g.R * q.sh * (1 - 0.05 * g.hov + 0.03 * g.pulse * Math.sin(t * 2.2) + 1.6 * g.burst); tx = g.x + x1 * R; ty = g.y + y2 * R; }
       q.f = (z2 + 1) * 0.5;                                  /* 1 = the near side, 0 = the far side */
       var lam = x1 * LX + y2 * LY + z2 * LZ; if (lam < 0) lam = 0;
-      var dd = clamp01((disp - q.d2 * 0.5) / 0.5); dd = dd * dd * (3 - 2 * dd);
-      if (dd > 0) {
-        tx += (x1 * g.R * 1.6 + q.dx * g.R * 2.2 + Math.sin(t * 0.4 + q.ph) * 14) * dd;
-        ty += (y2 * g.R * 1.2 - (0.6 + q.d2) * g.R * 1.8) * dd;
-      }
       var f = clamp01(arr * 1.35 - q.d2 * 0.35); f = f * f * (3 - 2 * f);
       var fx = q.x0 + (tx - q.x0) * f, fy = q.y0 + (ty - q.y0) * f;
       var k = reduce ? 1 : 0.18;
       q.x += (fx - q.x) * k; q.y += (fy - q.y) * k;
       // liquid colour field
       var v = 0.5 + 0.5 * Math.sin(q.x * 0.0055 + 1.9 * Math.sin(q.y * 0.0047 + t * 0.32) + t * 0.22 + 1.3 * Math.sin((q.x + q.y) * 0.0028 - t * 0.17));
-      var lv = SOLID ? 0.05 + 0.85 * lam * (0.3 + 0.7 * q.f) + 0.1 * (v - 0.5) : 0.18 + 0.5 * lam * (0.4 + 0.6 * q.f) + 0.42 * (v - 0.5) + 0.12 * (1 - q.rv);   /* a soft light and a liquid play of the project's colours, richer in the middle */
+      var lv = 0.18 + 0.5 * lam * (0.4 + 0.6 * q.f) + 0.42 * (v - 0.5) + 0.12 * (1 - q.rv);   /* a soft light and a liquid play of the project's colours, richer in the middle */
       var bi = Math.max(0, Math.min(BINS - 1, Math.floor(lv * BINS)));
       buckets[q.ri * BINS + bi].push(i);
     }
     var fade = clamp01(gather * 0.8);
     /* a soft glow in each project's own colours behind its specks */
-    var ga = fade * clamp01(arr * 2.5 - 0.6) * (1 - 0.8 * disp);
+    var ga = fade * clamp01(arr * 2.5 - 0.6);
     if (ga > 0.01) for (var gr = 0; gr < rings.length; gr++) {
       if (rings[gr].x < -rings[gr].R * 1.3 || rings[gr].x > W + rings[gr].R * 1.3) continue;
       var G = rings[gr], c0 = G.pal[0], c1 = G.pal[1], lift = 1 + 0.6 * G.hov + 0.5 * G.pulse;
-      /* 4 · a soft coloured shadow on the paper under the orb */
-      var dk = G.pal.slice().sort(function (a, b) { return lum(a) - lum(b); })[0];
-      ctx.save(); ctx.translate(G.x + G.R * 0.08, G.y + G.R * 1.07); ctx.scale(1, 0.13);
-      var sg = ctx.createRadialGradient(0, 0, 0, 0, 0, G.R * 0.78);
-      sg.addColorStop(0, 'rgba(' + dk[0] + ',' + dk[1] + ',' + dk[2] + ',0.26)'); sg.addColorStop(1, 'rgba(' + dk[0] + ',' + dk[1] + ',' + dk[2] + ',0)');
-      if (SOLID) { ctx.globalAlpha = ga * (1 - 0.9 * G.burst); ctx.fillStyle = sg; ctx.fillRect(-G.R, -G.R, G.R * 2, G.R * 2); }
-      ctx.restore();
       var gR = G.R * (1.22 + 0.04 * G.pulse * Math.sin(t * 2.2));
       var gg0 = ctx.createRadialGradient(G.x - G.R * 0.14, G.y - G.R * 0.17, 0, G.x, G.y, gR);
       gg0.addColorStop(0, 'rgba(' + c1[0] + ',' + c1[1] + ',' + c1[2] + ',' + (0.13 * lift).toFixed(3) + ')');
@@ -6905,19 +6755,10 @@ Lord you are Holy, Holy, Holy</p>
       for (var j = 0; j < list.length; j++) {
         var pp = parts[list[j]], gg = rings[pp.ri];
         if (pp.x < -4 || pp.x > W + 4) continue;
-        var ddd = clamp01((disp - pp.d2 * 0.4) / 0.6);
-        ctx.globalAlpha = Math.min(1, pp.a * (SOLID ? 0.2 + 0.8 * pp.f : (0.45 + 0.55 * pp.f) * (pp.rv > 1 ? Math.max(0.15, 1.6 - 0.6 * pp.rv) : 1)) * (1 + 0.3 * gg.hov + 0.25 * gg.pulse)) * fade * (1 - 0.85 * gg.burst) * (1 - 0.8 * ddd) * clamp01(arr * 4);   // unseen until the section starts to rise
-        var zs = pp.sz * gg.szK * (SOLID ? 0.5 + 0.75 * pp.f : 0.65 + 0.5 * pp.f);
+        ctx.globalAlpha = Math.min(1, pp.a * (0.45 + 0.55 * pp.f) * (pp.rv > 1 ? Math.max(0.15, 1.6 - 0.6 * pp.rv) : 1) * (1 + 0.3 * gg.hov + 0.25 * gg.pulse)) * fade * (1 - 0.85 * gg.burst) * clamp01(arr * 4);   // unseen until the section starts to rise
+        var zs = pp.sz * gg.szK * (0.65 + 0.5 * pp.f);
         ctx.fillRect(pp.x - zs / 2, pp.y - zs / 2, zs, zs);
       }
-    }
-    /* 2 · a soft highlight where the light meets the ball */
-    if (SOLID && ga > 0.01) for (var hr = 0; hr < rings.length; hr++) {
-      var Hh = rings[hr]; if (Hh.x < -Hh.R * 1.3 || Hh.x > W + Hh.R * 1.3) continue;
-      var hx = Hh.x - Hh.R * 0.36, hy = Hh.y - Hh.R * 0.42, hR = Hh.R * 0.6;
-      var hg = ctx.createRadialGradient(hx, hy, 0, hx, hy, hR);
-      hg.addColorStop(0, 'rgba(255,252,246,0.34)'); hg.addColorStop(1, 'rgba(255,252,246,0)');
-      ctx.globalAlpha = ga * (1 - 0.9 * Hh.burst); ctx.fillStyle = hg; ctx.fillRect(hx - hR, hy - hR, hR * 2, hR * 2);
     }
     ctx.globalAlpha = 1;
   }
@@ -6925,11 +6766,9 @@ Lord you are Holy, Holy, Holy</p>
 
   if ('IntersectionObserver' in window) {
     new IntersectionObserver(function (es) {
-      var was = visible;
       visible = es[0].isIntersecting;
       // arriving from the dove above: the dust falls down the white page and
       // settles into each project's shape (Emmanuel)
-      started = true;
     }, { root: scroller, threshold: 0.05 }).observe(sec);
   } else { visible = true; }
   window.addEventListener('resize', layout);
