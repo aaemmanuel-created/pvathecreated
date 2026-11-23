@@ -3539,7 +3539,7 @@ window.__tint = function (top, bot) {
 
 <!-- ============================================================
      PROJECT HALL (Emmanuel, 23 Nov) — after the password: four tiles
-     (Music, Film, Literature and conversations, Paintings) over the
+     (Music, Film, Conversations, Paintings) over the
      project's dust spread out like stars, then the names of those in it
      ============================================================ -->
 <section id="view-project-hall" class="view project-view">
@@ -3554,7 +3554,7 @@ window.__tint = function (top, bot) {
       <ul class="hall-stack" id="hall-stack" aria-label="Parts of this project">
         <li class="hall-tile is-cur"><span class="hall-label">Music</span></li>
         <li class="hall-tile is-next"><span class="hall-label">Film</span></li>
-        <li class="hall-tile is-far-d"><span class="hall-label">Literature and conversations</span></li>
+        <li class="hall-tile is-far-d"><span class="hall-label">Conversations</span></li>
         <li class="hall-tile is-prev"><span class="hall-label">Paintings</span></li>
       </ul>
     </div>
@@ -5871,8 +5871,8 @@ Lord you are Holy, Holy, Holy</p>
       if (busy) return;
       busy = true;
       var he = heroEnd(), left = Math.max(1, he - scroller.scrollTop);
-      var d1 = Math.max(1700, 2400 * (left / Math.max(1, he)));   /* slower (Emmanuel, 23 Nov: 'smoother and slower, like the way back'): about 2.4 s for the whole flight, never under the way back's 1.7 s */
-      v0 = Math.max(v0 || 0, 0.7 * left / d1);             /* it sets off at once (no dead start), or at the finger's speed if that was quicker */
+      var d1 = Math.max(2000, 2800 * (left / Math.max(1, he)));   /* slower (Emmanuel, 23 Nov: 'smoother and slower, like the way back'): about 2.4 s for the whole flight, never under the way back's 1.7 s */
+      v0 = Math.max(v0 || 0, 0.35 * left / d1);             /* it sets off at once (no dead start), or at the finger's speed if that was quicker */
       window.__dvTrip = 1;                                  /* the dove, colours and dust keep up with the move (see the dove's frame) */
       var gone = false;
       function on() {                                       // 3 · into the projects, carrying whatever speed it has
@@ -5880,12 +5880,12 @@ Lord you are Holy, Holy, Holy</p>
         seedsEl.classList.remove('dv-wait');               /* the title and bars fade in as the house gathers */
         if (!fell && !window.__dvFellTrip && window.__dvFall) { fell = true; window.__dvFall(); }   /* only if the dove's hand-over didn't start it */
         var st = seedsTop(), rest = Math.max(1, st - scroller.scrollTop);
-        run(st, 1300, function () { finish(true); }, Math.max(curV, 1.0 * rest / 1300));
+        run(st, 2200, function () { finish(true); }, Math.min(curV, 0.6 * rest / 2200));   /* slow and smooth, like the way back (Emmanuel, 23 Nov): eases off from rest, the colours drain as it goes */
       }
       var fell = false; window.__dvGone = 0; window.__dvFellTrip = 0;
       function sheet() {
         var dd = window.__dvDust || 0;
-        return (window.__dvNight ? window.__dvGone && dd >= 0.8 : dd >= 0.7) && scroller.scrollTop > he * 0.9;   /* on black: once the dove's dust has been handed over */
+        return (window.__dvNight ? !!window.__dvGone : dd >= 0.7) && scroller.scrollTop > he * 0.9;   /* on black: as soon as the bird has fully gone; the colours drain upward as the page moves on */
       }   /* the white sheet is most of the way down */
       run(he, d1, function (early) {                        // 1 · through the dove: it grows, breaks, the colours fall
         if (early) return on();
@@ -6057,7 +6057,7 @@ Lord you are Holy, Holy, Holy</p>
       /* TRIAL (Emmanuel, 23 Nov: 'let the bleed happen in reverse … the red and purple leak upwards'): on black the
          bleed's front climbs instead of falling, in the same streaks, so the colours drain up and off the top of the
          screen and leave black behind them; swiping back, they leak back down */
-      '  float edge = 0.6 + b*mix(-1.25, 1.42, uNight) + (streak - 0.5)*(0.5 + 0.3*b*uNight) + (sway - 0.5)*0.28;',   /* the bleed reaches low from the start, then falls */
+      '  float edge = 0.6 + b*mix(-1.25, 1.12, uNight) + (streak - 0.5)*(0.5 + 0.3*b*uNight) + (sway - 0.5)*0.28;',   /* on black the climb is spread over the whole move, so the colours drain gradually (23 Nov) */   /* the bleed reaches low from the start, then falls */
       '  float curtain = smoothstep(edge - 0.34, edge + 0.04, uv.y);',
       /* a thermal feel at rest (Emmanuel, 21 Nov): slow, soft hot patches drift through
          the bleed, so purple blends into red and, at the hottest spots near the top, white */
@@ -6819,7 +6819,7 @@ Lord you are Holy, Holy, Holy</p>
   var phase = Math.PI / 2, beats = 0, prevC = 0, glowAuto = 0, autoA = 0;
   var edgeN = 0, edgePx = new Uint8Array(4), edgeT = null, edgeB = null, PAPER = window.__dvNight ? [0, 0, 0] : [255, 255, 255], barT = [90, 47, 154], barB = [0, 0, 0];
   function edgeHex(q) { function h(v) { v = Math.min(255, Math.round(v / 3) * 3); return (v < 16 ? '0' : '') + v.toString(16); } return '#' + h(q[0]) + h(q[1]) + h(q[2]); }
-  var riseS = 0, wipeS = 0, bleedT = 0, bleedRate = 0, restA = 0, restT = 0, appS = 0, bSlow = 0, dustS = 0, ps = 0, pPrev = 0, velS = 0, freqS = 0.3, last = performance.now(), clock = 0;
+  var bHoldV = null, riseS = 0, wipeS = 0, bleedT = 0, bleedRate = 0, restA = 0, restT = 0, appS = 0, bSlow = 0, dustS = 0, ps = 0, pPrev = 0, velS = 0, freqS = 0.3, last = performance.now(), clock = 0;
   var tmp = new THREE.Vector3();
   var heroVisible = true;
   if ('IntersectionObserver' in window) {
@@ -6837,7 +6837,7 @@ Lord you are Holy, Holy, Holy</p>
        dust keep up with it, so the growth is seen before the white sheet arrives; at rest and under the finger they
        keep their slow, unhurried pace */
     var trip = window.__dvTrip ? 1 : 0;
-    ps += (p - ps) * (1 - Math.exp(-dt * (trip ? 3.0 : 2.4)));
+    ps += (p - ps) * (1 - Math.exp(-dt * 2.4));   /* the same pace as the way back */
     var vel = Math.abs(p - pPrev) / dt; pPrev = p;
     velS += (Math.min(vel, 2.5) - velS) * (1 - Math.exp(-dt * 5));
 
@@ -6874,7 +6874,7 @@ Lord you are Holy, Holy, Holy</p>
     // 0.4 s; scroll back up and it lifts away just as fast.
     /* on black, during the move, the dark closes over the dove in step with its breaking up (none left by the time it
        is dust), then fully once its dust is handed to the house — no ghost of the bird remains (Emmanuel, 23 Nov) */
-    var wOn = window.__dvNight ? (window.__dvGone || (!window.__dvTrip && ps > 0.8 && dustS > 0.38) ? 1 : window.__dvTrip ? 0 : 0)   /* the dark waits: the bird is seen breaking up completely first */ : (ps > 0.8 && dustS > 0.38 ? 1 : 0);
+    var wOn = window.__dvNight ? ((!window.__dvTrip && ps > 0.8 && dustS > 0.38) ? 1 : window.__dvTrip ? 0 : 0)   /* the dark waits: the bird is seen breaking up completely first */ : (ps > 0.8 && dustS > 0.38 ? 1 : 0);
     wipeS += (wOn - wipeS) * (1 - Math.exp(-dt * (window.__dvGone ? 6.0 : window.__dvNight ? 4.5 : 8)));
     var w = wipeS > 0.995 ? 1 : wipeS;
     if (window.__dvNight) whiteEl.style.opacity = smooth(0.55, 1.0, w).toFixed(3);   /* trial: by now the colours have drained upward; this only closes the last of the dove's light */
@@ -6891,12 +6891,16 @@ Lord you are Holy, Holy, Holy</p>
     bleedRate += ((ps > 0.006 ? 1 : 0) - bleedRate) * (1 - Math.exp(-dt * 1.6));
     if (!reduce) bleedT += dt * bleedRate;
     bgMat.uniforms.uBT.value = bleedT;
-    bSlow += (b - bSlow) * (1 - Math.exp(-dt * (trip ? 2.0 : 1.5)));   // the bleed eases after the swipe, slowly (Emmanuel)
+    /* the colours hold still while the bird breaks up, and only start to drain once it is fully gone and the dust
+       begins to fall (Emmanuel, 23 Nov) */
+    /* (a hold until the bird had gone was tried and dropped: Emmanuel, 23 Nov — 'let them happen at the same time,
+       but it needs to feel smoother'; the colours and the break-up now move together, at the way back's pace) */
+    bSlow += (b - bSlow) * (1 - Math.exp(-dt * (trip ? 1.1 : 1.5)));   // the bleed eases after the swipe, slowly (Emmanuel)
     bgMat.uniforms.uB.value = bSlow;
     bgMat.uniforms.uPulse.value = pulse;
     if (ptMat) ptMat.uniforms.uT.value = reduce ? 0 : clock;
 
-    dustS += (smooth(0.34, 0.95, ps) - dustS) * (1 - Math.exp(-dt * ((trip ? 1.0 : 1.5) + 0.5 * smooth(0.8, 1.0, ps))));   /* on the way down the dove breaks up slowly and fully (Emmanuel, 23 Nov: 'slower but still fully') */   // unhurried, so the dove's rise can be watched   // the dust lets go slowly, over a few seconds (Emmanuel)
+    dustS += (smooth(0.34, 0.95, ps) - dustS) * (1 - Math.exp(-dt * ((trip ? 0.85 : 1.5) + 0.45 * smooth(0.8, 1.0, ps))));   /* on the way down the dove breaks up slowly and fully (Emmanuel, 23 Nov: 'slower but still fully') */   // unhurried, so the dove's rise can be watched   // the dust lets go slowly, over a few seconds (Emmanuel)
     if (window.__dvRiseGo) { window.__dvRiseGo = 0; riseS = 1; }
     if (riseS > 0) {
       dustS = 0;                                       /* nothing left hanging from the way down */
@@ -6943,18 +6947,11 @@ Lord you are Holy, Holy, Holy</p>
     if (w < 0.999) {
       renderer.render(scene, camera);
       if (grabNow) {
-        try {
-          var gl0 = renderer.getContext(), BW = gl0.drawingBufferWidth, BH = gl0.drawingBufferHeight, px = new Uint8Array(BW * BH * 4);
-          gl0.readPixels(0, 0, BW, BH, gl0.RGBA, gl0.UNSIGNED_BYTE, px);
-          var cw = canvas.clientWidth || window.innerWidth, ch = canvas.clientHeight || window.innerHeight, pts = [], st2 = 2;
-          for (var yy0 = 0; yy0 < BH; yy0 += st2) for (var xx0 = 0; xx0 < BW; xx0 += st2) {
-            var o = (yy0 * BW + xx0) * 4, r0 = px[o], g0 = px[o + 1], b0 = px[o + 2], mn = Math.min(r0, g0, b0), mx = Math.max(r0, g0, b0);
-            if (mn > 95 && mx - mn < 120) pts.push(xx0 * cw / BW, (BH - 1 - yy0) * ch / BH);
-          }
-          window.__dvPtsReal = pts.length >= 800;
-          if (pts.length < 800) { for (var k9 = 0; k9 < 2000; k9++) { var a9 = Math.random() * 6.2832, r9 = Math.sqrt(Math.random()); pts.push(cw * (0.5 + 0.3 * r9 * Math.cos(a9)), ch * (0.4 + 0.2 * r9 * Math.sin(a9))); } }   /* the bird has fully gone: the dust is taken from where it was */
-          window.__dvPts = pts;
-        } catch (eG) { window.__dvPts = null; }
+        /* the bird is fully gone by now, so nothing is read from the screen (a full read stalled phones for ~0.4 s);
+           the dust is taken across where the bird was */
+        var cw = canvas.clientWidth || window.innerWidth, ch = canvas.clientHeight || window.innerHeight, pts = [];
+        for (var k9 = 0; k9 < 2000; k9++) { var a9 = Math.random() * 6.2832, r9 = Math.sqrt(Math.random()); pts.push(cw * (0.5 + 0.3 * r9 * Math.cos(a9)), ch * (0.4 + 0.2 * r9 * Math.sin(a9))); }
+        window.__dvPts = pts; window.__dvPtsReal = false;
         if (window.__dvFall) window.__dvFall();
       }
       if (!canvas.classList.contains('drawn')) canvas.classList.add('drawn');   /* shown only once it has a picture: no black flash on load */
@@ -7599,7 +7596,7 @@ Lord you are Holy, Holy, Holy</p>
       var q = P[i], tx, ty, al = q.a, z = q.sz, rate = 3.4;
       if (stars && G) {   /* on the project hall: a ball on the left, a trail to the tile in front, and its border */
         var f = i / P.length;
-        if (f < 0.7) {   /* the ball, turning slowly */
+        if (true) {   /* the ball, turning slowly — all the dots now: the trail into the tiles was removed (Emmanuel, 23 Nov) */
           var ca = Math.cos(t * 0.3), sa = Math.sin(t * 0.3);
           var bx = q.bx * ca - q.bz * sa, bz = q.bx * sa + q.bz * ca;
           var lump = 1 + 0.08 * Math.sin(3 * Math.atan2(q.by, bx) + t * 0.4 + q.ph);
