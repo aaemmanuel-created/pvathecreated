@@ -3177,8 +3177,8 @@
   .dv-pass-err { font-size: 11px; }
   .dv-pass { padding: 0 24px; }
   .dv-pass input { font-size: 16px; }   /* 16: iPhones don't zoom into it */
-  .dv-name { font-size: 16px; }
-  @media (min-width: 1000px) { .dv-name { font-size: 20px; } }
+  .dv-name { font-size: 20px; text-wrap: balance; max-width: calc(100vw - 48px); }   /* bigger (Emmanuel, 23 Nov): 16 → 20 on phones, 20 → 24 on wide screens; a long title takes two balanced lines */
+  @media (min-width: 1000px) { .dv-name { font-size: 24px; } }
   .dv-pager { gap: 16px; bottom: calc(16px + env(safe-area-inset-bottom)); }
   .dv-dot { width: 36px; }                              /* a wider target; the bar drawn stays 18px */
   .dv-dot::after { left: 9px; right: 9px; }
