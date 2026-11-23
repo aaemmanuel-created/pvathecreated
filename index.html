@@ -2991,7 +2991,7 @@
     transition: opacity 1.1s cubic-bezier(.22,1,.36,1), filter 1.1s cubic-bezier(.22,1,.36,1), transform 1.1s cubic-bezier(.22,1,.36,1);   /* slower (Emmanuel, 22 Nov) */
     transition-delay: 0s; will-change: opacity, filter; }
   .dv-in .dv-w { opacity: 1; filter: blur(0); transform: none; transition-delay: var(--d, 0s); }
-  .dv-w.dv-ws { transition-duration: 1.9s, 1.9s, 1.9s; }   /* the line under the title reveals more slowly (Emmanuel, 22 Nov) */
+  .dv-w.dv-ws { transition-duration: 1.35s, 1.35s, 1.35s; }   /* a little quicker (Emmanuel, 23 Nov; was 1.9s) */   /* the line under the title reveals more slowly (Emmanuel, 22 Nov) */
   /* 'Yahweh' shimmers in many colours (Emmanuel, 22 Nov): a slow band of colours travels through the letters */
   .dv-yah { font-weight: inherit; color: #5a2390;   /* not bold: thin like the rest of the line */
     background: linear-gradient(100deg, #5a2390 0%, #9c1b22 14%, #c8862a 28%, #2a8a6e 42%, #2f5fb8 56%, #8a3fc0 70%, #d23c6a 84%, #5a2390 100%);
@@ -3024,6 +3024,65 @@
   .dv-seed:focus-visible .dv-ring { outline: 1.5px solid rgba(26,22,18,0.45); outline-offset: 6px; }
   .dv-seed.dv-peek { cursor: w-resize; } .dv-seed.dv-peek-r { cursor: e-resize; }   /* over a faint neighbour house: a click moves to it */
 
+  /* the password pill on the houses (23 Nov). Glass, after DESIGN-GUIDELINES §6.1 and §6.2: real glass
+     bends what is behind it (an SVG displacement in the backdrop, a small blur), its top edge catches the
+     light, a thin light travels round its border ("light, not shape"), and the glass materialises as it
+     appears. No button: Return / Go enters it. */
+  @property --dvA { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+  .dv-pass { position: absolute; z-index: 5; left: 50%; bottom: calc(96px + env(safe-area-inset-bottom)); width: min(280px, calc(100vw - 56px)); height: 54px; margin: 0;
+    display: flex; align-items: center; justify-content: center; padding: 0 26px; border-radius: 999px; isolation: isolate;
+    background: linear-gradient(180deg, rgba(255,255,255,0.34) 0%, rgba(255,255,255,0.10) 48%, rgba(255,255,255,0.22) 100%);
+    -webkit-backdrop-filter: blur(0px) saturate(100%); backdrop-filter: blur(0px) saturate(100%);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.95),                                                     /* the lit top edge */
+      inset 0 -1px 0 rgba(255,255,255,0.5),
+      inset 0 -10px 18px -14px color-mix(in srgb, var(--pc, #1a1612) 18%, transparent),        /* the house's colour pooling at the foot */
+      0 0 0 0.5px rgba(26,22,18,0.08),
+      0 18px 36px -22px color-mix(in srgb, var(--pc, #1a1612) 45%, rgba(26,22,18,0.4));
+    /* it emerges from the background the way the line under the title does (Emmanuel, 23 Nov) */
+    opacity: 0; pointer-events: none; transform: translate(-50%, 0.4em); filter: blur(7px);
+    transition: opacity 1.35s cubic-bezier(.22,1,.36,1), transform 1.35s cubic-bezier(.22,1,.36,1), filter 1.35s cubic-bezier(.22,1,.36,1),
+                backdrop-filter 1.6s cubic-bezier(.22,1,.36,1), -webkit-backdrop-filter 1.6s cubic-bezier(.22,1,.36,1), box-shadow .5s ease; }
+  .dv-pass.on { opacity: 1; pointer-events: auto; transform: translate(-50%, 0); filter: none;
+    -webkit-backdrop-filter: blur(9px) saturate(185%) brightness(1.05); backdrop-filter: blur(9px) saturate(185%) brightness(1.05); }
+  @supports (backdrop-filter: url(#dv-glass)) {   /* browsers that can bend the backdrop: the dots behind warp like seen through a lens */
+    .dv-pass { backdrop-filter: url(#dv-glass) blur(0px) saturate(100%); }
+    .dv-pass.on { backdrop-filter: url(#dv-glass) blur(3px) saturate(185%) brightness(1.05); }
+  }
+  /* the light travelling round the border: a bright arc and a faint coloured one, opposite each other */
+  .dv-pass::before { content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1px; pointer-events: none; z-index: 1;
+    background: conic-gradient(from var(--dvA),
+      rgba(255,255,255,0) 0deg, rgba(255,255,255,0.95) 38deg, color-mix(in srgb, var(--pc, #1a1612) 55%, white) 62deg, rgba(255,255,255,0) 110deg,
+      rgba(255,255,255,0) 190deg, color-mix(in srgb, var(--pc, #1a1612) 35%, transparent) 235deg, rgba(255,255,255,0.6) 262deg, rgba(255,255,255,0) 300deg);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+    animation: dvPassLight 7s linear infinite; opacity: .85; transition: opacity .5s ease; }
+  /* a soft sheen lying on the glass, upper left */
+  .dv-pass::after { content: ""; position: absolute; inset: 1px; border-radius: inherit; pointer-events: none; z-index: -1;
+    background: radial-gradient(70% 120% at 22% -10%, rgba(255,255,255,0.8), rgba(255,255,255,0) 55%),
+                radial-gradient(40% 90% at 88% 120%, color-mix(in srgb, var(--pc, #1a1612) 12%, transparent), transparent 70%); }
+  @keyframes dvPassLight { to { --dvA: 360deg; } }
+  .dv-pass:focus-within::before { opacity: 1; animation-duration: 3.6s; }   /* typing: the light quickens */
+  .dv-pass:focus-within { box-shadow:
+      inset 0 1px 0 rgba(255,255,255,1), inset 0 -1px 0 rgba(255,255,255,0.55),
+      inset 0 -12px 20px -14px color-mix(in srgb, var(--pc, #1a1612) 30%, transparent), inset 0 10px 16px -14px rgba(255,255,255,0.95),
+      0 0 0 0.5px rgba(26,22,18,0.08), 0 0 0 3px color-mix(in srgb, var(--pc, #1a1612) 5%, transparent),
+      0 18px 36px -22px color-mix(in srgb, var(--pc, #1a1612) 55%, rgba(26,22,18,0.4)); }
+  .dv-pass input { position: relative; z-index: 2; width: 100%; border: 0; outline: 0; background: none; padding: 0; text-align: center;
+    font: 300 18px/1 'Helvetica Neue', Helvetica, Arial, sans-serif; letter-spacing: .32em; color: #1a1612; caret-color: var(--pc, #1a1612);
+    opacity: 0; filter: blur(5px); transition: opacity 1.35s cubic-bezier(.22,1,.36,1), filter 1.35s cubic-bezier(.22,1,.36,1); }
+  .dv-pass input::placeholder { color: rgba(26,22,18,0.62); letter-spacing: .34em; text-transform: uppercase; font: 300 11px/1 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+  .dv-pass.on input { opacity: 1; filter: none; transition-delay: .3s; }
+  .dv-pass-go { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); border: 0; }   /* Return / Go submits; kept for screen readers */
+  .dv-pass-err { position: absolute; left: 0; right: 0; top: calc(100% + 12px); margin: 0; text-align: center; font: 400 10px/1 'Helvetica Neue', Helvetica, Arial, sans-serif; letter-spacing: .24em; text-transform: uppercase; color: #9c1b22; opacity: 0; transition: opacity .3s ease; }
+  .dv-pass.bad .dv-pass-err { opacity: 1; }
+  .dv-seeds:has(.dv-pass.on) .dv-swipe { opacity: 0 !important; }   /* the swipe hint steps aside while the pill is open */
+  .dv-pass.bad::before { background: conic-gradient(from var(--dvA), rgba(156,27,34,0) 0deg, rgba(156,27,34,0.85) 60deg, rgba(156,27,34,0) 140deg, rgba(156,27,34,0) 200deg, rgba(156,27,34,0.5) 260deg, rgba(156,27,34,0) 320deg); }   /* wrong: the light turns crimson */
+  .dv-pass.shake { animation: dvShake .42s cubic-bezier(.36,.07,.19,.97); }
+  @keyframes dvShake { 10%,90% { transform: translate(calc(-50% - 1px), 0); } 20%,80% { transform: translate(calc(-50% + 3px), 0); } 30%,50%,70% { transform: translate(calc(-50% - 6px), 0); } 40%,60% { transform: translate(calc(-50% + 6px), 0); } }
+  @media (prefers-reduced-motion: reduce) { .dv-pass, .dv-pass input { transition: opacity .2s ease; filter: none !important; } .dv-pass { transform: translate(-50%, 0); } .dv-pass::before { animation: none; } .dv-pass.shake { animation: none; } }
+  @media (prefers-reduced-transparency: reduce) { .dv-pass, .dv-pass.on { background: #f6f5f2; -webkit-backdrop-filter: none; backdrop-filter: none; } }   /* solid glass when asked (§10.3) */
+
   /* Project hall (Emmanuel, 23 Nov) */
   #view-project-hall { background-color: #fff;   /* a fine grain over the white (Emmanuel, 23 Nov) */
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .1  0 0 0 0 .08  0 0 0 0 .07  0 0 0 .2 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E"); background-size: 180px 180px;
@@ -3031,7 +3090,7 @@
   #view-project-hall .hall-head { position: relative; z-index: 2; padding-top: calc(28px + env(safe-area-inset-top)); }
   #view-project-hall .back-btn { color: rgba(26,22,18,0.7); }
   .hall-in { position: relative; z-index: 1; width: 100%; box-sizing: border-box; min-width: 0; max-width: 760px; margin: 0 auto; padding: 4vh 20px calc(72px + env(safe-area-inset-bottom)); }
-  .hall-title { margin: 0 0 32px; text-align: center; font: 700 clamp(18px, 2.6vw, 24px)/1.4 'Courier Prime', 'Courier New', monospace; letter-spacing: 0.14em;   /* the movie-script font (Emmanuel, 23 Nov) */ text-transform: uppercase; color: rgba(26,22,18,0.82);
+  .hall-title { margin: 0 0 10px; text-align: center; font: 700 clamp(18px, 2.6vw, 24px)/1.4 'Courier Prime', 'Courier New', monospace; letter-spacing: 0.14em;   /* the movie-script font (Emmanuel, 23 Nov) */ text-transform: uppercase; color: rgba(26,22,18,0.82);
     opacity: 0; filter: blur(6px); transition: opacity 1.1s cubic-bezier(.22,1,.36,1), filter 1.1s cubic-bezier(.22,1,.36,1); }
   /* 23 Nov (Emmanuel): the project's dots as a ball on the left; the tiles stacked on the right,
      one in front; a trail of dots runs from the ball to that tile and draws its border.
@@ -3045,9 +3104,10 @@
     background: rgba(255,255,255,0.78);
     box-shadow: 0 1px 2px rgba(26,22,18,0.04), 0 14px 34px -16px rgba(26,22,18,0.18);
     display: flex; align-items: flex-end; padding: 16px;
-    transform: translateY(-50%) translateY(var(--ty, 0%)) scale(var(--sc, 1)); opacity: var(--op, 0); filter: blur(var(--bl, 0px));
-    transition: transform .75s cubic-bezier(.22,1,.36,1), opacity .75s cubic-bezier(.22,1,.36,1), filter .75s cubic-bezier(.22,1,.36,1);
+    transform: translateY(-50%) translateY(var(--ty, 0%)) translateY(var(--dy, 0px)) scale(var(--sc, 1)); opacity: var(--op, 0); filter: blur(var(--bl, 0px));
+    transition: transform .8s cubic-bezier(.34,1.18,.64,1), opacity .7s cubic-bezier(.22,1,.36,1), filter .7s cubic-bezier(.22,1,.36,1);   /* a soft spring with a touch of give */
     pointer-events: none; }
+  .hall-stack.dragging .hall-tile { transition: opacity .7s cubic-bezier(.22,1,.36,1), filter .7s cubic-bezier(.22,1,.36,1); }   /* follows the finger exactly while held */
   .hall-tile.is-cur  { --ty: 0%;   --sc: 1;   --op: 1;   --bl: 0px; z-index: 3; }
   .hall-tile.is-next { --ty: 38%;  --sc: .56; --op: .24; --bl: 1px; z-index: 2; pointer-events: auto; cursor: pointer; }
   .hall-tile.is-prev { --ty: -38%; --sc: .56; --op: .24; --bl: 1px; z-index: 2; pointer-events: auto; cursor: pointer; }
@@ -3060,6 +3120,9 @@
   .hall-tile::before { content: ""; position: absolute; inset: 0; background: radial-gradient(120% 90% at 85% 0%, var(--hc, rgba(90,35,144,0.10)), transparent 70%); pointer-events: none; }
   .hall-label { position: relative; font: 200 12px/1.45 'Helvetica Neue', Helvetica, Arial, sans-serif; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(26,22,18,0.82); }
   @media (min-width: 720px) { .hall-label { font-size: 15px; letter-spacing: 0.18em; } }
+  /* the project's thread tag (Grounding · Righteous · Lifted) under the title (Emmanuel, 23 Nov) */
+  .hall-tagline { margin: 0 0 26px; min-height: 14px; text-align: center; opacity: 0; transition: opacity 1.1s cubic-bezier(.22,1,.36,1) .35s; }
+  #view-project-hall.hall-on .hall-tagline { opacity: 1; }
   .hall-people { margin-top: 28px; text-align: center; }
   .hall-names { list-style: none; margin: 0 auto; padding: 0; max-width: 620px; display: flex; flex-wrap: wrap; justify-content: center; gap: 2px 20px;   /* side by side, each at its own width */
     font: 200 13px/1.9 'Helvetica Neue', Helvetica, Arial, sans-serif; color: rgba(26,22,18,0.8); }   /* smaller (Emmanuel, 23 Nov) */
@@ -3115,6 +3178,11 @@ window.__tint = function (top, bot) {
      plus the painting ripple filter (animated displacement map). -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
+    <!-- the glass of the password pill: a soft, slow warp of whatever lies behind it -->
+    <filter id="dv-glass" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.006 0.022" numOctaves="2" seed="11" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="7" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
     <clipPath id="lens-clip" clipPathUnits="objectBoundingBox">
       <path d="M 0,0.5 Q 0.5,0 1,0.5 Q 0.5,1 0,0.5 Z" />
     </clipPath>
@@ -3209,6 +3277,14 @@ window.__tint = function (top, bot) {
         <button class="dv-arrow" type="button" id="dv-next" aria-label="Next project">&#8250;</button>
       </div>
       <p class="dv-swipe" id="dv-swipe" aria-hidden="true">swipe</p>
+      <!-- the password pill (Emmanuel, 23 Nov): tapping a house asks for its password right here;
+           when it is right the house disperses and its dots gather again on the project page -->
+      <form class="dv-pass" id="dv-pass" autocomplete="off" aria-hidden="true">
+        <label class="dv-sr" for="dv-pass-in">Password</label>
+        <input id="dv-pass-in" type="password" placeholder="password" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="go" tabindex="-1">
+        <button type="submit" class="dv-pass-go" tabindex="-1">Enter</button>
+        <p class="dv-pass-err" id="dv-pass-err" aria-live="polite"></p>
+      </form>
       <p class="dv-count dv-sr" id="dv-count" aria-live="polite">01 / 05</p>
     </div>
 
@@ -3403,6 +3479,7 @@ window.__tint = function (top, bot) {
   </header>
   <div class="hall-in">
     <h1 class="hall-title" id="hall-title">Project</h1>
+    <p class="hall-tagline"><span class="project-tag" id="hall-tag" hidden></span></p>
     <div class="hall-stage">
       <div class="hall-ball" id="hall-ball" tabindex="0" role="slider" aria-label="Swipe up or down to move between the parts of this project" aria-valuemin="1" aria-valuemax="4" aria-valuenow="1" aria-valuetext="Music"></div>
       <ul class="hall-stack" id="hall-stack" aria-label="Parts of this project">
@@ -4797,6 +4874,12 @@ Lord you are Holy, Holy, Holy</p>
       sessionStorage.setItem(AUTH_KEY, JSON.stringify(Array.from(set)));
     } catch (_) {}
   }
+  /* the houses' own password pill (23 Nov): same check, same session unlock */
+  window.__tryPass = function (tab, val) {
+    var exp = PARTNER_PASSWORDS[tab];
+    if (exp && String(val || '').trim() === exp) { markTabAuthed(tab); return true; }
+    return false;
+  };
   window.__isTabAuthed = function (tab) { return getAuthedTabs().indexOf(tab) >= 0; };
   function isViewAuthed(viewId) {
     const authed = new Set(getAuthedTabs());
@@ -5636,10 +5719,14 @@ Lord you are Holy, Holy, Holy</p>
   (function () {
     var seedsEl = document.getElementById('dv-seeds');
     if (!seedsEl) return;
-    var busy = false, coolUntil = 0, below = false, touchY = null;
+    var busy = false, coolUntil = 0, below = false, touchY = null, pulling = false;
     function seedsTop() { return seedsEl.offsetTop; }
     function heroEnd() { return hero.offsetHeight - scroller.clientHeight; }
-    function ease(k) { return k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2; }
+    /* a critically damped spring (23 Nov, Emmanuel: 'the whole spring feel'): starts gently, settles softly, never overshoots */
+    var SPR = 1 - (1 + 7.4) * Math.exp(-7.4);
+    function ease(k) { return k >= 1 ? 1 : (1 - (1 + 7.4 * k) * Math.exp(-7.4 * k)) / SPR; }
+    /* Apple's rubber band: the page follows the finger with more and more resistance */
+    function rubber(x, d) { return (1 - 1 / (0.55 * x / d + 1)) * d; }
     function run(to, dur, done) {
       var from = scroller.scrollTop, t0 = performance.now();
       (function step(now) {
@@ -5648,7 +5735,9 @@ Lord you are Holy, Holy, Holy</p>
         if (k < 1) requestAnimationFrame(step); else done();
       })(t0);
     }
-    function finish(isBelow) { busy = false; below = isBelow; coolUntil = performance.now() + 450; }
+    function finish(isBelow) { busy = false; below = isBelow; coolUntil = performance.now() + 700; }
+    var NOEV = { preventDefault: function () {} };
+    function springBack(to) { busy = true; run(to, 520, function () { busy = false; }); }
     function goDown() {
       if (busy) return;
       busy = true;
@@ -5680,21 +5769,50 @@ Lord you are Holy, Holy, Holy</p>
         e.preventDefault(); goUp();
       }
     }
+    /* 23 Nov (Emmanuel: 'I don't want to swipe all over the page and go to the next section with
+       such ease'): a wheel or trackpad needs a deliberate push (the deltas add up past 120), and
+       after a trip it stays locked until the wheel has been still for a quarter of a second, so the
+       tail of a flick can't start another */
+    var wAcc = 0, wLast = 0, wLock = false;
     scroller.addEventListener('wheel', function (e) {
-      if (Math.abs(e.deltaY) < 3) { if (!off() && (busy || scroller.scrollTop < seedsTop() - 1)) e.preventDefault(); return; }
-      intent(e.deltaY > 0 ? 1 : -1, e);
+      if (off()) return;
+      var now = performance.now(), top = scroller.scrollTop, st = seedsTop();
+      if (now - wLast > 250) { wAcc = 0; wLock = false; }
+      wLast = now;
+      var dy = e.deltaY * (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? scroller.clientHeight : 1);
+      var gate = top < st - 1 || (top <= st + 1 && dy < 0);   /* on the dove, or at the top of the projects heading back */
+      if (!gate && !busy) { wAcc = 0; return; }
+      e.preventDefault();
+      if (busy || wLock || now < coolUntil) return;
+      wAcc += dy;
+      if (Math.abs(wAcc) > 120) { wLock = true; var d = wAcc > 0 ? 1 : -1; wAcc = 0; intent(d, NOEV); }
     }, { passive: false });
-    var touchX = null;
-    scroller.addEventListener('touchstart', function (e) { touchY = e.touches[0].clientY; touchX = e.touches[0].clientX; }, { passive: true });
+    var touchX = null, top0 = 0, lastY = 0, lastT = 0, vel = 0, pullDy = 0;
+    scroller.addEventListener('touchstart', function (e) {
+      touchY = e.touches[0].clientY; touchX = e.touches[0].clientX; top0 = scroller.scrollTop;
+      lastY = touchY; lastT = performance.now(); vel = 0; pullDy = 0; pulling = false;
+    }, { passive: true });
     scroller.addEventListener('touchmove', function (e) {
       if (off() || touchY === null) return;
-      var dy = touchY - e.touches[0].clientY, top = scroller.scrollTop, st = seedsTop();
-      if (top >= st - 1 && !busy && Math.abs(touchX - e.touches[0].clientX) > Math.abs(dy)) return;   /* a sideways swipe between projects: leave it to the slider */
-      if (busy || top < st - 1 || (top <= st + 1 && dy < 0)) {
+      var y = e.touches[0].clientY, dy = touchY - y, st = seedsTop();
+      if (!pulling && top0 >= st - 1 && !busy && Math.abs(touchX - e.touches[0].clientX) > Math.abs(dy)) return;   /* a sideways swipe between projects: leave it to the slider */
+      var now = performance.now();
+      if (now > lastT) { vel = vel * 0.6 + ((lastY - y) / (now - lastT)) * 0.4; lastY = y; lastT = now; }   /* px per ms, + = onward */
+      if (busy) { if (e.cancelable) e.preventDefault(); return; }
+      if (pulling || top0 < st - 1 || (top0 <= st + 1 && dy < 0)) {
         if (e.cancelable) e.preventDefault();
-        if (Math.abs(dy) > 26) { intent(dy > 0 ? 1 : -1, e); touchY = e.touches[0].clientY; }
+        pulling = true; pullDy = dy;
+        var H = scroller.clientHeight, rb = (dy > 0 ? 1 : -1) * rubber(Math.abs(dy), H * 0.9);
+        scroller.scrollTop = Math.max(0, top0 + rb * (top0 < st - 1 ? 1.4 : 0.8));   /* the dove moves with you, held back */
       }
     }, { passive: false });
+    scroller.addEventListener('touchend', function () {
+      if (!pulling) { touchY = null; return; }
+      pulling = false; touchY = null;
+      var H = scroller.clientHeight, d = pullDy, far = Math.abs(d) > Math.max(90, H * 0.14), flick = Math.abs(vel) > 0.55 && Math.abs(d) > 36 && (vel > 0) === (d > 0);
+      if ((far || flick) && performance.now() >= coolUntil) intent(d > 0 ? 1 : -1, NOEV);
+      if (!busy) springBack(top0);   /* not far enough: it springs back */
+    }, { passive: true });
     window.addEventListener('keydown', function (e) {
       if (off() || /INPUT|TEXTAREA/.test((e.target && e.target.tagName) || '')) return;
       var k = e.key;
@@ -5706,8 +5824,9 @@ Lord you are Holy, Holy, Holy</p>
     scroller.addEventListener('scroll', function () {
       if (busy || off()) return;
       var top = scroller.scrollTop, st = seedsTop();
+      if (pulling) return;
       if (top >= st - 1) below = true;
-      else if (below && top > 2) goUp();
+      else if (below && top > 2) { if (performance.now() < coolUntil) return; scroller.scrollTop = st; }   /* a fling stops at the top of the projects; a deliberate swipe back goes on */
       else if (top <= 2) below = false;
     }, { passive: true });
   })();
@@ -7024,7 +7143,7 @@ Lord you are Holy, Holy, Holy</p>
       el.textContent = '';
       words.forEach(function (w, i) {
         var sp = document.createElement('span'); sp.className = 'dv-w'; sp.setAttribute('aria-hidden', 'true');
-        sp.textContent = w; sp.style.setProperty('--d', (0.2 + n * 0.2 + (slow ? (n - nTitle) * 0.25 : 0)).toFixed(3) + 's'); n++;
+        sp.textContent = w; sp.style.setProperty('--d', (0.2 + n * 0.2 + (slow ? (n - nTitle) * 0.12 : 0)).toFixed(3) + 's'); n++;
         if (slow) sp.classList.add('dv-ws');
         if (/^yahweh\b/i.test(w)) sp.classList.add('dv-yah');
         el.appendChild(sp); if (i < words.length - 1) el.appendChild(document.createTextNode(' '));
@@ -7110,17 +7229,54 @@ Lord you are Holy, Holy, Holy</p>
       var way = e.target.closest ? e.target.closest('.dv-way') : null;
       var tab = way ? way.dataset.tab : btn.dataset.tab;
       if (btn.dataset.busy) return;
+      if (!(window.__isTabAuthed && window.__isTabAuthed(tab)) && window.__tryPass) { askPass(i, tab); return; }   /* the password first, right here */
+      disperse(i, tab);
+    });
+  });
+  /* the password pill */
+  var pass = document.getElementById('dv-pass'), passIn = document.getElementById('dv-pass-in'), passErr = document.getElementById('dv-pass-err'), passFor = null;
+  function askPass(i, tab) {
+    passFor = { i: i, tab: tab };
+    pass.style.setProperty('--pc', seeds[i].style.getPropertyValue('--pc') || '');
+    pass.classList.remove('bad'); passErr.textContent = ''; passIn.value = '';
+    pass.classList.add('on'); pass.setAttribute('aria-hidden', 'false');
+    passIn.tabIndex = 0;
+    try { passIn.focus({ preventScroll: true }); } catch (_) { passIn.focus(); }
+  }
+  function closePass() {
+    if (!pass.classList.contains('on')) return;
+    pass.classList.remove('on', 'bad'); pass.setAttribute('aria-hidden', 'true'); passFor = null;
+    passIn.tabIndex = -1; passIn.blur();
+  }
+  pass.addEventListener('submit', function (e) {
+    e.preventDefault(); if (!passFor) return;
+    var f = passFor;
+    if (window.__tryPass(f.tab, passIn.value)) {
+      passIn.blur(); closePass();
+      setTimeout(function () { disperse(f.i, f.tab); }, 260);   /* the pill fades, then the house disperses */
+    } else {
+      passErr.textContent = 'incorrect \u2014 try again';
+      pass.classList.remove('shake'); void pass.offsetWidth; pass.classList.add('shake', 'bad');
+      passIn.select();
+    }
+  });
+  pass.addEventListener('animationend', function () { pass.classList.remove('shake'); });
+  passIn.addEventListener('keydown', function (e) { if (e.key === 'Escape') { e.preventDefault(); closePass(); } });
+  track.addEventListener('scroll', function () { if (passFor && cur() !== passFor.i) closePass(); }, { passive: true });   /* moving to another house puts it away */
+  document.addEventListener('pointerdown', function (e) { if (passFor && !pass.contains(e.target) && !(e.target.closest && e.target.closest('.dv-seed'))) closePass(); });
+  function disperse(i, tab) {
+      var btn = seeds[i];
+      if (btn.dataset.busy) return;
       btn.dataset.busy = '1';
       var rg = rings[i];
-      if (rg && !reduceQ.matches) rg.doorT = 1;   /* zoom in while the dots come together */
+      if (rg && !reduceQ.matches) rg.doorT = 1;   /* the house disperses */
       setTimeout(function () {
         if (window.__dvMark) window.__dvMark.go(handoff(i), rg ? rg.pal : null);
         openSeed(tab);
         // the house is whole again by the time you come back
         setTimeout(function () { if (rg) { rg.doorT = 0; rg.door = 0; } delete btn.dataset.busy; }, 900);
       }, reduceQ.matches ? 0 : 950);
-    });
-  });
+  }
 })();
 </script>
 <!-- The small house (Emmanuel, 23 Nov): after a project is tapped its dust gathers in the
@@ -7170,13 +7326,13 @@ Lord you are Holy, Holy, Holy</p>
       var q = P[i], tx, ty, al = q.a, z = q.sz, rate = 3.4;
       if (stars && G) {   /* on the project hall: a ball on the left, a trail to the tile in front, and its border */
         var f = i / P.length;
-        if (f < 0.58) {   /* the ball, turning slowly */
+        if (f < 0.7) {   /* the ball, turning slowly */
           var ca = Math.cos(t * 0.3), sa = Math.sin(t * 0.3);
           var bx = q.bx * ca - q.bz * sa, bz = q.bx * sa + q.bz * ca;
           var lump = 1 + 0.08 * Math.sin(3 * Math.atan2(q.by, bx) + t * 0.4 + q.ph);
           tx = G.cx + bx * G.R * q.rv * lump; ty = G.cy + q.by * G.R * q.rv * lump;
           al = q.a * (0.45 + 0.55 * (bz + 1) / 2); z = q.sz * (0.85 + 0.35 * (bz + 1) / 2) * Math.max(1, Math.min(1.8, G.R / 60)); rate = 2.4;   /* bigger ball, bigger dots */
-        } else if (f < 0.78) {   /* the trail, flowing from the ball to the tile */
+        } else {   /* the trail, flowing from the ball to the tile */
           /* 23 Nov: three strands braided round each other, wide where they leave the ball and
              drawn together as they reach the tile, gathering speed on the way, like thread being spun */
           if (!reduce) q.u = (q.u + dt * (0.16 + 0.1 * q.sx) * (0.7 + 1.1 * q.u)) % 1;
@@ -7187,13 +7343,6 @@ Lord you are Holy, Holy, Holy</p>
           tx = px + G.nx * wv; ty = py + G.ny * wv;
           var near = (Math.cos(u * 10 - t * 1.8 + strand) + 1) / 2;   /* the strand on top is brighter */
           al = q.a * Math.min(1, u * 6, (1 - u) * 12) * (0.55 + 0.45 * near); z = q.sz * (0.8 + 0.4 * near); rate = 16;
-        } else {   /* the border, drawn outward from where the trail meets the tile */
-          var e = rrPoint(G.tx, G.ty, G.tw, G.th, G.tr, q.p);
-          var reach = Math.min(q.p, 1 - q.p) * 2;   /* 0 at the meeting point, 1 at the far side */
-          var shown = reach <= G.cover;
-          var jx = Math.sin(t * 1.3 + q.ph) * 0.8, jy = Math.cos(t * 1.1 + q.ph) * 0.8;
-          tx = shown ? e[0] + jx : G.ax; ty = shown ? e[1] + jy : G.ay;
-          al = shown ? q.a * 0.95 : 0; z = q.sz * 0.9; rate = shown ? 5 : 20;
         }
       } else if (stars) { al = 0; tx = q.x; ty = q.y; } else {
         tx = s0.x + q.hx * s0.R * 1.15 + Math.sin(t * 0.6 + q.ph) * 0.9; ty = s0.y + q.hy * s0.R * 1.15 + Math.cos(t * 0.5 + q.ph) * 0.9;
@@ -7206,16 +7355,12 @@ Lord you are Holy, Holy, Holy</p>
     ctx.globalAlpha = 1;
   }
   /* where the ball and the tile in front are on the screen now */
-  var coverT = 0, cover = 0, seenT = 0;
   function hallGeo(dt) {
     var be = document.getElementById('hall-ball'), te = document.querySelector('#view-project-hall .hall-tile.is-cur');
     if (!be || !te) return null;
     var br = be.getBoundingClientRect(), tr = te.getBoundingClientRect(); if (!br.width || !tr.width) return null;
-    if (window.__hallTileT !== seenT) { seenT = window.__hallTileT; cover = 0; }   /* a new tile: draw its border again */
-    var on2 = document.getElementById('view-project-hall').classList.contains('hall-on') && parseFloat(getComputedStyle(te).opacity) > 0.6;
-    cover = reduce ? 1 : on2 ? Math.min(1, cover + dt * 0.75) : 0;
     var o = 6, g = { cx: br.left + br.width / 2, cy: br.top + br.height / 2, R: br.width * 0.36,
-      tx: tr.left - o, ty: tr.top - o, tw: tr.width + 2 * o, th: tr.height + 2 * o, tr: 22 * (tr.width / te.offsetWidth) + o, cover: cover };
+      tx: tr.left - o, ty: tr.top - o, tw: tr.width + 2 * o, th: tr.height + 2 * o, tr: 22 * (tr.width / te.offsetWidth) + o };
     g.ax = g.tx; g.ay = g.ty + g.th / 2;   /* the trail meets the tile's left side, half way down */
     var dx = g.ax - g.cx, dy = g.ay - g.cy, dl = Math.sqrt(dx * dx + dy * dy) || 1;
     g.bx = g.cx + dx / dl * g.R * 0.9; g.by = g.cy + dy / dl * g.R * 0.9;
@@ -7223,32 +7368,13 @@ Lord you are Holy, Holy, Holy</p>
     g.mx = (g.bx + g.ax) / 2 + g.nx * dl * 0.12; g.my = (g.by + g.ay) / 2 + g.ny * dl * 0.12;   /* a gentle arc */
     return g;
   }
-  function rrPoint(x, y, w, h, r, s) {   /* a point on a rounded rectangle, s 0…1 from the left side's middle, going up and round */
-    r = Math.min(r, w / 2, h / 2);
-    var segs = [h / 2 - r, Math.PI * r / 2, w - 2 * r, Math.PI * r / 2, h - 2 * r, Math.PI * r / 2, w - 2 * r, Math.PI * r / 2, h / 2 - r];
-    var L = 0; for (var k = 0; k < 9; k++) L += segs[k];
-    var d = s * L;
-    for (k = 0; k < 9; k++) { if (d <= segs[k] || k === 8) break; d -= segs[k]; }
-    var f = segs[k] ? d / segs[k] : 0, a;
-    switch (k) {
-      case 0: return [x, y + h / 2 - d];
-      case 1: a = Math.PI + f * Math.PI / 2; return [x + r + Math.cos(a) * r, y + r + Math.sin(a) * r];
-      case 2: return [x + r + d, y];
-      case 3: a = 1.5 * Math.PI + f * Math.PI / 2; return [x + w - r + Math.cos(a) * r, y + r + Math.sin(a) * r];
-      case 4: return [x + w, y + r + d];
-      case 5: a = f * Math.PI / 2; return [x + w - r + Math.cos(a) * r, y + h - r + Math.sin(a) * r];
-      case 6: return [x + w - r - d, y + h];
-      case 7: a = Math.PI / 2 + f * Math.PI / 2; return [x + r + Math.cos(a) * r, y + h - r + Math.sin(a) * r];
-      default: return [x, y + h - r - d];
-    }
-  }
   function grow() {   /* the hall needs more dots than the small house: copies join from where the house was */
     var base = P.length; if (!base) return;
     for (var i = base; i < 1200; i++) { var o0 = P[i % base]; P.push({ hx: o0.hx, hy: o0.hy, sx: Math.random(), sy: Math.random(), x: o0.x + (Math.random() - 0.5) * 10, y: o0.y + (Math.random() - 0.5) * 10, d: Math.random() * 0.6, ph: Math.random() * 6.28, sz: 0.8 + Math.random() * 0.9, a: 0.55 + Math.random() * 0.45, c: i % 3 }); }
     for (i = 0; i < P.length; i++) {   /* a place in the ball, on the trail and on the border for each */
       var q = P[i], uz = Math.random() * 2 - 1, ph2 = Math.random() * 6.28, rxy = Math.sqrt(1 - uz * uz);
       q.bx = rxy * Math.cos(ph2); q.by = uz; q.bz = rxy * Math.sin(ph2); q.rv = Math.cbrt(Math.random());
-      q.u = Math.random(); q.p = (i * 0.618034) % 1;
+      q.u = Math.random();
     }
   }
   function show(from, p) {
@@ -7289,6 +7415,9 @@ Lord you are Holy, Holy, Holy</p>
   var hall = document.getElementById('view-project-hall'); if (!hall) return;
   var titleEl = document.getElementById('hall-title'), people = document.getElementById('hall-people'), list = document.getElementById('hall-names');
   /* the names come from each project's own page, so they stay in step with it */
+  /* the thread tag comes from the project's own page; only Grounding, Righteous or Lifted are shown */
+  var TAGS = { 'overseer': '#view-project-overseer .pg-header .project-tag', 'righthere': '#view-project-righthere .pg-header .project-tag' };
+  var tagEl = document.getElementById('hall-tag');
   var NAMES = { 'overseer': '#view-project-overseer .role-tabs .role-tab', 'renew-verse': '#view-project-renew .role-tab[data-role]' };
   window.__fillHall = function (tab) {
     var link = document.querySelector('.partner-tab-link[data-tab="' + tab + '"]');
@@ -7301,6 +7430,9 @@ Lord you are Holy, Holy, Holy</p>
     names.forEach(function (n, k) { var li = document.createElement('li'); li.textContent = n; li.style.setProperty('--d', (1.3 + k * 0.28).toFixed(2) + 's'); list.appendChild(li); });
     hallGo(0, true);
     people.hidden = !names.length;
+    var src = TAGS[tab] && document.querySelector(TAGS[tab]), th = src && /thread-(grounding|righteous|lifted)/.exec(src.className);
+    tagEl.className = 'project-tag' + (th ? ' thread-' + th[1] : '');
+    tagEl.textContent = th ? src.textContent.trim() : ''; tagEl.hidden = !th;
     var key = /^housepva/.test(tab) ? 'house-pva' : tab, pal = window.__dvPal && window.__dvPal(key);
     if (pal) {
       hall.style.setProperty('--hc', 'rgba(' + pal[1].join(',') + ',0.13)');
@@ -7319,22 +7451,43 @@ Lord you are Holy, Holy, Holy</p>
     });
     var label = tiles[cur].textContent.trim();
     ball.setAttribute('aria-valuenow', String(cur + 1)); ball.setAttribute('aria-valuetext', label);
-    if (!quiet) window.__hallTileT = performance.now();
   }
   window.__hallStep = function (dir) { var now = performance.now(); if (now - lastStep < 420) return; lastStep = now; hallGo(cur + dir); };
   /* swipe up or down on the ball (or on the tiles) */
+  /* 23 Nov (feel): the tiles follow the finger with resistance and only move on if the pull was
+     far enough or quick; otherwise they spring back. A wheel needs a firm push and a pause between steps. */
+  function rubber(x, d) { return (1 - 1 / (0.55 * x / d + 1)) * d; }
+  var drag = null;
+  function dragStart(y) { drag = { y0: y, ly: y, lt: performance.now(), v: 0, dy: 0 }; stack.classList.add('dragging'); }
+  function dragMove(y) {
+    if (!drag) return;
+    var now = performance.now(); if (now > drag.lt) { drag.v = drag.v * 0.6 + ((drag.ly - y) / (now - drag.lt)) * 0.4; drag.ly = y; drag.lt = now; }
+    drag.dy = drag.y0 - y;
+    stack.style.setProperty('--dy', (-(drag.dy > 0 ? 1 : -1) * rubber(Math.abs(drag.dy), 260)).toFixed(1) + 'px');
+  }
+  function dragEnd() {
+    if (!drag) return;
+    var d = drag.dy, go = Math.abs(d) > 64 || (Math.abs(drag.v) > 0.5 && Math.abs(d) > 24 && (drag.v > 0) === (d > 0));
+    drag = null; stack.classList.remove('dragging'); stack.style.setProperty('--dy', '0px');
+    if (go) { lastStep = 0; window.__hallStep(d > 0 ? 1 : -1); }
+  }
   [ball, stack].forEach(function (el) {
-    var y0 = null;
-    el.addEventListener('touchstart', function (e) { y0 = e.touches[0].clientY; }, { passive: true });
-    el.addEventListener('touchmove', function (e) { if (y0 === null) return; var dy = y0 - e.touches[0].clientY; if (Math.abs(dy) > 34) { window.__hallStep(dy > 0 ? 1 : -1); y0 = null; } }, { passive: true });
-    el.addEventListener('touchend', function () { y0 = null; }, { passive: true });
-    var acc = 0, accT = 0;
-    el.addEventListener('wheel', function (e) { e.preventDefault(); var now = performance.now(); if (now - accT > 300) acc = 0; accT = now; acc += e.deltaY; if (Math.abs(acc) > 40) { window.__hallStep(acc > 0 ? 1 : -1); acc = 0; } }, { passive: false });
-    var my = null;   /* a mouse drag works like a swipe */
-    el.addEventListener('pointerdown', function (e) { if (e.pointerType === 'mouse') my = e.clientY; });
-    window.addEventListener('pointermove', function (e) { if (my === null) return; var dy = my - e.clientY; if (Math.abs(dy) > 34) { window.__hallStep(dy > 0 ? 1 : -1); my = e.clientY; } });
-    window.addEventListener('pointerup', function () { my = null; });
+    el.addEventListener('touchstart', function (e) { dragStart(e.touches[0].clientY); }, { passive: true });
+    el.addEventListener('touchmove', function (e) { dragMove(e.touches[0].clientY); }, { passive: true });
+    el.addEventListener('touchend', dragEnd, { passive: true });
+    el.addEventListener('touchcancel', dragEnd, { passive: true });
+    el.addEventListener('pointerdown', function (e) { if (e.pointerType === 'mouse') { e.preventDefault(); dragStart(e.clientY); } });
+    var acc = 0, accT = 0, lock = false;
+    el.addEventListener('wheel', function (e) {
+      e.preventDefault(); var now = performance.now();
+      if (now - accT > 250) { acc = 0; lock = false; } accT = now;
+      if (lock) return;
+      acc += e.deltaY * (e.deltaMode === 1 ? 16 : 1);
+      if (Math.abs(acc) > 90) { lock = true; window.__hallStep(acc > 0 ? 1 : -1); acc = 0; }
+    }, { passive: false });
   });
+  window.addEventListener('pointermove', function (e) { if (drag && e.pointerType === 'mouse') dragMove(e.clientY); });
+  window.addEventListener('pointerup', function (e) { if (drag && e.pointerType === 'mouse') dragEnd(); });
   tiles.forEach(function (el, k) { el.addEventListener('click', function () { if (el.classList.contains('is-next')) window.__hallStep(1); else if (el.classList.contains('is-prev')) window.__hallStep(-1); }); });
   ball.addEventListener('keydown', function (e) { if (e.key === 'ArrowDown' || e.key === 'ArrowRight') { e.preventDefault(); window.__hallStep(1); } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') { e.preventDefault(); window.__hallStep(-1); } });
   /* each time the hall opens, the title, tiles and names fade in again */
