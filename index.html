@@ -2995,7 +2995,7 @@
     transition: opacity 1.1s cubic-bezier(.22,1,.36,1), filter 1.1s cubic-bezier(.22,1,.36,1), transform 1.1s cubic-bezier(.22,1,.36,1);   /* slower (Emmanuel, 22 Nov) */
     transition-delay: 0s; will-change: opacity, filter; }
   .dv-in .dv-w { opacity: 1; filter: blur(0); transform: none; transition-delay: var(--d, 0s); }
-  .dv-w.dv-ws { transition-duration: 1.35s, 1.35s, 1.35s; }   /* a little quicker (Emmanuel, 23 Nov; was 1.9s) */   /* the line under the title reveals more slowly (Emmanuel, 22 Nov) */
+  .dv-w.dv-ws { transition-duration: .85s, .85s, .85s; }   /* quicker again (Emmanuel, 23 Nov; was 1.9s, then 1.35s) */   /* the line under the title reveals more slowly (Emmanuel, 22 Nov) */
   /* 'Yahweh' shimmers in many colours (Emmanuel, 22 Nov): a slow band of colours travels through the letters */
   .dv-yah { font-weight: inherit; color: #5a2390;   /* not bold: thin like the rest of the line */
     background: linear-gradient(100deg, #5a2390 0%, #9c1b22 14%, #c8862a 28%, #2a8a6e 42%, #2f5fb8 56%, #8a3fc0 70%, #d23c6a 84%, #5a2390 100%);
@@ -3017,8 +3017,8 @@
   .dv-arrow:disabled { opacity: .25; cursor: default; }
   @media (hover: none) { .dv-arrow { display: none; } }
   .dv-name {   /* the movie-script font, as on the project pages and the seed list (Emmanuel, 21 Nov) */
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;   /* thin, to match the lines beneath (Emmanuel, 22 Nov); was Courier Prime bold */
-    font-size: clamp(18px, 2.4vw, 24px); font-weight: 200; letter-spacing: 0.22em; text-transform: uppercase;
+    font-family: 'Courier Prime', 'Courier New', monospace;   /* the script font again (Emmanuel, 23 Nov; thin Helvetica from 22 Nov), as the project page title */
+    font-size: clamp(16px, 2vw, 20px); font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
     line-height: 1.45; text-align: center; color: rgba(26,22,18,0.78);
     transition: color .4s ease;
     padding: 0 4px;
@@ -3035,64 +3035,44 @@
   .dv-seed, .dv-way, .dv-dot, .dv-arrow, .hall-ball, .hall-tile, .back-btn { touch-action: manipulation; }
   .dv-seed:active .dv-name { opacity: .55; transition: opacity .08s ease; }   /* the title answers the touch at once */
 
-  /* the password pill on the houses (23 Nov). Glass, after DESIGN-GUIDELINES §6.1 and §6.2: real glass
-     bends what is behind it (an SVG displacement in the backdrop, a small blur), its top edge catches the
-     light, a thin light travels round its border ("light, not shape"), and the glass materialises as it
-     appears. No button: Return / Go enters it. */
-  @property --dvA { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
-  .dv-pass { position: absolute; z-index: 5; left: 50%; bottom: calc(96px + env(safe-area-inset-bottom)); width: min(280px, calc(100vw - 56px)); height: 54px; margin: 0;
-    display: flex; align-items: center; justify-content: center; padding: 0 26px; border-radius: 999px; isolation: isolate;
-    background: linear-gradient(180deg, rgba(255,255,255,0.34) 0%, rgba(255,255,255,0.10) 48%, rgba(255,255,255,0.22) 100%);
-    -webkit-backdrop-filter: blur(0px) saturate(100%); backdrop-filter: blur(0px) saturate(100%);
-    box-shadow:
-      inset 0 1px 0 rgba(255,255,255,0.95),                                                     /* the lit top edge */
-      inset 0 -1px 0 rgba(255,255,255,0.5),
-      inset 0 -10px 18px -14px color-mix(in srgb, var(--pc, #1a1612) 18%, transparent),        /* the house's colour pooling at the foot */
-      0 0 0 0.5px rgba(26,22,18,0.08),
-      0 18px 36px -22px color-mix(in srgb, var(--pc, #1a1612) 45%, rgba(26,22,18,0.4));
-    /* it emerges from the background the way the line under the title does (Emmanuel, 23 Nov) */
+  /* the password tab on the houses (23 Nov, Emmanuel: 'a square tab … let it fade out from the background
+     — right now it looks too 3D'). Flat: the page's own white, faintly frosted, a hairline in the house's
+     colour, no shadows or sheen; it comes out of the background the way the line under the title does.
+     Typing: the hairline firms up and a thin line of the house's colour grows from the middle along its
+     foot (DESIGN-GUIDELINES §8.1). No button: Return / Go enters it. */
+  .dv-pass { position: absolute; z-index: 5; left: 50%; bottom: calc(96px + env(safe-area-inset-bottom)); width: min(260px, calc(100vw - 64px)); height: 48px; margin: 0;
+    display: flex; align-items: center; justify-content: center; padding: 0 22px; border-radius: 6px;
+    background: rgba(255,255,255,0.6); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--pc, #1a1612) 18%, transparent);
     opacity: 0; pointer-events: none; transform: translate(-50%, 0.4em); filter: blur(7px);
-    transition: opacity 1.35s cubic-bezier(.22,1,.36,1), transform 1.35s cubic-bezier(.22,1,.36,1), filter 1.35s cubic-bezier(.22,1,.36,1),
-                backdrop-filter 1.6s cubic-bezier(.22,1,.36,1), -webkit-backdrop-filter 1.6s cubic-bezier(.22,1,.36,1), box-shadow .5s ease; }
-  .dv-pass.on { opacity: 1; pointer-events: auto; transform: translate(-50%, 0); filter: none;
-    -webkit-backdrop-filter: blur(9px) saturate(185%) brightness(1.05); backdrop-filter: blur(9px) saturate(185%) brightness(1.05); }
-  @supports (backdrop-filter: url(#dv-glass)) {   /* browsers that can bend the backdrop: the dots behind warp like seen through a lens */
-    .dv-pass { backdrop-filter: url(#dv-glass) blur(0px) saturate(100%); }
-    .dv-pass.on { backdrop-filter: url(#dv-glass) blur(3px) saturate(185%) brightness(1.05); }
-  }
-  /* the light travelling round the border: a bright arc and a faint coloured one, opposite each other */
-  .dv-pass::before { content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1px; pointer-events: none; z-index: 1;
-    background: conic-gradient(from var(--dvA),
-      rgba(255,255,255,0) 0deg, rgba(255,255,255,0.95) 38deg, color-mix(in srgb, var(--pc, #1a1612) 55%, white) 62deg, rgba(255,255,255,0) 110deg,
-      rgba(255,255,255,0) 190deg, color-mix(in srgb, var(--pc, #1a1612) 35%, transparent) 235deg, rgba(255,255,255,0.6) 262deg, rgba(255,255,255,0) 300deg);
-    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
-    mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
-    animation: dvPassLight 7s linear infinite; opacity: .85; transition: opacity .5s ease; }
-  /* a soft sheen lying on the glass, upper left */
-  .dv-pass::after { content: ""; position: absolute; inset: 1px; border-radius: inherit; pointer-events: none; z-index: -1;
-    background: radial-gradient(70% 120% at 22% -10%, rgba(255,255,255,0.8), rgba(255,255,255,0) 55%),
-                radial-gradient(40% 90% at 88% 120%, color-mix(in srgb, var(--pc, #1a1612) 12%, transparent), transparent 70%); }
-  @keyframes dvPassLight { to { --dvA: 360deg; } }
-  .dv-pass:focus-within::before { opacity: 1; animation-duration: 3.6s; }   /* typing: the light quickens */
-  .dv-pass:focus-within { box-shadow:
-      inset 0 1px 0 rgba(255,255,255,1), inset 0 -1px 0 rgba(255,255,255,0.55),
-      inset 0 -12px 20px -14px color-mix(in srgb, var(--pc, #1a1612) 30%, transparent), inset 0 10px 16px -14px rgba(255,255,255,0.95),
-      0 0 0 0.5px rgba(26,22,18,0.08), 0 0 0 3px color-mix(in srgb, var(--pc, #1a1612) 5%, transparent),
-      0 18px 36px -22px color-mix(in srgb, var(--pc, #1a1612) 55%, rgba(26,22,18,0.4)); }
-  .dv-pass input { position: relative; z-index: 2; width: 100%; border: 0; outline: 0; background: none; padding: 0; text-align: center;
+    transition: opacity .85s cubic-bezier(.22,1,.36,1), transform .85s cubic-bezier(.22,1,.36,1), filter .85s cubic-bezier(.22,1,.36,1), box-shadow .4s ease; }
+  .dv-pass.on { opacity: 1; pointer-events: auto; transform: translate(-50%, 0); filter: none; }
+  .dv-pass::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1.5px; border-radius: 0 0 6px 6px; background: var(--pc, #1a1612);
+    transform: scaleX(0); transform-origin: center; transition: transform .45s cubic-bezier(.22,1,.36,1); pointer-events: none; }
+  .dv-pass:focus-within { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--pc, #1a1612) 34%, transparent); }
+  .dv-pass:focus-within::after { transform: scaleX(1); }
+  .dv-pass input { position: relative; width: 100%; border: 0; outline: 0; background: none; padding: 0; text-align: center;
     font: 300 18px/1 'Helvetica Neue', Helvetica, Arial, sans-serif; letter-spacing: .32em; color: #1a1612; caret-color: var(--pc, #1a1612);
-    opacity: 0; filter: blur(5px); transition: opacity 1.35s cubic-bezier(.22,1,.36,1), filter 1.35s cubic-bezier(.22,1,.36,1); }
-  .dv-pass input::placeholder { color: rgba(26,22,18,0.62); letter-spacing: .34em; text-transform: uppercase; font: 300 11px/1 'Helvetica Neue', Helvetica, Arial, sans-serif; }
-  .dv-pass.on input { opacity: 1; filter: none; transition-delay: .3s; }
+    opacity: 0; filter: blur(5px); transition: opacity .85s cubic-bezier(.22,1,.36,1), filter .85s cubic-bezier(.22,1,.36,1); }
+  .dv-pass input { -webkit-text-security: disc; text-security: disc; }
+  /* the word 'password' is drawn beside the box, not on it, so Safari doesn't take it for a sign-up field */
+  .dv-pass-ph { position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%); text-align: center; pointer-events: none;
+    color: rgba(26,22,18,0.6); letter-spacing: .34em; text-transform: uppercase; font: 300 11px/1 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    opacity: 0; filter: blur(5px); transition: opacity .85s cubic-bezier(.22,1,.36,1), filter .85s cubic-bezier(.22,1,.36,1); }
+  .dv-pass.on .dv-pass-ph { opacity: 1; filter: none; transition-delay: .18s; }
+  .dv-pass.on:has(input:not(:placeholder-shown)) .dv-pass-ph { opacity: 0; transition: opacity .12s ease; transition-delay: 0s; }   /* dots, without iOS treating it as a new-account password ('Use Strong Password?') */
+  .dv-pass input::placeholder { color: rgba(26,22,18,0.6); letter-spacing: .34em; text-transform: uppercase; font: 300 11px/1 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+  .dv-pass.on input { opacity: 1; filter: none; transition-delay: .18s; }
   .dv-pass-go { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); border: 0; }   /* Return / Go submits; kept for screen readers */
   .dv-pass-err { position: absolute; left: 0; right: 0; top: calc(100% + 12px); margin: 0; text-align: center; font: 400 10px/1 'Helvetica Neue', Helvetica, Arial, sans-serif; letter-spacing: .24em; text-transform: uppercase; color: #9c1b22; opacity: 0; transition: opacity .3s ease; }
   .dv-pass.bad .dv-pass-err { opacity: 1; }
-  .dv-seeds:has(.dv-pass.on) .dv-swipe { opacity: 0 !important; }   /* the swipe hint steps aside while the pill is open */
-  .dv-pass.bad::before { background: conic-gradient(from var(--dvA), rgba(156,27,34,0) 0deg, rgba(156,27,34,0.85) 60deg, rgba(156,27,34,0) 140deg, rgba(156,27,34,0) 200deg, rgba(156,27,34,0.5) 260deg, rgba(156,27,34,0) 320deg); }   /* wrong: the light turns crimson */
+  .dv-seeds:has(.dv-pass.on) .dv-swipe { opacity: 0 !important; }   /* the swipe hint steps aside while the tab is open */
+  .dv-pass.bad { box-shadow: inset 0 0 0 1px rgba(156,27,34,0.45); }
+  .dv-pass.bad::after { background: #9c1b22; transform: scaleX(1); }
   .dv-pass.shake { animation: dvShake .42s cubic-bezier(.36,.07,.19,.97); }
   @keyframes dvShake { 10%,90% { transform: translate(calc(-50% - 1px), 0); } 20%,80% { transform: translate(calc(-50% + 3px), 0); } 30%,50%,70% { transform: translate(calc(-50% - 6px), 0); } 40%,60% { transform: translate(calc(-50% + 6px), 0); } }
-  @media (prefers-reduced-motion: reduce) { .dv-pass, .dv-pass input { transition: opacity .2s ease; filter: none !important; } .dv-pass { transform: translate(-50%, 0); } .dv-pass::before { animation: none; } .dv-pass.shake { animation: none; } }
-  @media (prefers-reduced-transparency: reduce) { .dv-pass, .dv-pass.on { background: #f6f5f2; -webkit-backdrop-filter: none; backdrop-filter: none; } }   /* solid glass when asked (§10.3) */
+  @media (prefers-reduced-motion: reduce) { .dv-pass, .dv-pass input { transition: opacity .2s ease; filter: none !important; } .dv-pass { transform: translate(-50%, 0); } .dv-pass.shake { animation: none; } }
+  @media (prefers-reduced-transparency: reduce) { .dv-pass { background: #fff; -webkit-backdrop-filter: none; backdrop-filter: none; } }
 
   /* Project hall (Emmanuel, 23 Nov) */
   #view-project-hall { background-color: #fff;   /* a fine grain over the white (Emmanuel, 23 Nov) */
@@ -3138,8 +3118,21 @@
   #hall-tag[hidden] { display: none; }   /* .project-tag sets display, which would override hidden */
   .hall-people { margin-top: 14px; text-align: center; }
   @media (min-width: 720px) { .hall-people { margin-top: 28px; } .hall-tagline { margin-bottom: 26px; } }
+  /* One screen, always (Emmanuel, 23 Nov: title, ball, tiles and names on one screen without swiping):
+     the page is a column the height of the screen; the stage takes whatever is left between the title and
+     the names, and the tile and ball are sized from that height (container units), so nothing scrolls on
+     any phone, with or without Safari's bars */
+  #view-project-hall { display: flex; flex-direction: column; overflow: hidden; }
+  #view-project-hall .hall-head { flex: none; padding-top: calc(16px + env(safe-area-inset-top)); padding-bottom: 4px; }
+  #view-project-hall .hall-in { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; padding: 0 20px calc(14px + env(safe-area-inset-bottom)); }
+  #view-project-hall .hall-title, #view-project-hall .hall-tagline, #view-project-hall .hall-people { flex: none; }
+  #view-project-hall .hall-stage { flex: 1 1 auto; min-height: 0; container-type: size; --tw: min(66vw, 44cqh); }
+  #view-project-hall .hall-stack { height: 100%; }
+  #view-project-hall .hall-ball { width: min(100%, 60cqh); }
+  #view-project-hall .hall-people { margin-top: 6px; }
+  @media (min-width: 720px) { #view-project-hall .hall-stage { --tw: min(30vw, 44cqh, 380px); } #view-project-hall .hall-people { margin-top: 18px; } }
   .hall-names { list-style: none; margin: 0 auto; padding: 0; max-width: 620px; display: flex; flex-wrap: wrap; justify-content: center; gap: 2px 20px;   /* side by side, each at its own width */
-    font: 200 13px/1.9 'Helvetica Neue', Helvetica, Arial, sans-serif; color: rgba(26,22,18,0.8); }   /* smaller (Emmanuel, 23 Nov) */
+    font: 400 13px/1.9 'Courier Prime', 'Courier New', monospace; letter-spacing: .02em; color: rgba(26,22,18,0.8); }   /* the script font (Emmanuel, 23 Nov) */
   .hall-names li { opacity: 0; filter: blur(6px); transform: translateY(6px); transition: opacity 1.3s cubic-bezier(.22,1,.36,1), filter 1.3s cubic-bezier(.22,1,.36,1), transform 1.3s cubic-bezier(.22,1,.36,1); }
   #view-project-hall.hall-on .hall-title { opacity: 1; filter: none; }
   #view-project-hall.hall-on .hall-names li { opacity: 1; filter: none; transform: none; transition-delay: var(--d, 1.4s); }   /* the names fade in one by one after the tile */
@@ -3192,11 +3185,6 @@ window.__tint = function (top, bot) {
      plus the painting ripple filter (animated displacement map). -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
-    <!-- the glass of the password pill: a soft, slow warp of whatever lies behind it -->
-    <filter id="dv-glass" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
-      <feTurbulence type="fractalNoise" baseFrequency="0.006 0.022" numOctaves="2" seed="11" result="n"/>
-      <feDisplacementMap in="SourceGraphic" in2="n" scale="7" xChannelSelector="R" yChannelSelector="G"/>
-    </filter>
     <clipPath id="lens-clip" clipPathUnits="objectBoundingBox">
       <path d="M 0,0.5 Q 0.5,0 1,0.5 Q 0.5,1 0,0.5 Z" />
     </clipPath>
@@ -3294,8 +3282,9 @@ window.__tint = function (top, bot) {
       <!-- the password pill (Emmanuel, 23 Nov): tapping a house asks for its password right here;
            when it is right the house disperses and its dots gather again on the project page -->
       <form class="dv-pass" id="dv-pass" autocomplete="off" aria-hidden="true">
-        <label class="dv-sr" for="dv-pass-in">Password</label>
-        <input id="dv-pass-in" type="password" placeholder="password" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="go" tabindex="-1">
+        <label class="dv-sr" for="dv-pass-in">Project key</label>
+        <span class="dv-pass-ph" aria-hidden="true">password</span>
+        <input id="dv-pass-in" name="dv-k" type="text" inputmode="text" placeholder=" " autocomplete="off" autocorrect="off" data-1p-ignore data-lpignore="true" autocapitalize="off" spellcheck="false" enterkeyhint="go" tabindex="-1">
         <button type="submit" class="dv-pass-go" tabindex="-1">Enter</button>
         <p class="dv-pass-err" id="dv-pass-err" aria-live="polite"></p>
       </form>
@@ -5815,7 +5804,7 @@ Lord you are Holy, Holy, Holy</p>
       e.preventDefault();
       if (busy || wLock || now < coolUntil) return;
       wAcc += dy;
-      if (Math.abs(wAcc) > 120) { wLock = true; var d = wAcc > 0 ? 1 : -1; wAcc = 0; intent(d, NOEV); }
+      if (Math.abs(wAcc) > 70) { wLock = true; var d = wAcc > 0 ? 1 : -1; wAcc = 0; intent(d, NOEV); }
     }, { passive: false });
     var touchX = null, top0 = 0, lastY = 0, lastT = 0, vel = 0, pullDy = 0;
     scroller.addEventListener('touchstart', function (e) {
@@ -5839,7 +5828,7 @@ Lord you are Holy, Holy, Holy</p>
     scroller.addEventListener('touchend', function () {
       if (!pulling) { touchY = null; return; }
       pulling = false; touchY = null;
-      var H = scroller.clientHeight, d = pullDy, far = Math.abs(d) > Math.max(90, H * 0.14), flick = Math.abs(vel) > 0.55 && Math.abs(d) > 36 && (vel > 0) === (d > 0);
+      var H = scroller.clientHeight, d = pullDy, far = Math.abs(d) > Math.max(48, H * 0.065), flick = Math.abs(vel) > 0.28 && Math.abs(d) > 18 && (vel > 0) === (d > 0);   /* easier (Emmanuel, 23 Nov: 'too hard'): a short, ordinary swipe is enough; a tiny nudge still springs back */
       if ((far || flick) && performance.now() >= coolUntil) intent(d > 0 ? 1 : -1, NOEV);
       if (!busy) springBack(top0);   /* not far enough: it springs back */
     }, { passive: true });
@@ -7164,7 +7153,7 @@ Lord you are Holy, Holy, Holy</p>
      and the Enter link as one sentence, about a tenth of a second per word */
   seeds.forEach(function (b) {
     var n = 0, nTitle = 0;
-    [b.querySelector('.dv-name'), b.querySelector('.dv-desc')].forEach(function (el) {
+    [b.querySelector('.dv-desc')].forEach(function (el) {   /* only the line under the title fades in; the title stays (Emmanuel, 23 Nov) */
       if (!el || !el.textContent.trim()) return;
       var slow = el.classList.contains('dv-desc');
       if (slow) nTitle = n;
@@ -7174,7 +7163,7 @@ Lord you are Holy, Holy, Holy</p>
       el.textContent = '';
       words.forEach(function (w, i) {
         var sp = document.createElement('span'); sp.className = 'dv-w'; sp.setAttribute('aria-hidden', 'true');
-        sp.textContent = w; sp.style.setProperty('--d', (0.2 + n * 0.2 + (slow ? (n - nTitle) * 0.12 : 0)).toFixed(3) + 's'); n++;
+        sp.textContent = w; sp.style.setProperty('--d', (0.2 + n * 0.2 + (slow ? (n - nTitle) * 0.02 : 0)).toFixed(3) + 's'); n++;
         if (slow) sp.classList.add('dv-ws');
         if (/^yahweh\b/i.test(w)) sp.classList.add('dv-yah');
         el.appendChild(sp); if (i < words.length - 1) el.appendChild(document.createTextNode(' '));
@@ -7272,6 +7261,7 @@ Lord you are Holy, Holy, Holy</p>
     passFor = { i: i, tab: tab };
     pass.style.setProperty('--pc', seeds[i].style.getPropertyValue('--pc') || '');
     pass.classList.remove('bad'); passErr.textContent = ''; passIn.value = '';
+    placePass(i);
     pass.classList.add('on'); pass.setAttribute('aria-hidden', 'false');
     passIn.tabIndex = 0;
     try { passIn.focus({ preventScroll: true }); } catch (_) { passIn.focus(); }
@@ -7294,12 +7284,21 @@ Lord you are Holy, Holy, Holy</p>
     }
   });
   pass.addEventListener('animationend', function () { pass.classList.remove('shake'); });
-  /* with the phone's keyboard up, the pill rises to sit just above it */
-  function liftPass() {
-    var vv = window.visualViewport; if (!vv) return;
-    var kb = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
-    pass.style.bottom = kb > 80 ? (kb + 18) + 'px' : '';
+  /* the tab sits just under the line beneath the title (Emmanuel, 23 Nov: 'closer to the subtext');
+     the box is a text field drawn as dots, so iOS doesn't offer 'Use Strong Password?' over it */
+  var passTop = null;
+  function placePass(i) {
+    var b = seeds[i], ln = b && (b.querySelector('.dv-desc:not(:empty)') || b.querySelector('.dv-ways') || b.querySelector('.dv-name'));
+    if (!ln) { passTop = null; pass.style.top = ''; pass.style.bottom = ''; return; }
+    var sr = sec.getBoundingClientRect(), lr = ln.getBoundingClientRect();
+    passTop = lr.bottom - sr.top + 22;
+    pass.style.bottom = 'auto'; pass.style.top = passTop + 'px';
+    liftPass();
   }
+  function liftPass() {   /* it stays under the line; iOS scrolls it into view above the keyboard by itself (moving it ourselves put it over the title) */
+    if (passTop !== null) pass.style.top = passTop + 'px';
+  }
+  window.addEventListener('resize', function () { if (passFor) placePass(passFor.i); });
   if (window.visualViewport) { visualViewport.addEventListener('resize', liftPass); visualViewport.addEventListener('scroll', liftPass); }
   passIn.addEventListener('blur', function () { setTimeout(liftPass, 300); });
   passIn.addEventListener('keydown', function (e) { if (e.key === 'Escape') { e.preventDefault(); closePass(); } });
