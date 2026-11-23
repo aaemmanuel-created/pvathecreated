@@ -5887,7 +5887,7 @@ Lord you are Holy, Holy, Holy</p>
       var fell = false; window.__dvGone = 0; window.__dvFellTrip = 0;
       function sheet() {
         var dd = window.__dvDust || 0;
-        return dd >= 0.7 && scroller.scrollTop > he * 0.9;
+        return (window.__dvNight ? window.__dvGone && dd >= 0.8 : dd >= 0.7) && scroller.scrollTop > he * 0.9;   /* on black: once the dove's dust has been handed over */
       }   /* the white sheet is most of the way down */
       run(he, d1, function (early) {                        // 1 · through the dove: it grows, breaks, the colours fall
         if (early) return on();
@@ -6504,11 +6504,11 @@ Lord you are Holy, Holy, Holy</p>
     transparent: true, depthTest: false, depthWrite: false,
     blending: THREE.NormalBlending,   // normal blending, so the points can darken on a light page
     uniforms: { uBg: bgMat.uniforms.uB, uVidA: { value: texA }, uVidB: { value: texB }, uVidMix: bgMat.uniforms.uVidMix, uFit: bgMat.uniforms.uVidFit,
-                uDust: { value: 0 }, uT: { value: 0 }, uDpr: bgMat.uniforms.uDpr, uOn: bgMat.uniforms.uVidOn, uZ: bgMat.uniforms.uZ, uCtr: bgMat.uniforms.uCtr, uRise: { value: 0 }, uBT: bgMat.uniforms.uBT, uAsp: { value: 1 }, uBH: { value: 0.2 } },
+                uDust: { value: 0 }, uFull: { value: window.__dvNight ? 1 : 0 }, uT: { value: 0 }, uDpr: bgMat.uniforms.uDpr, uOn: bgMat.uniforms.uVidOn, uZ: bgMat.uniforms.uZ, uCtr: bgMat.uniforms.uCtr, uRise: { value: 0 }, uBT: bgMat.uniforms.uBT, uAsp: { value: 1 }, uBH: { value: 0.2 } },
     vertexShader: [
       'precision highp float;',
       'attribute vec2 aUv; attribute float aR; attribute float aVis; attribute float aL;',
-      'uniform sampler2D uVidA, uVidB; uniform float uVidMix, uDust, uT, uDpr, uOn, uZ, uBg, uRise, uBT, uAsp, uBH; uniform vec2 uFit, uCtr;',
+      'uniform sampler2D uVidA, uVidB; uniform float uVidMix, uDust, uFull, uT, uDpr, uOn, uZ, uBg, uRise, uBT, uAsp, uBH; uniform vec2 uFit, uCtr;',
       'varying vec3 vCol; varying float vA;',
       NOISE_GLSL,
       'void main(){',
@@ -6523,7 +6523,7 @@ Lord you are Holy, Holy, Holy</p>
       '  float ds = clamp((uDust - aR*0.45)/0.55, 0.0, 1.0); ds = ds*ds;',
       /* the dove does not disintegrate fully (Emmanuel): only some parts come away, in
          soft patches; the rest holds its shape until the white takes it */
-      '  ds *= step(0.46, fbm(aUv*5.5 + 2.0) + (fract(aR*57.3) - 0.5)*0.4);',   /* about half the specks, in patches: clearly seen */
+      '  ds *= mix(step(0.46, fbm(aUv*5.5 + 2.0) + (fract(aR*57.3) - 0.5)*0.4), 1.0, uFull);',   /* about half the specks, in patches; on black every speck comes away: the bird breaks up fully (Emmanuel, 23 Nov) */
       /* the dust falls: down the screen and off the bottom, on into the projects (Emmanuel) */
       '  vec2 drift = vec2((fbm(aUv*5.0 + uT*0.05) - 0.5)*0.5 + (aUv.x - 0.5)*0.25, -(0.75 + 0.6*fbm(aUv*3.0 - uT*0.04)) - aR*0.35);',
       '  s += drift * ds * 1.15;',   /* far enough to reach the foot */
@@ -6548,7 +6548,7 @@ Lord you are Holy, Holy, Holy</p>
       '  bc = mix(bc, vec3(0.80, 0.68, 1.0), smoothstep(0.42, 0.82, bt + (bstreak - 0.5)*0.3));',
       '  bc *= 0.72 + 0.34*L;',
       '  vCol = mix(bc, vec3(0.43, 0.43, 0.45), smoothstep(0.72, 0.95, uBg));',   /* easing to a soft grey as the page turns white */
-      '  vA = vis * (0.85 + 0.15*L) * (1.0 - 0.35*ds) * mix(bfade, 1.0, smoothstep(0.72, 0.95, uBg));',   /* stays visible as it falls away */
+      '  vA = vis * (0.85 + 0.15*L) * (1.0 - 0.35*ds) * (1.0 - uFull*smoothstep(0.55, 1.0, ds)) * mix(bfade, 1.0, smoothstep(0.72, 0.95, uBg));',   /* on black each speck fades as it falls away, so nothing is left */   /* stays visible as it falls away */
       '}'].join('\n'),
     fragmentShader: [
       'precision highp float; varying vec3 vCol; varying float vA;',
@@ -6874,7 +6874,10 @@ Lord you are Holy, Holy, Holy</p>
     // The white is a sheet swiped quickly down the screen (Emmanuel, 21 Nov): once
     // you are near the end and the dove has begun to break, it comes down in about
     // 0.4 s; scroll back up and it lifts away just as fast.
-    wipeS += (((ps > 0.8 && dustS > 0.38) || window.__dvGone ? 1 : 0) - wipeS) * (1 - Math.exp(-dt * (window.__dvGone ? 4.5 : window.__dvNight ? 1.6 : 8)));
+    /* on black, during the move, the dark closes over the dove in step with its breaking up (none left by the time it
+       is dust), then fully once its dust is handed to the house — no ghost of the bird remains (Emmanuel, 23 Nov) */
+    var wOn = window.__dvNight ? (window.__dvGone || (!window.__dvTrip && ps > 0.8 && dustS > 0.38) ? 1 : window.__dvTrip ? 0 : 0)   /* the dark waits: the bird is seen breaking up completely first */ : (ps > 0.8 && dustS > 0.38 ? 1 : 0);
+    wipeS += (wOn - wipeS) * (1 - Math.exp(-dt * (window.__dvGone ? 6.0 : window.__dvNight ? 4.5 : 8)));
     var w = wipeS > 0.995 ? 1 : wipeS;
     if (window.__dvNight) whiteEl.style.opacity = smooth(0.55, 1.0, w).toFixed(3);   /* trial: by now the colours have drained upward; this only closes the last of the dove's light */
     else whiteEl.style.transform = 'translateY(' + (-(1 - w) * 101).toFixed(2) + '%)';
@@ -6895,7 +6898,7 @@ Lord you are Holy, Holy, Holy</p>
     bgMat.uniforms.uPulse.value = pulse;
     if (ptMat) ptMat.uniforms.uT.value = reduce ? 0 : clock;
 
-    dustS += (smooth(0.34, 0.95, ps) - dustS) * (1 - Math.exp(-dt * ((trip ? 1.4 : 1.5) + 0.6 * smooth(0.8, 1.0, ps))));   // unhurried, so the dove's rise can be watched   // the dust lets go slowly, over a few seconds (Emmanuel)
+    dustS += (smooth(0.34, 0.95, ps) - dustS) * (1 - Math.exp(-dt * ((trip ? 1.25 : 1.5) + 0.6 * smooth(0.8, 1.0, ps))));   /* on the way down the dove breaks up slowly and fully (Emmanuel, 23 Nov: 'slower but still fully') */   // unhurried, so the dove's rise can be watched   // the dust lets go slowly, over a few seconds (Emmanuel)
     if (window.__dvRiseGo) { window.__dvRiseGo = 0; riseS = 1; }
     if (riseS > 0) {
       dustS = 0;                                       /* nothing left hanging from the way down */
@@ -6938,7 +6941,7 @@ Lord you are Holy, Holy, Holy</p>
        house's dots, which take the dove's shape at once while the dove itself is closed off behind them; the bird
        stays as particles, then they leave it one by one for the house. */
     var grabNow = false;
-    if (window.__dvNight && window.__dvTrip && !window.__dvGone && dustS >= 0.42 && !reduce) { window.__dvGone = 1; grabNow = true; }
+    if (window.__dvNight && window.__dvTrip && !window.__dvGone && dustS >= 0.8 && !reduce)   /* by then every speck has fallen away and faded */ { window.__dvGone = 1; grabNow = true; }
     if (w < 0.999) {
       renderer.render(scene, camera);
       if (grabNow) {
@@ -6950,7 +6953,8 @@ Lord you are Holy, Holy, Holy</p>
             var o = (yy0 * BW + xx0) * 4, r0 = px[o], g0 = px[o + 1], b0 = px[o + 2], mn = Math.min(r0, g0, b0), mx = Math.max(r0, g0, b0);
             if (mn > 95 && mx - mn < 120) pts.push(xx0 * cw / BW, (BH - 1 - yy0) * ch / BH);
           }
-          window.__dvPts = pts.length > 400 ? pts : null;
+          if (pts.length < 800) { for (var k9 = 0; k9 < 2000; k9++) { var a9 = Math.random() * 6.2832, r9 = Math.sqrt(Math.random()); pts.push(cw * (0.5 + 0.3 * r9 * Math.cos(a9)), ch * (0.4 + 0.2 * r9 * Math.sin(a9))); } }   /* the bird has fully gone: the dust is taken from where it was */
+          window.__dvPts = pts;
         } catch (eG) { window.__dvPts = null; }
         if (window.__dvFall) window.__dvFall();
       }
@@ -7097,15 +7101,15 @@ Lord you are Holy, Holy, Holy</p>
     if (reduceQ.matches) return;
     var vh0 = window.innerHeight || H;
     var nt = window.__dvNight, P2 = nt && window.__dvPts, np = P2 ? P2.length / 2 : 0;   /* on black the dust leaves from the dove's own specks */
-    window.__dvFellTrip = 1;
-    for (var i = 0; i < parts.length; i++) { var q = parts[i]; if (np) { var pk = (Math.random() * np | 0) * 2; q.fx0 = P2[pk] + (Math.random() - 0.5) * 1.5; q.fs = P2[pk + 1] + (Math.random() - 0.5) * 1.5; q.fa = 0; continue; } q.fs = nt ? vh0 * (0.27 + Math.random() * 0.24) : -(0.03 + Math.random() * 0.42) * vh0; q.fx0 = nt ? W * (0.5 + (Math.random() + Math.random() - 1) * 0.34) : W * (-0.05 + Math.random() * 1.1); q.fa = 0; }
+    window.__dvFellTrip = 1; for (var i0 = 0; i0 < parts.length; i0++) parts[i0].fcol = 0;
+    for (var i = 0; i < parts.length; i++) { var q = parts[i]; if (np) { var gx9 = (Math.random() + Math.random() + Math.random() - 1.5) / 1.5; q.fx0 = W * 0.5 + gx9 * W * 0.11; q.fs = vh0 * (-0.75 + Math.random() * 0.95); q.fa = 0; q.fcol = 1; continue; }   /* the dove's dust carries on falling as it left off in section 1: a narrow stream coming down from above (Emmanuel, 23 Nov) */ q.fs = nt ? vh0 * (0.27 + Math.random() * 0.24) : -(0.03 + Math.random() * 0.42) * vh0; q.fx0 = nt ? W * (0.5 + (Math.random() + Math.random() - 1) * 0.34) : W * (-0.05 + Math.random() * 1.1); q.fa = 0; }
     fallOn = true; fallT = 0;
   };
   function frame(now) {
     requestAnimationFrame(frame);
     var dt = Math.min(0.05, (now - last) / 1000); last = now;
     if ((!visible && !fallOn) || !home.classList.contains('active')) return;
-    if (fallOn) { fallT += dt; if (fallT > 5.4) fallOn = false; }
+    if (fallOn) { fallT += dt; if (fallT > 7.6) fallOn = false; }
     var reduce = reduceQ.matches;
     if (!reduce) t += dt;
     gather = reduce ? 3 : gather + dt;
@@ -7136,7 +7140,7 @@ Lord you are Holy, Holy, Holy</p>
     var arrT = reduce ? 1 : clamp01(1 - srect.top / (vh * 0.85));
     arr += (arrT - arr) * (1 - Math.exp(-dt * 3));
     if (arr > 0.97 && !hintQ) { hintQ = true; setTimeout(hintOn, 900); }
-    if (arr > 0.85 && !revealOn && !(fallOn && fallT < 2.9)) { revealOn = true; reveal(Math.max(0, shown)); }
+    if (arr > 0.85 && !revealOn && !(fallOn && fallT < 4.2)) { revealOn = true; reveal(Math.max(0, shown)); }
     if (arr < 0.3 && revealOn) revealOn = false;   /* back at the dove: the lines already shown stay shown */
     /* on a touch screen (no hover) the circle nearest the middle of the screen
        gently breathes and brightens, so it is clear the circles can be tapped */
@@ -7203,11 +7207,12 @@ Lord you are Holy, Holy, Holy</p>
       var fx = q.x0 + (tx - q.x0) * f, fy = q.y0 + (ty - q.y0) * f;
       var k = reduce ? 1 : 0.18;
       if (fallOn && q.fs !== undefined) {
-        var fu = clamp01((fallT - q.d * 1.25) / (2.5 + 0.9 * q.d2)), fe = fu * fu * fu * (fu * (fu * 6 - 15) + 10);   /* slower and softer (23 Nov): eases away and eases in, like the dust rising on the way back */
-        var hold = 1 - clamp01((fallT - q.d * 1.25) * 3);   /* while it still holds the dove's shape it shimmers a little */
-        fx = q.fx0 + (tx - q.fx0) * fe + 4 * fe * (1 - fe) * g.R * 0.2 * Math.sin(t * 1.15 + q.ph) + hold * 0.8 * Math.sin(t * 3.1 + q.ph * 7);   /* a slow sway mid-flight, none at either end */
+        var fu = q.fcol ? clamp01((fallT - 0.25 - q.d * 1.6) / (3.4 + 1.2 * q.d2)) : clamp01((fallT - (window.__dvPts ? 0.25 : 0) - q.d * 1.25) / (2.5 + 0.9 * q.d2)), fe = fu * fu * fu * (fu * (fu * 6 - 15) + 10);   /* slower and softer (23 Nov): eases away and eases in, like the dust rising on the way back */
+        var fxu = q.fcol ? clamp01((fu - 0.4) / 0.6) : fu, fex = fxu * fxu * fxu * (fxu * (fxu * 6 - 15) + 10);   /* in the stream the dust falls first and only spreads into the house near the end */
+        var hold = 0;
+        fx = q.fx0 + (tx - q.fx0) * fex + 4 * fe * (1 - fe) * g.R * (q.fcol ? 0.06 : 0.2) * Math.sin(t * 1.15 + q.ph) + hold * 0.8 * Math.sin(t * 3.1 + q.ph * 7);   /* a slow sway mid-flight, none at either end; slight in the narrow stream */
         fy = (q.fs - srect.top) + (ty - (q.fs - srect.top)) * fe;
-        q.fa = window.__dvPts ? clamp01(fallT / 0.35) : clamp01(fu * 7);   /* from the dove: all there at once, as the dove; otherwise seen as it sets off */
+        q.fa = window.__dvPts ? clamp01((fallT - 0.25) / 0.8) * (0.5 + 0.5 * clamp01(fu * 4)) : clamp01(fu * 7);   /* only once the dove is fully gone (half a second of dark), then they emerge softly */
         q.x = fx; q.y = fy;
       } else { q.fa = 1; q.x += (fx - q.x) * k; q.y += (fy - q.y) * k; }
       // liquid colour field
@@ -7689,7 +7694,9 @@ Lord you are Holy, Holy, Holy</p>
   var tagEl = document.getElementById('hall-tag');
   var NAMES = { 'overseer': '#view-project-overseer .role-tabs .role-tab', 'renew-verse': '#view-project-renew .role-tab[data-role]' };
   /* people added to a project who have no role written on its old page yet (Emmanuel, 23 Nov) */
-  var MORE = { 'overseer': ['Joshua Spence', 'Mallory Oluchi Omegui'] };
+  var MORE = {};
+  /* a project's names in the order Emmanuel set (23 Nov); when given, this list is used as it is */
+  var ORDER = { 'overseer': ['Marika "Marika" Bastien', 'Pietro Ciappelli', 'Mallory Oluchi Omegui', 'Dean "Deano" Dobson', 'Simon Kobina "Korby" Nyamekye Imbrah', 'Emmanuel', 'Joshua Spence', 'Arindy'] };
   window.__fillHall = function (tab) {
     var link = document.querySelector('.partner-tab-link[data-tab="' + tab + '"]');
     var sn = document.querySelector('.dv-seed[data-tab="' + tab + '"]:not(.dv-multi) .dv-name');   /* the house's own name first, then the Partner list's */
@@ -7698,6 +7705,7 @@ Lord you are Holy, Holy, Holy</p>
     var seen = {}, names = [];
     [].forEach.call(NAMES[tab] ? document.querySelectorAll(NAMES[tab]) : [], function (b) { var n = b.textContent.trim(); if (n && !seen[n]) { seen[n] = 1; names.push(n); } });
     (MORE[tab] || []).forEach(function (n) { if (!seen[n]) { seen[n] = 1; names.push(n); } });
+    if (ORDER[tab]) names = ORDER[tab].slice();
     list.textContent = '';
     names.forEach(function (n, k) { var li = document.createElement('li'); li.textContent = n; li.style.setProperty('--d', (1.3 + k * 0.28).toFixed(2) + 's'); list.appendChild(li); });
     hallGo(0, true);
