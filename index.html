@@ -6950,7 +6950,7 @@ Lord you are Holy, Holy, Holy</p>
     arr += (arrT - arr) * (1 - Math.exp(-dt * 3));
     if (arr > 0.97 && !hintQ) { hintQ = true; setTimeout(hintOn, 900); }
     if (arr > 0.85 && !revealOn) { revealOn = true; reveal(Math.max(0, shown)); }
-    if (arr < 0.3 && revealOn) { revealOn = false; reveal(-1); }   /* leaving for the dove: hide again, so it replays next time */
+    if (arr < 0.3 && revealOn) revealOn = false;   /* back at the dove: the lines already shown stay shown */
     /* on a touch screen (no hover) the circle nearest the middle of the screen
        gently breathes and brightens, so it is clear the circles can be tapped */
     var near = -1;
@@ -7187,8 +7187,9 @@ Lord you are Holy, Holy, Holy</p>
   fitLines();
   window.addEventListener('resize', fitLines);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitLines);
+  /* each line reveals once, the first time its house is in view, and then stays (Emmanuel, 23 Nov) */
   function reveal(c) {
-    seeds.forEach(function (b, i) { b.classList.toggle('dv-in', i === c); });
+    if (c >= 0 && seeds[c]) seeds[c].classList.add('dv-in');
   }
   /* each project's Enter link and bar take its own (darkest) colour */
   seeds.forEach(function (b) {
