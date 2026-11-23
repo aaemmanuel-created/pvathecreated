@@ -3199,13 +3199,16 @@
      the dove, the title and the bars used to ride up the white page as hard, finished things while the house was
      still dust. Now they wait unseen and fade in as the house gathers, so everything on the screen arrives the
      same way. Only the way in: the way back to the dove is untouched. */
-  .dv-grid, .dv-pager { transition: opacity 1.2s cubic-bezier(.22,1,.36,1) .7s; }   /* after the dust has begun to settle */
+  .dv-grid, .dv-pager { transition: opacity 1.6s cubic-bezier(.22,1,.36,1) 1.6s; }   /* after the dust has begun to settle */
   .dv-seeds.dv-wait .dv-grid, .dv-seeds.dv-wait .dv-pager, .dv-seeds.dv-wait .dv-swipe { opacity: 0 !important; transition: none; }
   @media (prefers-reduced-motion: reduce) { .dv-grid, .dv-pager { transition: none; } }
 
   /* TRIAL — the projects on black (Emmanuel, 23 Nov). Everything here applies only while <html> has .dv-night.
      The white sheet becomes a fade to black; the words and controls turn light (never fainter than white .6). */
   .dv-night .dv-white { background: #000; height: 100%; transform: none !important; opacity: 0; will-change: opacity; }
+  /* a still, very fine film grain over the black (Emmanuel, 23 Nov), the same grain as the project page's tiles, in light */
+  .dv-night .dv-seeds::after, .dv-night .dv-white::after { content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1; opacity: .5;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .16 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E"); background-size: 160px 160px; }
   .dv-night .dv-seeds { background: #000; color: #fff; }
   .dv-night .dv-name { color: rgba(255,255,255,0.86); }
   .dv-night .dv-seed:hover .dv-name, .dv-night .dv-seed:focus-visible .dv-name { color: #fff; }
@@ -5870,28 +5873,27 @@ Lord you are Holy, Holy, Holy</p>
       if (busy) return;
       busy = true;
       var he = heroEnd(), left = Math.max(1, he - scroller.scrollTop);
-      var d1 = Math.max(900, 1500 * (left / Math.max(1, he)));   /* about a second and a half for the whole flight, less for what is left of it */
+      var d1 = Math.max(1700, 2400 * (left / Math.max(1, he)));   /* slower (Emmanuel, 23 Nov: 'smoother and slower, like the way back'): about 2.4 s for the whole flight, never under the way back's 1.7 s */
       v0 = Math.max(v0 || 0, 0.7 * left / d1);             /* it sets off at once (no dead start), or at the finger's speed if that was quicker */
       window.__dvTrip = 1;                                  /* the dove, colours and dust keep up with the move (see the dove's frame) */
       var gone = false;
       function on() {                                       // 3 · into the projects, carrying whatever speed it has
         if (gone) return; gone = true;
         seedsEl.classList.remove('dv-wait');               /* the title and bars fade in as the house gathers */
-        if (!fell && window.__dvFall) { fell = true; window.__dvFall(); }   /* the house's dust floats down */
+        if (!fell && !window.__dvFellTrip && window.__dvFall) { fell = true; window.__dvFall(); }   /* only if the dove's hand-over didn't start it */
         var st = seedsTop(), rest = Math.max(1, st - scroller.scrollTop);
-        run(st, 560, function () { finish(true); }, Math.max(curV, 1.4 * rest / 560));
+        run(st, 1300, function () { finish(true); }, Math.max(curV, 1.0 * rest / 1300));
       }
-      var fell = false;
+      var fell = false; window.__dvGone = 0; window.__dvFellTrip = 0;
       function sheet() {
         var dd = window.__dvDust || 0;
-        if (!fell && window.__dvNight && dd >= 0.12 && window.__dvFall) { fell = true; window.__dvFall(); }   /* trial: the dust sets off as the dove begins to go */
         return dd >= 0.7 && scroller.scrollTop > he * 0.9;
       }   /* the white sheet is most of the way down */
       run(he, d1, function (early) {                        // 1 · through the dove: it grows, breaks, the colours fall
         if (early) return on();
         var t0 = performance.now();
         (function wait(now) {                               // 2 · only if the sheet isn't down yet (it never waits long)
-          if (sheet() || now - t0 > 1500) on(); else requestAnimationFrame(wait);
+          if (sheet() || now - t0 > 2500) on(); else requestAnimationFrame(wait);
         })(t0);
       }, v0, sheet, true);
     }
@@ -5899,7 +5901,7 @@ Lord you are Holy, Holy, Holy</p>
       if (busy) return;
       busy = true;
       window.__dvRiseGo = 1;                             // the dust rises back into the dove
-      window.__dvTrip = 0;
+      window.__dvTrip = 0; window.__dvGone = 0;
       run(0, 1700, function () { finish(false); }, v0);
     }
     function off() { return reduceQ.matches || !home.classList.contains('active'); }
@@ -6837,7 +6839,7 @@ Lord you are Holy, Holy, Holy</p>
        dust keep up with it, so the growth is seen before the white sheet arrives; at rest and under the finger they
        keep their slow, unhurried pace */
     var trip = window.__dvTrip ? 1 : 0;
-    ps += (p - ps) * (1 - Math.exp(-dt * (trip ? 5.5 : 2.4)));
+    ps += (p - ps) * (1 - Math.exp(-dt * (trip ? 3.0 : 2.4)));
     var vel = Math.abs(p - pPrev) / dt; pPrev = p;
     velS += (Math.min(vel, 2.5) - velS) * (1 - Math.exp(-dt * 5));
 
@@ -6872,7 +6874,7 @@ Lord you are Holy, Holy, Holy</p>
     // The white is a sheet swiped quickly down the screen (Emmanuel, 21 Nov): once
     // you are near the end and the dove has begun to break, it comes down in about
     // 0.4 s; scroll back up and it lifts away just as fast.
-    wipeS += (((ps > 0.8 && dustS > 0.38) ? 1 : 0) - wipeS) * (1 - Math.exp(-dt * (window.__dvNight ? 4.2 : 8)));
+    wipeS += (((ps > 0.8 && dustS > 0.38) || window.__dvGone ? 1 : 0) - wipeS) * (1 - Math.exp(-dt * (window.__dvGone ? 4.5 : window.__dvNight ? 1.6 : 8)));
     var w = wipeS > 0.995 ? 1 : wipeS;
     if (window.__dvNight) whiteEl.style.opacity = smooth(0.55, 1.0, w).toFixed(3);   /* trial: by now the colours have drained upward; this only closes the last of the dove's light */
     else whiteEl.style.transform = 'translateY(' + (-(1 - w) * 101).toFixed(2) + '%)';
@@ -6888,12 +6890,12 @@ Lord you are Holy, Holy, Holy</p>
     bleedRate += ((ps > 0.006 ? 1 : 0) - bleedRate) * (1 - Math.exp(-dt * 1.6));
     if (!reduce) bleedT += dt * bleedRate;
     bgMat.uniforms.uBT.value = bleedT;
-    bSlow += (b - bSlow) * (1 - Math.exp(-dt * (trip ? 3.6 : 1.5)));   // the bleed eases after the swipe, slowly (Emmanuel)
+    bSlow += (b - bSlow) * (1 - Math.exp(-dt * (trip ? 2.0 : 1.5)));   // the bleed eases after the swipe, slowly (Emmanuel)
     bgMat.uniforms.uB.value = bSlow;
     bgMat.uniforms.uPulse.value = pulse;
     if (ptMat) ptMat.uniforms.uT.value = reduce ? 0 : clock;
 
-    dustS += (smooth(0.34, 0.95, ps) - dustS) * (1 - Math.exp(-dt * ((trip ? 2.6 : 1.5) + 0.9 * smooth(0.8, 1.0, ps))));   // unhurried, so the dove's rise can be watched   // the dust lets go slowly, over a few seconds (Emmanuel)
+    dustS += (smooth(0.34, 0.95, ps) - dustS) * (1 - Math.exp(-dt * ((trip ? 1.4 : 1.5) + 0.6 * smooth(0.8, 1.0, ps))));   // unhurried, so the dove's rise can be watched   // the dust lets go slowly, over a few seconds (Emmanuel)
     if (window.__dvRiseGo) { window.__dvRiseGo = 0; riseS = 1; }
     if (riseS > 0) {
       dustS = 0;                                       /* nothing left hanging from the way down */
@@ -6928,10 +6930,30 @@ Lord you are Holy, Holy, Holy</p>
     var rest = reduce ? 0.15 : 0.34 * rs
              + (restA >= 1 ? 0.018 * Math.sin((clock - restT) * 0.22) : 0);
     var appT = rest + (1 - rest) * grow;
-    appS += (appT - appS) * (1 - Math.exp(-dt * (trip ? 7.0 : 3.0)));
+    appS += (appT - appS) * (1 - Math.exp(-dt * (trip ? 3.6 : 3.0)));
     vidStep(dt, reduce, ps, velS, appS);
+    /* The dove hands its particles to the house (Emmanuel, 23 Nov: 'some of the bird remains and when it disintegrates
+       the particles from section 2 should start from there'). On the way down, once the dove has begun to break, the
+       frame just drawn is read once: every light, pale pixel is a speck of the dove. Those places are handed to the
+       house's dots, which take the dove's shape at once while the dove itself is closed off behind them; the bird
+       stays as particles, then they leave it one by one for the house. */
+    var grabNow = false;
+    if (window.__dvNight && window.__dvTrip && !window.__dvGone && dustS >= 0.42 && !reduce) { window.__dvGone = 1; grabNow = true; }
     if (w < 0.999) {
       renderer.render(scene, camera);
+      if (grabNow) {
+        try {
+          var gl0 = renderer.getContext(), BW = gl0.drawingBufferWidth, BH = gl0.drawingBufferHeight, px = new Uint8Array(BW * BH * 4);
+          gl0.readPixels(0, 0, BW, BH, gl0.RGBA, gl0.UNSIGNED_BYTE, px);
+          var cw = canvas.clientWidth || window.innerWidth, ch = canvas.clientHeight || window.innerHeight, pts = [], st2 = 2;
+          for (var yy0 = 0; yy0 < BH; yy0 += st2) for (var xx0 = 0; xx0 < BW; xx0 += st2) {
+            var o = (yy0 * BW + xx0) * 4, r0 = px[o], g0 = px[o + 1], b0 = px[o + 2], mn = Math.min(r0, g0, b0), mx = Math.max(r0, g0, b0);
+            if (mn > 95 && mx - mn < 120) pts.push(xx0 * cw / BW, (BH - 1 - yy0) * ch / BH);
+          }
+          window.__dvPts = pts.length > 400 ? pts : null;
+        } catch (eG) { window.__dvPts = null; }
+        if (window.__dvFall) window.__dvFall();
+      }
       if (!canvas.classList.contains('drawn')) canvas.classList.add('drawn');   /* shown only once it has a picture: no black flash on load */
       if ((edgeN++ % 6) === 0) {   /* read the colours at the top and foot for the phone's bars */
         try {
@@ -7074,15 +7096,16 @@ Lord you are Holy, Holy, Holy</p>
   window.__dvFall = function () {
     if (reduceQ.matches) return;
     var vh0 = window.innerHeight || H;
-    var nt = window.__dvNight;   /* trial: on black the dust leaves from where the dove is, not from above the screen */
-    for (var i = 0; i < parts.length; i++) { var q = parts[i]; q.fs = nt ? vh0 * (0.27 + Math.random() * 0.24) : -(0.03 + Math.random() * 0.42) * vh0; q.fx0 = nt ? W * (0.5 + (Math.random() + Math.random() - 1) * 0.34) : W * (-0.05 + Math.random() * 1.1); q.fa = 0; }
+    var nt = window.__dvNight, P2 = nt && window.__dvPts, np = P2 ? P2.length / 2 : 0;   /* on black the dust leaves from the dove's own specks */
+    window.__dvFellTrip = 1;
+    for (var i = 0; i < parts.length; i++) { var q = parts[i]; if (np) { var pk = (Math.random() * np | 0) * 2; q.fx0 = P2[pk] + (Math.random() - 0.5) * 1.5; q.fs = P2[pk + 1] + (Math.random() - 0.5) * 1.5; q.fa = 0; continue; } q.fs = nt ? vh0 * (0.27 + Math.random() * 0.24) : -(0.03 + Math.random() * 0.42) * vh0; q.fx0 = nt ? W * (0.5 + (Math.random() + Math.random() - 1) * 0.34) : W * (-0.05 + Math.random() * 1.1); q.fa = 0; }
     fallOn = true; fallT = 0;
   };
   function frame(now) {
     requestAnimationFrame(frame);
     var dt = Math.min(0.05, (now - last) / 1000); last = now;
     if ((!visible && !fallOn) || !home.classList.contains('active')) return;
-    if (fallOn) { fallT += dt; if (fallT > 3.2) fallOn = false; }
+    if (fallOn) { fallT += dt; if (fallT > 5.4) fallOn = false; }
     var reduce = reduceQ.matches;
     if (!reduce) t += dt;
     gather = reduce ? 3 : gather + dt;
@@ -7113,7 +7136,7 @@ Lord you are Holy, Holy, Holy</p>
     var arrT = reduce ? 1 : clamp01(1 - srect.top / (vh * 0.85));
     arr += (arrT - arr) * (1 - Math.exp(-dt * 3));
     if (arr > 0.97 && !hintQ) { hintQ = true; setTimeout(hintOn, 900); }
-    if (arr > 0.85 && !revealOn && !(fallOn && fallT < 1.5)) { revealOn = true; reveal(Math.max(0, shown)); }
+    if (arr > 0.85 && !revealOn && !(fallOn && fallT < 2.9)) { revealOn = true; reveal(Math.max(0, shown)); }
     if (arr < 0.3 && revealOn) revealOn = false;   /* back at the dove: the lines already shown stay shown */
     /* on a touch screen (no hover) the circle nearest the middle of the screen
        gently breathes and brightens, so it is clear the circles can be tapped */
@@ -7180,10 +7203,11 @@ Lord you are Holy, Holy, Holy</p>
       var fx = q.x0 + (tx - q.x0) * f, fy = q.y0 + (ty - q.y0) * f;
       var k = reduce ? 1 : 0.18;
       if (fallOn && q.fs !== undefined) {
-        var fu = clamp01((fallT - q.d * 0.85) / (1.45 + 0.55 * q.d2)), fe = 1 - Math.pow(1 - fu, 2.6);
-        fx = q.fx0 + (tx - q.fx0) * fe + (1 - fe) * g.R * 0.2 * Math.sin(t * 1.15 + q.ph);   /* a slow sway that dies away as it lands */
+        var fu = clamp01((fallT - q.d * 1.25) / (2.5 + 0.9 * q.d2)), fe = fu * fu * fu * (fu * (fu * 6 - 15) + 10);   /* slower and softer (23 Nov): eases away and eases in, like the dust rising on the way back */
+        var hold = 1 - clamp01((fallT - q.d * 1.25) * 3);   /* while it still holds the dove's shape it shimmers a little */
+        fx = q.fx0 + (tx - q.fx0) * fe + 4 * fe * (1 - fe) * g.R * 0.2 * Math.sin(t * 1.15 + q.ph) + hold * 0.8 * Math.sin(t * 3.1 + q.ph * 7);   /* a slow sway mid-flight, none at either end */
         fy = (q.fs - srect.top) + (ty - (q.fs - srect.top)) * fe;
-        q.fa = clamp01(fu * 7);                              /* seen as soon as it sets off */
+        q.fa = window.__dvPts ? clamp01(fallT / 0.35) : clamp01(fu * 7);   /* from the dove: all there at once, as the dove; otherwise seen as it sets off */
         q.x = fx; q.y = fy;
       } else { q.fa = 1; q.x += (fx - q.x) * k; q.y += (fy - q.y) * k; }
       // liquid colour field
@@ -7232,21 +7256,30 @@ Lord you are Holy, Holy, Holy</p>
         var cc = cr.pal.slice().sort(function (a, b) { return lum(a) - lum(b); });
         for (var fi = 0; fi < FLOAT.length; fi++) {
           var fl = FLOAT[fi];
-          if (!reduce) { fl.x += (fl.vx + 4 * Math.sin(t * 0.3 + fl.p)) * dt; fl.y += (fl.vy + 3 * Math.cos(t * 0.25 + fl.p)) * dt; }
+          var zf = fl.z === undefined ? (fl.z = fq2(fi)) : fl.z;   /* depth (23 Nov): 0 far … 1 near */
+          if (!reduce) { var sp = 0.35 + 1.3 * zf; fl.x += ((fl.vx + 4 * Math.sin(t * 0.3 + fl.p)) * sp - tv * 0.04 * zf * zf) * dt; fl.y += (fl.vy + 3 * Math.cos(t * 0.25 + fl.p)) * sp * dt; }
           if (fl.x < -10) fl.x = W + 10; if (fl.x > W + 10) fl.x = -10;
           if (fl.y < 0) fl.y = H; if (fl.y > H) fl.y = 0;
           var c3 = cc[fl.c]; if (window.__dvNight) c3 = [c3[0] + (255 - c3[0]) * 0.45 | 0, c3[1] + (255 - c3[1]) * 0.45 | 0, c3[2] + (255 - c3[2]) * 0.45 | 0];
-          ctx.globalAlpha = fl.a * fade * clamp01(arr * 2 - 0.6) * (0.6 + 0.4 * Math.sin(t * 0.7 + fl.p));
-          ctx.fillStyle = 'rgb(' + c3[0] + ',' + c3[1] + ',' + c3[2] + ')';
-          ctx.beginPath(); ctx.arc(fl.x, fl.y, fl.r, 0, 6.2832); ctx.fill();
+          var al = fl.a * fade * clamp01(arr * 2 - 0.6) * (0.6 + 0.4 * Math.sin(t * 0.7 + fl.p));
+          if (zf > 0.8) {   /* near: big, soft and out of focus */
+            var rr = fl.r * (3 + 5 * (zf - 0.8) / 0.2), gr = ctx.createRadialGradient(fl.x, fl.y, 0, fl.x, fl.y, rr);
+            gr.addColorStop(0, 'rgba(' + c3[0] + ',' + c3[1] + ',' + c3[2] + ',0.5)'); gr.addColorStop(0.55, 'rgba(' + c3[0] + ',' + c3[1] + ',' + c3[2] + ',0.2)'); gr.addColorStop(1, 'rgba(' + c3[0] + ',' + c3[1] + ',' + c3[2] + ',0)');
+            ctx.globalAlpha = al * 0.8; ctx.fillStyle = gr; ctx.beginPath(); ctx.arc(fl.x, fl.y, rr, 0, 6.2832); ctx.fill();
+          } else {          /* far: small, dim and sharp; middle: as before */
+            ctx.globalAlpha = al * (0.4 + 0.6 * zf / 0.8);
+            ctx.fillStyle = 'rgb(' + c3[0] + ',' + c3[1] + ',' + c3[2] + ')';
+            ctx.beginPath(); ctx.arc(fl.x, fl.y, fl.r * (0.5 + 0.6 * zf / 0.8), 0, 6.2832); ctx.fill();
+          }
         }
       }
     }
     ctx.globalAlpha = 1;
   }
   var FLOAT = [];
-  for (var fq = 0; fq < 26; fq++) FLOAT.push({ x: Math.random() * 1200, y: Math.random() * 900, vx: (Math.random() - 0.5) * 9, vy: -2 - Math.random() * 5, r: 0.9 + Math.random() * 1.7, a: 0.22 + Math.random() * 0.3, p: Math.random() * 6.28, c: Math.floor(Math.random() * 3) });
+  for (var fq = 0; fq < 34; fq++) FLOAT.push({ x: Math.random() * 1200, y: Math.random() * 900, vx: (Math.random() - 0.5) * 9, vy: -2 - Math.random() * 5, r: 0.9 + Math.random() * 1.7, a: 0.22 + Math.random() * 0.3, p: Math.random() * 6.28, c: Math.floor(Math.random() * 3) });
   function clamp01(x) { return x < 0 ? 0 : x > 1 ? 1 : x; }
+  function fq2(i) { var v = (i * 0.6180339887) % 1; return v < 0.45 ? v * 0.55 / 0.45 : v < 0.82 ? 0.55 + (v - 0.45) * 0.25 / 0.37 : 0.81 + (v - 0.82) * 0.19 / 0.18; }   /* spread the specks over three depths: about half far, a third middle, a fifth near */
   function handoff(ri) {   /* where this house's dust is on the screen now, for the small house that follows */
     var r = sec.getBoundingClientRect(), out = [];
     for (var i = 0; i < parts.length && out.length < 900; i++) { var q = parts[i]; if (q.ri === ri && (i & 3) === 0) out.push([q.x + r.left, q.y + r.top]); }
