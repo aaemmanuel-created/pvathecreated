@@ -2621,6 +2621,9 @@
     padding: 8px 0;
   }
   .back-btn:hover { opacity: 1; }
+  .back-btn { position: relative; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+  .back-btn::before { content: ""; position: absolute; inset: -10px -14px; }   /* a 44px area to press (Fitts) */
+  .back-btn:active { opacity: 1; }
   .thread-name {
     font-size: 12px;
     letter-spacing: 0.34em;
@@ -3024,6 +3027,13 @@
   .dv-seed:focus-visible { outline: none; }
   .dv-seed:focus-visible .dv-ring { outline: 1.5px solid rgba(26,22,18,0.45); outline-offset: 6px; }
   .dv-seed.dv-peek { cursor: w-resize; } .dv-seed.dv-peek-r { cursor: e-resize; }   /* over a faint neighbour house: a click moves to it */
+
+  /* phone feel (23 Nov): no text selection or iOS callout on things you swipe or tap, no double-tap
+     zoom delay, and the page itself never bounces like a web page */
+  html, body { overscroll-behavior: none; }
+  .dv-hero, .dv-seeds, .hall-stage, .hall-title, .dv-pager { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+  .dv-seed, .dv-way, .dv-dot, .dv-arrow, .hall-ball, .hall-tile, .back-btn { touch-action: manipulation; }
+  .dv-seed:active .dv-name { opacity: .55; transition: opacity .08s ease; }   /* the title answers the touch at once */
 
   /* the password pill on the houses (23 Nov). Glass, after DESIGN-GUIDELINES §6.1 and §6.2: real glass
      bends what is behind it (an SVG displacement in the backdrop, a small blur), its top edge catches the
@@ -4267,6 +4277,7 @@ Lord you are Holy, Holy, Holy</p>
   const PROTECTED_VIEWS = ['view-project-hall', 'view-partner-shop', 'view-project-overseer', 'view-project-righthere', 'view-project-renew'];
 
   function showView(id) {
+    const __prev = document.querySelector('.view.active');
     views.forEach(v => v.classList.toggle('active', v.id === id));
     // Match the browser chrome (iOS Safari bars + safe areas + the
     // overscroll bounce) to the active view, so a light page blends
@@ -4291,9 +4302,10 @@ Lord you are Holy, Holy, Holy</p>
     if (hash !== undefined) {
       const target = hash || window.location.pathname;
       try {
-        if (target !== window.location.hash) {
-          history.replaceState(null, '', target);
-        }
+        /* 23 Nov (phone feel, Jakob's law): leaving home adds a history step, so the iPhone back swipe
+           and Android's back button come back inside the site instead of leaving it */
+        if (__prev && __prev.id === 'view-home' && id !== 'view-home' && !window.__dvPop) history.pushState({ dv: 1 }, '', target);
+        else if (target !== window.location.hash) history.replaceState(history.state, '', target);
       } catch (_) {}
     }
   }
@@ -4630,8 +4642,22 @@ Lord you are Holy, Holy, Holy</p>
   // ----------------------------------------------------------
   // Back buttons — return to homepage
   // ----------------------------------------------------------
+  /* the browser's own back (edge swipe, back button) runs the page's back: one step, the way it came */
+  window.addEventListener('popstate', () => {
+    const cur = document.querySelector('.view.active');
+    if (!cur || cur.id === 'view-home') return;
+    const b = cur.querySelector('[data-back]');
+    window.__dvPop = true;
+    try { if (b) b.click(); else showView('view-home'); } finally { window.__dvPop = false; }
+    setTimeout(() => {   /* still inside after that step (e.g. password → list)? keep a step to come back from */
+      const now = document.querySelector('.view.active');
+      if (now && now.id !== 'view-home' && !(history.state && history.state.dv)) { try { history.pushState({ dv: 1 }, '', location.hash); } catch (_) {} }
+    }, 50);
+  });
   document.querySelectorAll('[data-back]').forEach(btn => {
     btn.addEventListener('click', () => {
+      /* our own back button on a pushed step: let the browser go back, so its history stays in step */
+      if (!window.__dvPop && history.state && history.state.dv) { history.back(); return; }
       const currentView = document.querySelector('.view.active');
 
       // Came in through a project circle on the home page? Back goes
@@ -7217,6 +7243,8 @@ Lord you are Holy, Holy, Holy</p>
   mark();
 
   seeds.forEach(function (btn, i) {
+    btn.addEventListener('pointerdown', function (e) { if (e.pointerType !== 'mouse' && rings[i]) { rings[i].hovT = 1; rings[i].hov = Math.max(rings[i].hov, 0.5); } });   /* touch: the house draws in at once (Doherty) */
+    ['pointerup', 'pointercancel'].forEach(function (ev) { btn.addEventListener(ev, function (e) { if (e.pointerType !== 'mouse' && rings[i]) rings[i].hovT = 0; }); });
     btn.addEventListener('pointerenter', function () { if (rings[i]) rings[i].hovT = 1; });
     btn.addEventListener('pointerleave', function () { if (rings[i]) rings[i].hovT = 0; });
     btn.addEventListener('focus', function () { if (rings[i]) rings[i].hovT = 1; });
@@ -7266,6 +7294,14 @@ Lord you are Holy, Holy, Holy</p>
     }
   });
   pass.addEventListener('animationend', function () { pass.classList.remove('shake'); });
+  /* with the phone's keyboard up, the pill rises to sit just above it */
+  function liftPass() {
+    var vv = window.visualViewport; if (!vv) return;
+    var kb = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
+    pass.style.bottom = kb > 80 ? (kb + 18) + 'px' : '';
+  }
+  if (window.visualViewport) { visualViewport.addEventListener('resize', liftPass); visualViewport.addEventListener('scroll', liftPass); }
+  passIn.addEventListener('blur', function () { setTimeout(liftPass, 300); });
   passIn.addEventListener('keydown', function (e) { if (e.key === 'Escape') { e.preventDefault(); closePass(); } });
   track.addEventListener('scroll', function () { if (passFor && cur() !== passFor.i) closePass(); }, { passive: true });   /* moving to another house puts it away */
   document.addEventListener('pointerdown', function (e) { if (passFor && !pass.contains(e.target) && !(e.target.closest && e.target.closest('.dv-seed'))) closePass(); });
