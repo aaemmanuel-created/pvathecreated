@@ -3083,8 +3083,7 @@
   @media (prefers-reduced-transparency: reduce) { .dv-pass { background: #fff; -webkit-backdrop-filter: none; backdrop-filter: none; } }
 
   /* Project hall (Emmanuel, 23 Nov) */
-  #view-project-hall { background-color: #fff;   /* a fine grain over the white (Emmanuel, 23 Nov) */
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .1  0 0 0 0 .08  0 0 0 0 .07  0 0 0 .2 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E"); background-size: 180px 180px;
+  #view-project-hall { background: #fff;   /* pure white, no grain, to match the tiles (Emmanuel, 23 Nov) */
     color: #1a1612; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; }
   #view-project-hall .hall-head { position: relative; z-index: 2; padding-top: calc(28px + env(safe-area-inset-top)); }
   #view-project-hall .back-btn { color: rgba(26,22,18,0.7); }
