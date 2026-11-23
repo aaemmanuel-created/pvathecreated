@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<link rel="preload" as="image" href="dove-frames.jpg" />   <!-- the dove's frames start loading with the page, not after the scripts (23 Nov) -->
 <title>thecreated</title>
 <meta name="description" content="thecreated — Powered by pvaOS™." />
 <meta name="theme-color" content="#5a2f9a" />
@@ -5357,7 +5358,8 @@ Lord you are Holy, Holy, Holy</p>
       }
     }
   }
-  function loop(){ draw(performance.now()/1000); requestAnimationFrame(loop); }
+  var host=null;
+  function loop(){ if(host===null) host=nodes[0].c.closest('.view')||false; if(!document.hidden && (!host || host.classList.contains('active'))) draw(performance.now()/1000); requestAnimationFrame(loop); }   /* draws only while its page is showing (23 Nov) */
   function init(){
     var dots=document.querySelectorAll('canvas.seed-path-dot'), i;
     for(i=0;i<dots.length;i++) setup(dots[i], i*STEP, false);
@@ -5779,12 +5781,25 @@ Lord you are Holy, Holy, Holy</p>
     function ease(k) { return k >= 1 ? 1 : (1 - (1 + 7.4 * k) * Math.exp(-7.4 * k)) / SPR; }
     /* Apple's rubber band: the page follows the finger with more and more resistance */
     function rubber(x, d) { return (1 - 1 / (0.55 * x / d + 1)) * d; }
-    function run(to, dur, done) {
+    /* 23 Nov (reel DgEyy8nRybB, 'motion should follow the visitor'): a move that starts from a finger keeps the
+       finger's speed (v0, px per ms) instead of stopping and starting again — the same critically damped spring,
+       started with that speed; it can never run past where it is going */
+    function run(to, dur, done, v0) {
       var from = scroller.scrollTop, t0 = performance.now();
-      (function step(now) {
-        var k = Math.min(1, (now - t0) / dur);
-        scroller.scrollTop = from + (to - from) * ease(k);
-        if (k < 1) requestAnimationFrame(step); else done();
+      if (!v0 || Math.abs(to - from) < 1) {
+        (function step(now) {
+          var k = Math.min(1, (now - t0) / dur);
+          scroller.scrollTop = from + (to - from) * ease(k);
+          if (k < 1) requestAnimationFrame(step); else done();
+        })(t0);
+        return;
+      }
+      var w = 7.4 / dur, A = from - to, B = v0 + w * A, side = A > 0 ? 1 : -1;
+      (function stepV(now) {
+        var t = now - t0, x = to + (A + B * t) * Math.exp(-w * t);
+        if ((x - to) * side <= 0.6 || t > dur * 1.6) { scroller.scrollTop = to; done(); return; }
+        scroller.scrollTop = x;
+        requestAnimationFrame(stepV);
       })(t0);
     }
     function finish(isBelow) { busy = false; below = isBelow; coolUntil = performance.now() + 700; savePlace(); }
@@ -5799,8 +5814,8 @@ Lord you are Holy, Holy, Holy</p>
     })();
     window.addEventListener('pagehide', savePlace);
     var NOEV = { preventDefault: function () {} };
-    function springBack(to) { busy = true; run(to, 520, function () { busy = false; }); }
-    function goDown() {
+    function springBack(to, v0) { busy = true; run(to, 520, function () { busy = false; }, v0); }
+    function goDown(v0) {
       if (busy) return;
       busy = true;
       var d1 = Math.max(700, 1700 * (1 - scroller.scrollTop / Math.max(1, heroEnd())));   /* quicker (Emmanuel, 22 Nov): was up to 2.6 s */
@@ -5811,24 +5826,24 @@ Lord you are Holy, Holy, Holy</p>
             run(seedsTop(), 650, function () { finish(true); });   // 3 · into the projects
           } else requestAnimationFrame(wait);
         })(t0);
-      });
+      }, v0);
     }
-    function goUp() {
+    function goUp(v0) {
       if (busy) return;
       busy = true;
       window.__dvRiseGo = 1;                             // the dust rises back into the dove
-      run(0, 1700, function () { finish(false); });
+      run(0, 1700, function () { finish(false); }, v0);
     }
     function off() { return reduceQ.matches || !home.classList.contains('active'); }
-    function intent(dir, e) {                             // dir: +1 = onward (down the page), −1 = back
+    function intent(dir, e, v0) {                         // dir: +1 = onward (down the page), −1 = back; v0 = the finger's speed, carried on
       if (off()) return;
       var top = scroller.scrollTop, st = seedsTop();
       if (busy || performance.now() < coolUntil) { if (top < st + 2 || busy) e.preventDefault(); return; }
       if (top < st - 1) {                                 // on the dove
         e.preventDefault();
-        if (dir > 0) goDown(); else if (top > 2) goUp();
+        if (dir > 0) goDown(v0); else if (top > 2) goUp(v0);
       } else if (top <= st + 1 && dir < 0) {              // at the top of the projects, heading back
-        e.preventDefault(); goUp();
+        e.preventDefault(); goUp(v0);
       }
     }
     /* 23 Nov (Emmanuel: 'I don't want to swipe all over the page and go to the next section with
@@ -5849,7 +5864,7 @@ Lord you are Holy, Holy, Holy</p>
       wAcc += dy;
       if (Math.abs(wAcc) > 70) { wLock = true; var d = wAcc > 0 ? 1 : -1; wAcc = 0; intent(d, NOEV); }
     }, { passive: false });
-    var touchX = null, top0 = 0, lastY = 0, lastT = 0, vel = 0, pullDy = 0;
+    var touchX = null, top0 = 0, lastY = 0, lastT = 0, vel = 0, pullDy = 0, gain = 1;
     scroller.addEventListener('touchstart', function (e) {
       touchY = e.touches[0].clientY; touchX = e.touches[0].clientX; top0 = scroller.scrollTop;
       lastY = touchY; lastT = performance.now(); vel = 0; pullDy = 0; pulling = false;
@@ -5864,17 +5879,32 @@ Lord you are Holy, Holy, Holy</p>
       if (pulling || top0 < st - 1 || (top0 <= st + 1 && dy < 0)) {
         if (e.cancelable) e.preventDefault();
         pulling = true; pullDy = dy;
-        var H = scroller.clientHeight, rb = (dy > 0 ? 1 : -1) * rubber(Math.abs(dy), H * 0.9);
-        scroller.scrollTop = Math.max(0, top0 + rb * (top0 < st - 1 ? 1.4 : 0.8));   /* the dove moves with you, held back */
+        var H = scroller.clientHeight;
+        if (top0 < st - 1) {
+          /* on the dove the thumb sets the pace (23 Nov, reel DgEyy8nRybB): the dove's whole flight is tied to the
+             finger — a drag of about half the screen carries it all the way, a still finger holds it still, and
+             dragging back takes it back */
+          gain = heroEnd() / (H * 0.55);
+          scroller.scrollTop = Math.min(heroEnd(), Math.max(0, top0 + dy * gain));
+        } else {
+          gain = 0.5;
+          var rb = (dy > 0 ? 1 : -1) * rubber(Math.abs(dy), H * 0.9);
+          scroller.scrollTop = Math.max(0, top0 + rb * 0.8);   /* at the top of the projects: held back, like a rubber band */
+        }
       }
     }, { passive: false });
-    scroller.addEventListener('touchend', function () {
+    function release() {
       if (!pulling) { touchY = null; return; }
       pulling = false; touchY = null;
+      if (performance.now() - lastT > 90) vel = 0;        /* the finger had stopped before it lifted */
+      var v0 = vel * gain;                                 /* the page's own speed at that moment */
       var H = scroller.clientHeight, d = pullDy, far = Math.abs(d) > Math.max(48, H * 0.065), flick = Math.abs(vel) > 0.28 && Math.abs(d) > 18 && (vel > 0) === (d > 0);   /* easier (Emmanuel, 23 Nov: 'too hard'): a short, ordinary swipe is enough; a tiny nudge still springs back */
-      if ((far || flick) && performance.now() >= coolUntil) intent(d > 0 ? 1 : -1, NOEV);
-      if (!busy) springBack(top0);   /* not far enough: it springs back */
-    }, { passive: true });
+      if (far && !flick && Math.abs(vel) > 0.2 && (vel > 0) !== (d > 0)) far = false;   /* dragged far, then clearly pulled back before letting go: you changed your mind, so it returns */
+      if ((far || flick) && performance.now() >= coolUntil) intent(d > 0 ? 1 : -1, NOEV, v0);
+      if (!busy) springBack(top0, v0);   /* not far enough: it springs back */
+    }
+    scroller.addEventListener('touchend', release, { passive: true });
+    scroller.addEventListener('touchcancel', release, { passive: true });
     window.addEventListener('keydown', function (e) {
       if (off() || /INPUT|TEXTAREA/.test((e.target && e.target.tagName) || '')) return;
       var k = e.key;
