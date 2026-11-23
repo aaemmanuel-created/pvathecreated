@@ -3167,6 +3167,32 @@
     .dv-hint { animation: none; opacity: 1; }
     .dv-hint::after { animation: none; }
   }
+
+  /* One type scale and one spacing scale (Emmanuel, 23 Nov: 'make the spacing and sizing according to the
+     guidelines'; DESIGN-GUIDELINES §2.1, §2.3, §2.4, §3.1). Text: 11 labels · 13 small text · 16 the line
+     under a title · 20 titles · 24 the hall title (16/20 on phones). Gaps: 4 / 8 / 12 / 16 / 24 only —
+     small inside a group, 24 between groups. Nothing smaller than 11px. */
+  .dv-swipe { font-size: 11px; bottom: calc(68px + env(safe-area-inset-bottom)); }
+  .dv-pass-err { font-size: 11px; }
+  .dv-pass { padding: 0 24px; }
+  .dv-pass input { font-size: 16px; }   /* 16: iPhones don't zoom into it */
+  .dv-name { font-size: 16px; }
+  @media (min-width: 1000px) { .dv-name { font-size: 20px; } }
+  .dv-pager { gap: 16px; bottom: calc(16px + env(safe-area-inset-bottom)); }
+  .dv-dot { width: 36px; }                              /* a wider target; the bar drawn stays 18px */
+  .dv-dot::after { left: 9px; right: 9px; }
+  #view-project-hall .back-btn { font-size: 11px; }
+  #view-project-hall .hall-head { padding-bottom: 8px; }
+  #view-project-hall .hall-in { padding-left: 16px; padding-right: 16px; }
+  .hall-title { font-size: 20px; text-wrap: balance; }
+  @media (min-width: 720px) { .hall-title { font-size: 24px; } }
+  .hall-tagline, #view-project-hall .hall-tagline { margin-bottom: 24px; min-height: 0; }
+  .hall-tagline:has(> #hall-tag[hidden]) { margin-bottom: 16px; }   /* no tag: title → stage is still 8 + 16 = 24 */
+  .hall-tagline .project-tag { font-size: 11px; padding: 4px 8px; }
+  .hall-label { font-size: 13px; }
+  @media (min-width: 720px) { .hall-label { font-size: 16px; } }
+  #view-project-hall .hall-people { margin-top: 24px; }
+  .hall-names { gap: 4px 16px; }
 </style>
 </head>
 <body>
@@ -7197,9 +7223,13 @@ Lord you are Holy, Holy, Holy</p>
   function fitLines() {
     seeds.forEach(function (b) {
       var d = b.querySelector('.dv-desc'); if (!d || !d.textContent.trim()) return;
-      d.style.fontSize = '';
+      d.style.fontSize = ''; d.style.whiteSpace = ''; d.style.textWrap = '';
       var room = Math.min(b.clientWidth, window.innerWidth) - 32, w = d.scrollWidth;
-      if (w > room && room > 0) d.style.fontSize = Math.max(11, Math.floor(16 * room / w * 10) / 10) + 'px';
+      if (w > room && room > 0) {
+        var fs = Math.floor(16 * room / w * 10) / 10;
+        if (fs < 14) { fs = 14; d.style.whiteSpace = 'normal'; d.style.textWrap = 'balance'; }   /* never below 14px (23 Nov): on the smallest phones the line takes two balanced lines instead */
+        d.style.fontSize = fs + 'px';
+      }
     });
   }
   fitLines();
