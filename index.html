@@ -2942,7 +2942,8 @@
     background: #fff;   /* pure white, no grain, no tint (Emmanuel, 22 Nov) */
     padding: 9vh 16px 8vh;
   }
-  #view-home .home-center { position: relative; margin-top: -1px; }   /* overlap by a pixel: the black page showed through the hairline where they met */
+  #view-home .home-center { position: relative; margin-top: -1px; }
+  #view-home .home-center { display: none; }   /* the last section (painting, Partner, Thought, powered by pvaOS) is hidden for now (Emmanuel, 23 Nov); delete this line to bring it back */   /* overlap by a pixel: the black page showed through the hairline where they met */
   #view-home .home-center > * { position: relative; z-index: 1; }
   .dv-dots { position: absolute; left: 0; right: 0; top: -100vh; width: 100%; height: calc(100% + 100vh); pointer-events: none; display: block; z-index: 1; }   /* reaches up into the white, for the falling dust */
   .dv-sr {
@@ -3089,17 +3090,18 @@
     color: #1a1612; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; }
   #view-project-hall .hall-head { position: relative; z-index: 2; padding-top: calc(28px + env(safe-area-inset-top)); }
   #view-project-hall .back-btn { color: rgba(26,22,18,0.7); }
-  .hall-in { position: relative; z-index: 1; width: 100%; box-sizing: border-box; min-width: 0; max-width: 760px; margin: 0 auto; padding: 4vh 20px calc(72px + env(safe-area-inset-bottom)); }
-  .hall-title { margin: 0 0 10px; text-align: center; font: 700 clamp(18px, 2.6vw, 24px)/1.4 'Courier Prime', 'Courier New', monospace; letter-spacing: 0.14em;   /* the movie-script font (Emmanuel, 23 Nov) */ text-transform: uppercase; color: rgba(26,22,18,0.82);
+  .hall-in { position: relative; z-index: 1; width: 100%; box-sizing: border-box; min-width: 0; max-width: 760px; margin: 0 auto; padding: 1.5vh 20px calc(40px + env(safe-area-inset-bottom)); }   /* phones: less above, so the names fit on screen (23 Nov) */
+  @media (min-width: 720px) { .hall-in { padding-top: 4vh; padding-bottom: calc(72px + env(safe-area-inset-bottom)); } }
+  .hall-title { margin: 0 0 8px; text-align: center; font: 700 clamp(18px, 2.6vw, 24px)/1.4 'Courier Prime', 'Courier New', monospace; letter-spacing: 0.14em;   /* the movie-script font (Emmanuel, 23 Nov) */ text-transform: uppercase; color: rgba(26,22,18,0.82);
     opacity: 0; filter: blur(6px); transition: opacity 1.1s cubic-bezier(.22,1,.36,1), filter 1.1s cubic-bezier(.22,1,.36,1); }
   /* 23 Nov (Emmanuel): the project's dots as a ball on the left; the tiles stacked on the right,
      one in front; a trail of dots runs from the ball to that tile and draws its border.
      Swipe up or down on the ball (or the tiles) to bring the next tile forward. */
   /* bigger tiles that run off the right edge of the screen (Emmanuel, 23 Nov): the stage spans the whole width */
-  .hall-stage { --tw: 74vw; display: grid; grid-template-columns: 42% 58%; align-items: center; width: 100vw; margin: 0 calc(50% - 50vw); min-height: min(66vh, 540px); }
+  .hall-stage { --tw: 66vw; --tin: 0.64; display: grid; grid-template-columns: 42% 58%; align-items: center; width: 100vw; margin: 0 calc(50% - 50vw); min-height: clamp(420px, 57vh, 540px); }
   .hall-ball { position: relative; width: 100%; max-width: 380px; justify-self: center; aspect-ratio: 1; touch-action: none; cursor: ns-resize; border-radius: 50%; }
   .hall-ball:focus-visible { outline: 1.5px solid rgba(26,22,18,0.35); outline-offset: 4px; }
-  .hall-stack { position: relative; list-style: none; margin: 0; padding: 0; height: min(66vh, 540px); touch-action: none; }
+  .hall-stack { position: relative; list-style: none; margin: 0; padding: 0; height: clamp(420px, 57vh, 540px); touch-action: none; }
   .hall-tile { position: absolute; width: var(--tw); left: calc(100% - var(--tw) * var(--tin, 0.66)); top: 50%; aspect-ratio: 4 / 5;   /* about a third of it past the screen's edge */ border-radius: 22px; overflow: hidden;
     background: rgba(255,255,255,0.78);
     box-shadow: 0 1px 2px rgba(26,22,18,0.04), 0 14px 34px -16px rgba(26,22,18,0.18);
@@ -3121,9 +3123,11 @@
   .hall-label { position: relative; font: 200 12px/1.45 'Helvetica Neue', Helvetica, Arial, sans-serif; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(26,22,18,0.82); }
   @media (min-width: 720px) { .hall-label { font-size: 15px; letter-spacing: 0.18em; } }
   /* the project's thread tag (Grounding · Righteous · Lifted) under the title (Emmanuel, 23 Nov) */
-  .hall-tagline { margin: 0 0 26px; min-height: 14px; text-align: center; opacity: 0; transition: opacity 1.1s cubic-bezier(.22,1,.36,1) .35s; }
+  .hall-tagline { margin: 0 0 6px; min-height: 14px; text-align: center; opacity: 0; transition: opacity 1.1s cubic-bezier(.22,1,.36,1) .35s; }
   #view-project-hall.hall-on .hall-tagline { opacity: 1; }
-  .hall-people { margin-top: 28px; text-align: center; }
+  #hall-tag[hidden] { display: none; }   /* .project-tag sets display, which would override hidden */
+  .hall-people { margin-top: 14px; text-align: center; }
+  @media (min-width: 720px) { .hall-people { margin-top: 28px; } .hall-tagline { margin-bottom: 26px; } }
   .hall-names { list-style: none; margin: 0 auto; padding: 0; max-width: 620px; display: flex; flex-wrap: wrap; justify-content: center; gap: 2px 20px;   /* side by side, each at its own width */
     font: 200 13px/1.9 'Helvetica Neue', Helvetica, Arial, sans-serif; color: rgba(26,22,18,0.8); }   /* smaller (Emmanuel, 23 Nov) */
   .hall-names li { opacity: 0; filter: blur(6px); transform: translateY(6px); transition: opacity 1.3s cubic-bezier(.22,1,.36,1), filter 1.3s cubic-bezier(.22,1,.36,1), transform 1.3s cubic-bezier(.22,1,.36,1); }
@@ -6623,7 +6627,7 @@ Lord you are Holy, Holy, Holy</p>
     // the wingbeat (so flapping never changes it), turned into a zoom that puts the
     // dove at one fixed size on screen — a size set only by the swipe
     var fit = bgMat.uniforms.uVidFit.value;
-    var base = (W / H < 1 ? 0.115 : 0.062), mult = 2.6;
+    var base = (W / H < 1 ? 0.16 : 0.062), mult = 2.6;   /* phones: the dove starts larger (23 Nov, was 0.115); its largest size is still capped so it never crops */
     if (VID.ext && VID.K) {
       /* never cropped (Emmanuel, 21 Nov): at its nearest the whole bird, wingtip to
          wingtip and head to tail, still fits inside the screen */
@@ -6855,7 +6859,7 @@ Lord you are Holy, Holy, Holy</p>
   function build() {
     /* 22 Nov: the same total as before, shared out by each circle's area, so the
        larger first three are as dense as the rest */
-    var total = (W < 720 ? 2800 : 4000) * rings.length, area = 0;   /* one circle on screen at a time, so each can be richer */
+    var total = (W < 720 ? 3400 : 4000) * rings.length, area = 0;   /* phones: more dots for the bigger house (23 Nov, was 2800) */   /* one circle on screen at a time, so each can be richer */
     rings.forEach(function (rg) { area += rg.R * rg.R; });
     parts = [];
     rings.forEach(function (rg, ri) {
@@ -6970,7 +6974,8 @@ Lord you are Holy, Holy, Holy</p>
       /* the dots gather loosely into the house; a fifth of the cloud's own
          drift is kept, so the picture breathes instead of standing still */
       var ox = tx - g.x, oy = ty - g.y;
-      ox = ox * 0.2 + q.hx * g.R * 0.86; oy = oy * 0.2 + q.hy * g.R * 0.86;
+      var hs = W < 720 ? 1.04 : 0.86;   /* phones: a bigger house (23 Nov) */
+      ox = ox * 0.2 + q.hx * g.R * hs; oy = oy * 0.2 + q.hy * g.R * hs;
       tx = g.x + ox; ty = g.y + oy;
       q.gx = ox; q.gy = oy;   /* its place in the house, for the faint neighbour copy */
       /* scatter: a house not in view breaks into dust thrown outward (and a little up) */
@@ -7359,7 +7364,7 @@ Lord you are Holy, Holy, Holy</p>
     var be = document.getElementById('hall-ball'), te = document.querySelector('#view-project-hall .hall-tile.is-cur');
     if (!be || !te) return null;
     var br = be.getBoundingClientRect(), tr = te.getBoundingClientRect(); if (!br.width || !tr.width) return null;
-    var o = 6, g = { cx: br.left + br.width / 2, cy: br.top + br.height / 2, R: br.width * 0.36,
+    var o = 6, g = { cx: br.left + br.width / 2, cy: br.top + br.height / 2, R: br.width * (innerWidth < 720 ? 0.43 : 0.36),   /* a fuller ball on phones */
       tx: tr.left - o, ty: tr.top - o, tw: tr.width + 2 * o, th: tr.height + 2 * o, tr: 22 * (tr.width / te.offsetWidth) + o };
     g.ax = g.tx; g.ay = g.ty + g.th / 2;   /* the trail meets the tile's left side, half way down */
     var dx = g.ax - g.cx, dy = g.ay - g.cy, dl = Math.sqrt(dx * dx + dy * dy) || 1;
