@@ -3206,9 +3206,7 @@
   /* TRIAL — the projects on black (Emmanuel, 23 Nov). Everything here applies only while <html> has .dv-night.
      The white sheet becomes a fade to black; the words and controls turn light (never fainter than white .6). */
   .dv-night .dv-white { background: #000; height: 100%; transform: none !important; opacity: 0; will-change: opacity; }
-  /* a still, very fine film grain over the black (Emmanuel, 23 Nov), the same grain as the project page's tiles, in light */
-  .dv-night .dv-seeds::after, .dv-night .dv-white::after { content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1; opacity: .5;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .16 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E"); background-size: 160px 160px; }
+  /* the grain over the black was removed the same day (Emmanuel, 23 Nov: 'remove the grain so it's pure black'); backup backups/index.before-no-grain-2026-11-23.html */
   .dv-night .dv-seeds { background: #000; color: #fff; }
   .dv-night .dv-name { color: rgba(255,255,255,0.86); }
   .dv-night .dv-seed:hover .dv-name, .dv-night .dv-seed:focus-visible .dv-name { color: #fff; }
