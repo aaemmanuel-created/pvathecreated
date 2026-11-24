@@ -3193,6 +3193,13 @@
   @media (min-width: 720px) { .hall-label { font-size: 16px; } }
   #view-project-hall .hall-people { margin-top: 24px; }
   .hall-names { gap: 4px 16px; }
+  /* tighter project page (Emmanuel, 24 Nov: 'the names need to be moved up, the ball closer to the tile'): the title,
+     ball, tiles and names sit together as one group in the middle of the screen instead of the stage taking all the
+     height, and the ball sits just left of the front tile (20px apart) instead of in the middle of its half */
+  #view-project-hall .hall-in { justify-content: center; }
+  #view-project-hall .hall-stage { flex: 0 1 auto; --tw: min(66vw, 25vh, 300px); height: calc(var(--tw) * 1.25 + 56px); }   /* just the tile's height and a little room for the tiles peeking above and below */
+  @media (min-width: 720px) { #view-project-hall .hall-stage { --tw: min(30vw, 30vh, 380px); } }
+  #view-project-hall .hall-ball { justify-self: end; margin-right: calc(20px - (58vw - var(--tw) * var(--tin, 0.66))); }
 
   /* The projects arrive softly (Emmanuel, 23 Nov: 'maybe it has to do with how section 2 fades in?'). Coming from
      the dove, the title and the bars used to ride up the white page as hard, finished things while the house was
@@ -5111,6 +5118,30 @@ Lord you are Holy, Holy, Holy</p>
   (function restoreFromHash() {
     const hash = window.location.hash || '';
     if (!hash) return; // empty hash = stay on home
+
+    /* 24 Nov (Emmanuel: 'sometimes when I open up the url it takes me to what it looked like before'): an address with
+       an old # ending (#partner, #overseer, #renew, #workshop, #threads, #painting, #thoughts, or #project without the
+       password in this tab) used to open the old pages, which look like the site before the dove. Now only #project
+       with the password reopens a page (that same project); every other # ending opens the home, and #project without
+       the password opens the projects screen on that project, ready for its password. The old pages stay in the code
+       but no address reaches them. */
+    let hallTab = null; try { hallTab = sessionStorage.getItem('dvHall'); } catch (_) {}
+    const clearHash = () => { try { history.replaceState(null, '', location.pathname + location.search); } catch (_) {} };
+    if (hash === '#project' && hallTab && getAuthedTabs().indexOf(hallTab) >= 0) {   /* that project's password was given in this tab */
+      const reopen = () => { if (window.__fillHall) window.__fillHall(hallTab); showView('view-project-hall'); };
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', reopen); else setTimeout(reopen, 0);
+      return;
+    }
+    if (hash === '#project') {
+      try {
+        sessionStorage.setItem('dvAt', 'seeds');
+        const key = hallTab && /^housepva/.test(hallTab) ? 'house-pva' : hallTab;
+        const k = key ? [].map.call(document.querySelectorAll('.dv-seed'), b => b.getAttribute('data-tab')).indexOf(key) : -1;
+        if (k >= 0) sessionStorage.setItem('dvSlide', String(k));
+      } catch (_) {}
+    }
+    clearHash();
+    return;
 
     // Build reverse lookup (hash → view id)
     const reverse = {};
@@ -7693,6 +7724,7 @@ Lord you are Holy, Holy, Holy</p>
   /* a project's names in the order Emmanuel set (23 Nov); when given, this list is used as it is */
   var ORDER = { 'overseer': ['Marika "Marika" Bastien', 'Pietro Ciappelli', 'Mallory Oluchi Omegui', 'Dean "Deano" Dobson', 'Simon Kobina "Korby" Nyamekye Imbrah', 'Emmanuel', 'Joshua Spence', 'Arindy'] };
   window.__fillHall = function (tab) {
+    try { sessionStorage.setItem('dvHall', tab); } catch (_) {}   /* so a refresh on #project reopens this project */
     var link = document.querySelector('.partner-tab-link[data-tab="' + tab + '"]');
     var sn = document.querySelector('.dv-seed[data-tab="' + tab + '"]:not(.dv-multi) .dv-name');   /* the house's own name first, then the Partner list's */
     var name = sn ? (sn.getAttribute('aria-label') || sn.textContent).trim() : link ? (link.firstChild ? link.firstChild.textContent : link.textContent).replace(/[\u2192→]/g, '').trim() : 'Project';
