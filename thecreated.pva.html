@@ -9,19 +9,31 @@
      usual cross-fade between screens is skipped, until the right screen is ready (window.__bootDone). -->
 <style>
   html.dv-boot .view { transition: none !important; }
-  html.dv-boot-hall::after, html.dv-boot-seeds::after { content: ""; position: fixed; inset: 0; z-index: 2147483646; pointer-events: none; }
-  html.dv-boot-hall::after { background: #fff; }
-  html.dv-boot-seeds::after { background: #000; }
+  #dv-cover { position: fixed; inset: 0; z-index: 2147483646; pointer-events: none; }   /* a real element: Safari takes its bar colours from it (a ::after was ignored) */
+  /* the two strips Safari reads its bar colours from start in the right colour too (24 Nov: the bars flashed the
+     dove's purple and black on a refresh); once the page has set them itself (__tint gives them data-c) this stops */
+  html.dv-boot-hall #tint-top:not([data-c]), html.dv-boot-hall #tint-bot:not([data-c]) { background-color: #fff !important; }
+  html.dv-boot-seeds #tint-top:not([data-c]), html.dv-boot-seeds #tint-bot:not([data-c]) { background-color: #000 !important; }
+  html.dv-boot-hall, html.dv-boot-hall body { background-color: #fff !important; }
+  html.dv-boot-seeds, html.dv-boot-seeds body { background-color: #000 !important; }
 </style>
 <script>
   (function () {
     var c = document.documentElement, h = location.hash, at = null, tab = null, auth = [];
     try { at = sessionStorage.getItem('dvAt'); tab = sessionStorage.getItem('dvHall'); auth = JSON.parse(sessionStorage.getItem('pvathecreated:auth') || '[]') || []; } catch (e) {}
     var kind = (h === '#project' && tab && auth.indexOf(tab) >= 0) ? 'hall' : ((h === '#project') || (!h && at === 'seeds')) ? 'seeds' : '';
+    /* the bar colour (theme-color) is written here, already right, so Safari never sees the dove's purple first */
+    var tm = document.createElement('meta'); tm.name = 'theme-color'; tm.content = kind === 'hall' ? '#ffffff' : kind === 'seeds' ? '#000000' : '#5a2f9a';
+    document.head.appendChild(tm);
     if (!kind) return;
     c.classList.add('dv-boot', 'dv-boot-' + kind);
+    var cov = document.createElement('div'); cov.id = 'dv-cover'; cov.setAttribute('aria-hidden', 'true'); cov.style.backgroundColor = kind === 'hall' ? '#fff' : '#000';
+    c.appendChild(cov);
+    if (kind === 'seeds') { window.__dvBar = { top: '#000000', bot: '#000000' }; window.__dvSnap = true; }   /* the dove's loop jumps to the end instead of easing there */   /* the projects' bar colours from the start */
     window.__bootDone = function () {
       c.classList.remove('dv-boot-hall', 'dv-boot-seeds');
+      var cv0 = document.getElementById('dv-cover'); if (cv0) cv0.remove();
+      if (window.__dvChrome) window.__dvChrome();   /* the page now sets the bars itself */
       setTimeout(function () { c.classList.remove('dv-boot'); }, 60);   /* fades come back only after the first picture */
     };
     setTimeout(window.__bootDone, 3000);   /* never left covered */
@@ -30,8 +42,7 @@
 <link rel="preload" as="image" href="dove-frames.jpg" />   <!-- the dove's frames start loading with the page, not after the scripts (23 Nov) -->
 <title>thecreated</title>
 <meta name="description" content="thecreated — Powered by pvaOS™." />
-<meta name="theme-color" content="#5a2f9a" />
-<script>(function(){var c=document.documentElement.classList,m=document.querySelector('meta[name="theme-color"]');if(m&&c.contains('dv-boot-hall'))m.setAttribute('content','#ffffff');else if(m&&c.contains('dv-boot-seeds'))m.setAttribute('content','#000000');})();</script>   <!-- on a refresh into a page, the phone's bars start in that page's colour (24 Nov) -->
+<!-- theme-color is created by the first script in <head>, already in the right colour (24 Nov) -->
 <link rel="canonical" href="https://pvathecreated.co/" />
 
 <!-- Favicon + iOS Add-to-Home-Screen icon -->
@@ -3225,6 +3236,12 @@
   #view-project-hall .hall-head .project-tag::before { content: ""; position: absolute; inset: -13px -6px; }   /* a 44px place to press */
   #view-project-hall .hall-head .project-tag:active, #view-project-hall .hall-head .project-tag[aria-expanded="true"] { transform: scale(.97); }
   #view-project-hall .hall-head .project-tag:focus-visible { outline: 1.5px solid rgba(26,22,18,0.4); outline-offset: 4px; }
+  /* the tag comes out from the right side of the phone (Emmanuel, 24 Nov): it sits flush with the screen's right
+     edge, rounded only on its left, its border open on the right, and slides out from the edge as the page opens */
+  #view-project-hall .hall-head .hall-tagline { right: 0 !important; transform: translate(100%, -50%); transition: opacity 1.1s cubic-bezier(.22,1,.36,1) .35s, transform .7s cubic-bezier(.22,1,.36,1) .45s; }
+  #view-project-hall.hall-on .hall-head .hall-tagline { transform: translate(0, -50%); }
+  #view-project-hall .hall-head .project-tag { border-radius: 3px 0 0 3px; border-right-width: 0; padding: 3px calc(16px + env(safe-area-inset-right)) 3px 9px; }
+  @media (prefers-reduced-motion: reduce) { #view-project-hall .hall-head .hall-tagline { transition: opacity .3s ease; transform: translate(0, -50%); } }
   .thread-pop { position: absolute; z-index: 5; right: max(16px, env(safe-area-inset-right)); top: calc(16px + env(safe-area-inset-top) + 44px + 10px);
     width: min(300px, calc(100vw - 32px)); box-sizing: border-box; padding: 16px 18px 18px; border-radius: 18px;
     background: rgba(255,255,255,0.56); -webkit-backdrop-filter: blur(18px) saturate(1.5); backdrop-filter: blur(18px) saturate(1.5);
@@ -5966,6 +5983,7 @@ Lord you are Holy, Holy, Holy</p>
   var lastChrome = '';
   function chrome() {
     if (!home.classList.contains('active')) return;
+    if (/\bdv-boot-(hall|seeds)\b/.test(document.documentElement.className)) return;   /* the refresh cover decides the bars until it lifts */
     /* 22 Nov (Emmanuel: 'the tool bar and bottom bar don't change colour to match'):
        the phone's top bar takes the colour at the top of the picture and the bottom
        bar the colour at its foot, read from the drawn frame a few times a second;
@@ -7011,6 +7029,7 @@ Lord you are Holy, Holy, Holy</p>
   // ---- the loop ----
   var phase = Math.PI / 2, beats = 0, prevC = 0, glowAuto = 0, autoA = 0;
   var edgeN = 0, edgePx = new Uint8Array(4), edgeT = null, edgeB = null, PAPER = window.__dvNight ? [0, 0, 0] : [255, 255, 255], barT = [90, 47, 154], barB = [0, 0, 0];
+  if (document.documentElement.classList.contains('dv-boot-seeds')) { barT = PAPER.slice(); barB = PAPER.slice(); }   /* a refresh on the projects: the bars start in the page's colour, not the dove's purple (24 Nov) */
   function edgeHex(q) { function h(v) { v = Math.min(255, Math.round(v / 3) * 3); return (v < 16 ? '0' : '') + v.toString(16); } return '#' + h(q[0]) + h(q[1]) + h(q[2]); }
   var bHoldV = null, riseS = 0, wipeS = 0, bleedT = 0, bleedRate = 0, restA = 0, restT = 0, appS = 0, bSlow = 0, dustS = 0, ps = 0, pPrev = 0, velS = 0, freqS = 0.3, last = performance.now(), clock = 0;
   var tmp = new THREE.Vector3();
@@ -7030,6 +7049,13 @@ Lord you are Holy, Holy, Holy</p>
        dust keep up with it, so the growth is seen before the white sheet arrives; at rest and under the finger they
        keep their slow, unhurried pace */
     var trip = window.__dvTrip ? 1 : 0;
+    /* a refresh on the projects (24 Nov): the dove's state jumps straight to its end, so nothing — the bars included —
+       passes back through the dove's colours on the way */
+    if (window.__dvSnap && p > 0.5) {
+      window.__dvSnap = false; ps = p; pPrev = p; velS = 0;
+      dustS = smooth(0.34, 0.95, ps); bSlow = Math.pow(smooth(0.0, 0.94, ps), 1.7); wipeS = ps > 0.8 ? 1 : 0;
+      barT = PAPER.slice(); barB = PAPER.slice();
+    }
     ps += (p - ps) * (1 - Math.exp(-dt * 2.4));   /* the same pace as the way back */
     var vel = Math.abs(p - pPrev) / dt; pPrev = p;
     velS += (Math.min(vel, 2.5) - velS) * (1 - Math.exp(-dt * 5));
