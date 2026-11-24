@@ -2948,7 +2948,7 @@
     overflow: hidden;
     /* the page opens on the colours at once (Emmanuel, 23 Nov: 'why is there a black first?'): the same
        purple → red → black as the live gradient, painted in CSS while three.js loads, then covered by it */
-    background: linear-gradient(180deg, rgb(126,72,192) 0%, rgb(118,64,182) 10%, rgb(96,38,140) 20%, rgb(122,32,90) 30%, rgb(146,29,50) 40%, rgb(140,25,31) 50%, rgb(68,10,15) 60%, rgb(18,4,6) 70%, rgb(10,3,5) 80%, rgb(9,3,6) 100%);
+    background: linear-gradient(180deg, rgb(126,72,192) 0%, rgb(118,64,182) 10%, rgb(96,38,140) 20%, rgb(122,32,90) 30%, rgb(146,29,50) 40%, rgb(140,25,31) 50%, rgb(68,10,15) 60%, rgb(12,2,4) 70%, #000 80%, #000 100%);   /* pure black at the foot (24 Nov) */
   }
   .dv-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; opacity: 0; transition: opacity .5s ease; }
   .dv-canvas.drawn { opacity: 1; }
@@ -3319,9 +3319,88 @@
   .hall-open-body { position: fixed; left: 0; right: 0; bottom: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 0 24px calc(32px + env(safe-area-inset-bottom)); box-sizing: border-box;
     opacity: 0; transform: translateY(16px); transition: opacity .3s ease, transform .3s cubic-bezier(.22,1,.36,1); }
   .hall-open.grown .hall-open-body { opacity: 1; transform: none; pointer-events: auto; transition: opacity .5s cubic-bezier(.22,1,.36,1) .3s, transform .5s cubic-bezier(.22,1,.36,1) .3s; }
-  .hall-open-cds { display: none; }
-  .hall-open.has-cds .hall-open-cds { display: grid; }
-  .hall-open.grown .hall-open-cds .cd { opacity: 1; transform: none; transition-delay: calc(var(--d, 0s) + .35s); }
+  /* Music: five spinning CDs (Emmanuel, 24 Nov: 'the music tile should show 5 spinning CDs then clicking on a CD
+     reveals its details'). Each disc turns on its own speed; the label in the middle carries the project's colours,
+     so the turning shows. The light on top stays still, as on a real disc. A tap brings that disc forward and opens
+     its details below; a second tap on it (or on another) changes or closes them. */
+  .hall-open-cds { display: none; list-style: none; margin: 0 auto; padding: 0; max-width: 420px; }
+  /* a loose, playful cluster (Emmanuel, 24 Nov: 'arrange the CDs in a fun way — not all the same row'): three
+     higher, two lower, each its own size, each floating gently at its own pace; all upright */
+  .hall-open.has-cds .hall-open-cds { display: block; position: relative; --u: min(19vw, 76px); height: calc(var(--u) * 2.35); margin-top: 4px; }
+  .cdx { position: absolute; left: calc(var(--x) - var(--u) * var(--k) / 2); top: calc(var(--u) * var(--y)); width: calc(var(--u) * var(--k)); aspect-ratio: 1; opacity: 0; transform: translateY(12px) scale(.94);
+    transition: opacity .7s cubic-bezier(.22,1,.36,1), transform .7s cubic-bezier(.22,1,.36,1); transition-delay: var(--d, 0s); }
+  .hall-open.grown .cdx { opacity: 1; transform: none; transition-delay: calc(var(--d, 0s) + .35s); }
+  .hall-open.grown .hall-open-cds.has-pick .cdx:not(.is-on) { opacity: .45; transition-delay: 0s; }
+  .cdx-btn { animation: cdxBob var(--bob, 5s) ease-in-out infinite; animation-delay: var(--bd, 0s); }
+  @keyframes cdxBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+  /* the disc itself (Emmanuel, 24 Nov, from his video 'lik lik Rotating CD'; an earlier brushed-silver try, from
+     'ok see', is in backups/index.before-glass-cds-2026-11-24.html): a dark glassy disc with curved rainbow streaks of
+     light, thin bright rings round the hub and a see-through hole, turning like a coin about its upright axis */
+  .cdx-btn { position: relative; display: block; width: 100%; height: 100%; padding: 0; border: 0; border-radius: 50%; background: none; cursor: pointer; -webkit-tap-highlight-color: transparent; touch-action: manipulation; perspective: 360px; }
+  .cdx-disc { position: absolute; inset: 0; transform-style: preserve-3d; -webkit-transform-style: preserve-3d; animation: cdxTurn var(--sp, 7s) linear infinite; }
+  .cdx-face { position: absolute; inset: 0; border-radius: 50%; overflow: hidden; -webkit-backface-visibility: hidden; backface-visibility: hidden;
+    -webkit-mask: radial-gradient(circle, transparent 0 10.5%, #000 11%); mask: radial-gradient(circle, transparent 0 10.5%, #000 11%);
+    background:
+      conic-gradient(from 180deg at 50% 50%, transparent 0deg, rgba(255,255,255,0.06) 8deg, rgba(255,255,255,0.42) 20deg, rgba(255,255,255,0.7) 27deg, rgba(160,195,255,0.5) 33deg, rgba(200,150,255,0.3) 42deg, rgba(150,230,210,0.12) 52deg, transparent 66deg,
+        transparent 172deg, rgba(255,255,255,0.08) 182deg, rgba(255,255,255,0.45) 196deg, rgba(255,255,255,0.66) 203deg, rgba(210,170,255,0.42) 211deg, rgba(140,220,255,0.2) 222deg, transparent 238deg),
+      conic-gradient(from 20deg at 50% 50%, transparent 0deg, rgba(120,200,255,0.12) 10deg, rgba(255,255,255,0.34) 22deg, rgba(220,150,255,0.24) 32deg, rgba(150,255,210,0.1) 44deg, transparent 60deg,
+        transparent 190deg, rgba(150,255,210,0.12) 202deg, rgba(255,255,255,0.3) 214deg, rgba(170,180,255,0.16) 226deg, transparent 244deg),
+      radial-gradient(circle, #3a3c42 0, #24262b 30%, #141519 62%, #0e0f12 86%, #2a2c31 99%);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.22), inset 0 0 0 2px rgba(0,0,0,0.5); }
+  .cdx-face.back { transform: rotateY(180deg); }
+  .cdx-face::after { content: ""; position: absolute; inset: 0; border-radius: 50%;   /* the thin bright rings round the hub */
+    background: radial-gradient(circle, transparent 0 12.5%, rgba(255,255,255,0.75) 13% 13.8%, transparent 14.6% 17.6%, rgba(255,255,255,0.55) 18% 18.7%, transparent 19.5% 24.5%, rgba(255,255,255,0.8) 25% 25.8%, transparent 26.6% 27.6%, rgba(255,255,255,0.45) 28% 28.6%, transparent 29.4%),
+      radial-gradient(circle, rgba(8,8,10,0.85) 0 12.5%, transparent 13%); }
+  .cdx-shadow { position: absolute; left: 14%; right: 14%; bottom: -12%; height: 10%; border-radius: 50%; background: radial-gradient(closest-side, rgba(26,22,18,0.22), transparent); pointer-events: none; }
+  .cdx-btn:focus-visible { outline: 1.5px solid rgba(26,22,18,0.4); outline-offset: 6px; }
+  @keyframes cdxTurn { from { transform: rotateY(0deg); } to { transform: rotateY(360deg); } }   /* upright: no backward tilt (it read as leaning, 24 Nov) */
+  /* A CD opened (Emmanuel, 24 Nov: 'when you click on a CD take it to the top of the screen, blur everything —
+     then have the written by, produced by, performed by and also waveforms that will play the actual music').
+     The tapped disc is carried (still turning) to the top of the screen over a blur of everything; its credits and
+     its tracks come in below. A tap on the disc, on the blur or the phone's back carries it home. */
+  .cdd { position: fixed; inset: 0; z-index: 2147482400; visibility: hidden; pointer-events: none; }
+  .cdd.on { visibility: visible; pointer-events: auto; }
+  .cdd-veil { position: absolute; inset: 0; background: rgba(255,255,255,0); -webkit-backdrop-filter: blur(0px); backdrop-filter: blur(0px);
+    transition: background .45s ease, -webkit-backdrop-filter .45s ease, backdrop-filter .45s ease; cursor: pointer; }
+  .cdd.grown .cdd-veil { background: rgba(255,255,255,0.62); -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); }
+  .cdd-disc { position: fixed; perspective: 600px; cursor: pointer; z-index: 2;
+    transition: left .6s cubic-bezier(.22,1,.36,1), top .6s cubic-bezier(.22,1,.36,1), width .6s cubic-bezier(.22,1,.36,1), height .6s cubic-bezier(.22,1,.36,1); }
+  .cdd-disc .cdx-disc { animation-duration: 9s; }
+  .cdd-disc .cdx-shadow { bottom: -9%; }
+  .cdd-body { position: absolute; left: 0; right: 0; bottom: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; z-index: 1;
+    padding: 0 24px calc(40px + env(safe-area-inset-bottom)); box-sizing: border-box; text-align: center;
+    opacity: 0; transform: translateY(14px); transition: opacity .3s ease, transform .3s cubic-bezier(.22,1,.36,1); }
+  .cdd.grown .cdd-body { opacity: 1; transform: none; transition: opacity .5s cubic-bezier(.22,1,.36,1) .3s, transform .5s cubic-bezier(.22,1,.36,1) .3s; }
+  .cdd-in { max-width: 420px; margin: 0 auto; }
+  .cdd-kick { margin: 0 0 8px; font: 400 11px/1.4 'Courier Prime', 'Courier New', monospace; letter-spacing: .2em; text-transform: uppercase; color: rgba(26,22,18,0.6); }
+  .cdd-title { margin: 0 0 24px; font: 300 28px/1.15 'Helvetica Neue', Helvetica, Arial, sans-serif; color: var(--ink, #1a1612); }
+  .cdd-credits { margin: 0 0 32px; padding: 0; display: grid; gap: 12px; }
+  .cdd-credits div { display: grid; gap: 4px; }
+  .cdd-credits dt { font: 400 11px/1.4 'Courier Prime', 'Courier New', monospace; letter-spacing: .2em; text-transform: uppercase; color: rgba(26,22,18,0.6); }
+  .cdd-credits dd { margin: 0; font: 300 16px/1.4 'Helvetica Neue', Helvetica, Arial, sans-serif; color: rgba(26,22,18,0.86); }
+  .cdd-credits dd.tbc { color: rgba(26,22,18,0.6); }
+  .cdd-tracks { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; text-align: left; }
+  .cdd-track { display: grid; grid-template-columns: 44px 1fr auto; grid-template-rows: auto 36px; column-gap: 12px; row-gap: 4px; align-items: center; }
+  .cdd-tname { grid-column: 2 / 4; font: 300 13px/1.3 'Helvetica Neue', Helvetica, Arial, sans-serif; color: rgba(26,22,18,0.78); }
+  .cdd-play { grid-row: 1 / 3; width: 44px; height: 44px; border-radius: 50%; border: 1px solid rgba(26,22,18,0.16); background: rgba(255,255,255,0.7);
+    display: grid; place-items: center; padding: 0; cursor: pointer; color: var(--ink, #1a1612); -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+  .cdd-play:disabled { cursor: default; opacity: .45; }
+  .cdd-play svg { width: 14px; height: 14px; display: block; }
+  .cdd-play .ic-pause { display: none; } .cdd-track.playing .cdd-play .ic-pause { display: block; } .cdd-track.playing .cdd-play .ic-play { display: none; }
+  .cdd-wave { width: 100%; height: 36px; display: block; cursor: pointer; touch-action: manipulation; }
+  .cdd-track.tbc .cdd-wave { cursor: default; }
+  .cdd-time { font: 400 11px/1 'Courier Prime', 'Courier New', monospace; letter-spacing: .08em; color: rgba(26,22,18,0.6); font-variant-numeric: tabular-nums; min-width: 40px; text-align: right; }
+  @media (prefers-reduced-motion: reduce) { .cdd-disc, .cdd-body, .cdd-veil { transition: none !important; } }
+  .cdx-info { display: none; max-width: 420px; margin: 24px auto 0; text-align: center; }
+  .hall-open.has-cds .cdx-info { display: block; }
+  .cdx-info-in { opacity: 0; transform: translateY(8px); transition: opacity .45s cubic-bezier(.22,1,.36,1), transform .45s cubic-bezier(.22,1,.36,1); }
+  .cdx-info.on .cdx-info-in { opacity: 1; transform: none; }
+  .cdx-kick { margin: 0 0 8px; font: 400 11px/1.4 'Courier Prime', 'Courier New', monospace; letter-spacing: .2em; text-transform: uppercase; color: rgba(26,22,18,0.6); }
+  .cdx-title { margin: 0 0 8px; font: 300 24px/1.2 'Helvetica Neue', Helvetica, Arial, sans-serif; color: var(--ink, rgba(26,22,18,0.86)); }
+  .cdx-line { margin: 0; font: 300 16px/1.5 'Helvetica Neue', Helvetica, Arial, sans-serif; color: rgba(26,22,18,0.68); }
+  .cdx-hint { margin: 0; font: 400 11px/1.4 'Courier Prime', 'Courier New', monospace; letter-spacing: .2em; text-transform: uppercase; color: rgba(26,22,18,0.6); transition: opacity .3s ease; }
+  .cdx-info.on .cdx-hint { display: none; }
+  @media (prefers-reduced-motion: reduce) { .cdx-disc, .cdx-btn { animation: none; } .cdx, .cdx-info-in { transition: none; } }
   .hall-open-soon { display: none; margin: 8px 0 0; text-align: center; font: 400 11px/1.4 'Courier Prime', 'Courier New', monospace; letter-spacing: .2em; text-transform: uppercase; color: rgba(26,22,18,0.6); }
   .hall-open:not(.has-cds) .hall-open-soon { display: block; }
   /* the rest of the page steps back while a card is open */
@@ -4563,6 +4642,10 @@ Lord you are Holy, Holy, Holy</p>
   const PROTECTED_VIEWS = ['view-project-hall', 'view-partner-shop', 'view-project-overseer', 'view-project-righthere', 'view-project-renew'];
 
   function showView(id) {
+    /* the old 'Please select the seed you are partnering on' list is retired (Emmanuel, 24 Nov: 'the list of the
+       projects from the previous iteration is still there … how can we get rid of it?'): every way into it now lands
+       on the projects screen (the houses), which has its own password tab */
+    if (id === 'view-partner-welcome') { id = 'view-home'; if (window.__dvToSeeds) setTimeout(window.__dvToSeeds, 0); }
     const __prev = document.querySelector('.view.active');
     views.forEach(v => v.classList.toggle('active', v.id === id));
     // Match the browser chrome (iOS Safari bars + safe areas + the
@@ -4946,11 +5029,12 @@ Lord you are Holy, Holy, Holy</p>
       if (!window.__dvPop && history.state && history.state.dv) { history.back(); return; }
       const currentView = document.querySelector('.view.active');
       if (currentView && currentView.id === 'view-project-music') { showView('view-project-hall'); return; }   /* the CDs → back to the project page */
+      if (window.__cdOpenIs && window.__cdOpenIs()) { window.__cdClose(); return; }   /* an open CD goes home first */
       if (currentView && currentView.id === 'view-project-hall' && window.__hallOpenIs && window.__hallOpenIs()) { window.__hallClose(); return; }   /* an open card goes home first */
 
       // Came in through a project circle on the home page? Back goes
       // straight home to the circles (the scroll place is kept).
-      if (window.__dvFromCircle && currentView && (currentView.id === 'view-partner-welcome' ||
+      if (currentView && (currentView.id === 'view-partner-welcome' ||   /* always (24 Nov): before, after a refresh Back fell through to the old list */
           currentView.id.startsWith('view-project-') || currentView.id === 'view-partner-shop')) {
         window.__dvFromCircle = false;
         if (ppInput) { ppInput.value = ''; ppInput.blur(); }
@@ -4958,6 +5042,7 @@ Lord you are Holy, Holy, Holy</p>
         flashTo(() => {
           showView('view-home');
           document.getElementById('view-partner-welcome').classList.remove('prompt-shown');
+          if (window.__dvToSeeds) window.__dvToSeeds();   /* back on the projects screen, not the dove */
         }, 'settle');
         return;
       }
@@ -6115,6 +6200,7 @@ Lord you are Holy, Holy, Holy</p>
     /* a refresh keeps your place (Emmanuel, 23 Nov: 'refreshing on section 2 shouldn't take users back to
        section 1'): which section you're in is kept for this tab, and on load the page opens there */
     function savePlace() { try { sessionStorage.setItem('dvAt', scroller.scrollTop >= seedsTop() - 2 ? 'seeds' : 'dove'); } catch (_) {} }
+    window.__dvToSeeds = function () { if (window.__dvNight) { window.__dvBar = { top: '#000000', bot: '#000000' }; window.__dvSnap = true; } scroller.scrollTop = seedsTop(); below = true; seedsEl.classList.remove('dv-wait'); requestAnimationFrame(function () { scroller.scrollTop = seedsTop(); savePlace(); if (window.__dvChrome) window.__dvChrome(); setTimeout(function () { if (window.__dvChrome) window.__dvChrome(); }, 400); }); };   /* the bars take the projects' black */
     (function restorePlace() {
       var at = null; try { at = sessionStorage.getItem('dvAt'); } catch (_) {}
       if (at !== 'seeds' || location.hash) return;
@@ -6295,7 +6381,7 @@ Lord you are Holy, Holy, Holy</p>
       'uniform float uT, uBT, uB, uPulse, uDoveR, uVidOn, uVidMix, uDpr, uZ, uNight; uniform vec2 uRes, uDove, uVidFit, uCtr; uniform sampler2D uVidA, uVidB; varying vec2 vUv;',
       'vec3 thermal(float h){ h = clamp(h, 0.0, 1.0);',                     /* the site colours: purple, red, white */
       /* purple at the top, red beneath it, black at the foot (Emmanuel: 'this is the one') */
-      '  vec3 k = mix(vec3(0.04,0.012,0.02), vec3(0.27,0.04,0.06), smoothstep(0.0, 0.18, h));',
+      '  vec3 k = mix(vec3(0.0), vec3(0.27,0.04,0.06), smoothstep(0.0, 0.18, h));',   /* pure black at the foot (Emmanuel, 24 Nov) */
       '  k = mix(k, vec3(0.61,0.11,0.13), smoothstep(0.14, 0.34, h));',   /* #9c1b22 Righteous red */
       '  k = mix(k, vec3(0.35,0.14,0.56), smoothstep(0.30, 0.50, h));',   /* #5a2390 Grounding purple */
       '  k = mix(k, vec3(0.64,0.43,0.95), smoothstep(0.46, 0.66, h));',   /* #a46ef2 bright purple */
@@ -7806,13 +7892,72 @@ Lord you are Holy, Holy, Holy</p>
       if (btn.dataset.busy) return;
       btn.dataset.busy = '1';
       var rg = rings[i];
-      if (rg && !reduceQ.matches) rg.doorT = 1;   /* the house disperses */
+      /* Emmanuel, 24 Nov: 'let the light start to bleed before the particles disperse' — the light begins in
+         the whole house first; the dots break away only once it is glowing */
+      var bleeding = !reduceQ.matches && lightBleed(i, rg);
+      if (rg && !reduceQ.matches) { if (bleeding) setTimeout(function () { rg.doorT = 1; }, BLEED_LEAD); else rg.doorT = 1; }   /* the house disperses */
       setTimeout(function () {
         if (window.__dvMark) window.__dvMark.go(handoff(i), rg ? rg.pal : null);
         openSeed(tab);
         // the house is whole again by the time you come back
         setTimeout(function () { if (rg) { rg.doorT = 0; rg.door = 0; } delete btn.dataset.busy; }, 900);
-      }, reduceQ.matches ? 0 : 950);
+      }, reduceQ.matches ? 0 : bleeding ? BLEED_FULL : 950);
+  }
+  /* Light bleeds from the dust (Emmanuel, 24 Nov: 'a light bleed from the particles into the rest of the screen —
+     the white bleeds into the black from the particles'). As the house disperses, every speck starts to glow; the
+     glows swell and run together, tinted at their edges with the house's own colours, until the black is white.
+     The project page (white) is put in underneath, and the light then lifts away. Drawn on a small canvas
+     (a third of the pixels: it is only soft light) above the page, below the small house's dust. */
+  var BLEED_FULL = 1500, BLEED_OUT = 650, BLEED_LEAD = 550;   /* light alone for 0.55 s, then the dust flies inside it */
+  function lightBleed(ri, rg) {
+    if (!rg) return false;
+    var cv = document.createElement('canvas'), ctx = cv.getContext('2d'); if (!ctx) return false;
+    var vw = window.innerWidth, vh = window.innerHeight, S = 0.35;
+    cv.width = Math.max(1, Math.round(vw * S)); cv.height = Math.max(1, Math.round(vh * S));
+    cv.setAttribute('aria-hidden', 'true');
+    cv.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:2147481000';
+    document.body.appendChild(cv);
+    var pal = rg.pal || FALLBACK, diag = Math.hypot(vw, vh);
+    /* the light is born where the house's specks were at the tap, so it swells out of the house's own shape
+       (following the flying dust scattered it into separate blobs); it drifts a little with the dust */
+    var sr0 = sec.getBoundingClientRect(), mine = [];
+    for (var k = 0; k < parts.length; k++) if (parts[k].ri === ri) mine.push(k);
+    var step = Math.max(1, Math.floor(mine.length / 120)), pts = [];
+    for (var k2 = 0; k2 < mine.length; k2 += step) { var q0 = parts[mine[k2]]; pts.push([mine[k2], q0.x + sr0.left, q0.y + sr0.top]); }
+    var t0 = performance.now(), FULL = BLEED_FULL, OUT = BLEED_OUT;
+    var ease = function (x) { return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };
+    function frame(now) {
+      var e = now - t0, sr = sec.getBoundingClientRect();
+      ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, cv.width, cv.height);
+      ctx.setTransform(S, 0, 0, S, 0, 0);
+      if (e < FULL) {
+        var p = e / FULL, g = ease(p);
+        /* each speck's glow: small at first (the house lights up), then swelling until the glows meet and flood out */
+        var rad = rg.R * (0.14 + 0.5 * p) + diag * 0.9 * g * g, a = Math.min(1, 0.3 + p * 1.4);
+        ctx.globalCompositeOperation = 'lighter';
+        for (var j = 0; j < pts.length; j++) {
+          var P = pts[j], q = parts[P[0]], x = P[1] + (q.x + sr.left - P[1]) * 0.18, y = P[2] + (q.y + sr.top - P[2]) * 0.18, c = pal[j % pal.length];
+          var gr = ctx.createRadialGradient(x, y, 0, x, y, rad);
+          gr.addColorStop(0, 'rgba(255,255,255,' + (a * 0.16).toFixed(3) + ')');
+          gr.addColorStop(0.5, 'rgba(255,255,255,' + (a * 0.07).toFixed(3) + ')');
+          gr.addColorStop(0.78, 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + (a * 0.05).toFixed(3) + ')');   /* the house's colour at the rim of the light */
+          gr.addColorStop(1, 'rgba(0,0,0,0)');
+          ctx.fillStyle = gr; ctx.fillRect(x - rad, y - rad, rad * 2, rad * 2);
+        }
+        /* the last of the black goes evenly */
+        var w = Math.max(0, (p - 0.72) / 0.28);
+        if (w > 0) { ctx.globalCompositeOperation = 'source-over'; ctx.fillStyle = 'rgba(255,255,255,' + (w * w).toFixed(3) + ')'; ctx.fillRect(0, 0, vw, vh); }
+        requestAnimationFrame(frame); return;
+      }
+      /* fully white: the project page is now underneath; the light lifts away */
+      var o = Math.min(1, (e - FULL) / OUT);
+      ctx.globalCompositeOperation = 'source-over'; ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, vw, vh);
+      cv.style.opacity = String(1 - o * o * (3 - 2 * o));
+      if (o < 1) { requestAnimationFrame(frame); return; }
+      cv.remove();
+    }
+    requestAnimationFrame(frame);
+    return true;
   }
 })();
 </script>
@@ -7960,7 +8105,7 @@ Lord you are Holy, Holy, Holy</p>
   /* people added to a project who have no role written on its old page yet (Emmanuel, 23 Nov) */
   var MORE = {};
   /* a project's names in the order Emmanuel set (23 Nov); when given, this list is used as it is */
-  var ORDER = { 'overseer': ['Marika "Marika" Bastien', 'Pietro Ciappelli', 'Mallory Oluchi Omegui', 'Dean "Deano" Dobson', 'Simon Kobina "Korby" Nyamekye Imbrah', 'Emmanuel "Thecreated" Anie-Akwetey', 'Joshua Spence', 'Arindy Plet'],
+  var ORDER = { 'overseer': ['Marika "Marika" Bastien', 'Pietro Ciappelli', 'Mallory Oluchi Omegui', 'Dean "Deano" Dobson', 'Simon Kobina "Korby" Nyamekye Imbrah', 'Joshua Spence', 'Arindy Plet', 'Emmanuel "Thecreated" Anie-Akwetey'],   /* 24 Nov (Emmanuel): his name under Joshua Spence and Arindy Plet */
                 'wrestle': ['Mallory Oluchi Omegui', 'Marika "Marika" Bastien', 'Arindy Plet', 'Emmanuel "Thecreated" Anie-Akwetey', 'Joshua Spence', 'Rasharn Powell', 'Pietro Ciappelli'] };
   /* the line under the title stays on one line: it shrinks (never below 11px) only if it must (24 Nov) */
   function fitHallDesc() {
@@ -8111,6 +8256,7 @@ Lord you are Holy, Holy, Holy</p>
     var key = tab && /^housepva/.test(tab) ? 'house-pva' : tab, pal = (window.__dvPal && window.__dvPal(key)) || [[90, 35, 144], [156, 27, 34], [168, 122, 28]];
     target.textContent = '';
     var c = function (q) { return 'rgb(' + q[0] + ',' + q[1] + ',' + q[2] + ')'; };
+    if (target === oCDs) return buildSpin(target, pal, c);
     var looks = [[0, 1, 2, 135], [1, 2, 0, 160], [2, 0, 1, 115], [0, 2, 1, 200], [1, 0, 2, 145], [2, 1, 0, 180]];   /* each sleeve mixes the project's three colours its own way */
     for (var i = 0; i < 6; i++) {
       var L = looks[i], li = document.createElement('li'), b = document.createElement('button'), disc = document.createElement('span'), sl = document.createElement('span'), no = document.createElement('span');
@@ -8123,10 +8269,145 @@ Lord you are Holy, Holy, Holy</p>
       b.addEventListener('click', function () { var me = this.parentNode, was = me.classList.contains('is-out'); [].forEach.call(target.children, function (x) { x.classList.remove('is-out'); }); if (!was) me.classList.add('is-out'); });
     }
   }
+  /* The five spinning CDs inside the open Music card. Everything about a CD is Emmanuel's to give — never invent
+     titles, names or songs. Until given, the CD page says 'To come' and its track shows 'Sound to come'.
+     To fill one in: CDS['<project>'][i] = { title: '…', written: '…', produced: '…', performed: '…',
+       tracks: [{ title: '…', src: 'music/<file>.mp3' }] }   (put the files in Thecreated/music/ and copy that
+     folder on deploy; same-origin files only, so the waveform can be read). */
+  var CDS = window.__CDS = {};
+  function cdData(i) { var tab = null; try { tab = sessionStorage.getItem('dvHall'); } catch (_) {} var list = CDS[tab] || []; return list[i] || {}; }
+  /* where each CD sits: [centre across %, top in units, size in units, float seconds] */
+  var SPOTS = [[17, 0.12, 0.86, 5.2], [47, 0, 0.7, 4.4], [80, 0.2, 0.95, 6], [32, 1.08, 1.05, 5.6], [66, 1.2, 0.78, 4.8]];
+  function buildSpin(target, pal, c) {
+    var info = oInfo, labs = [[0, 1, 2], [1, 2, 0], [2, 0, 1], [0, 2, 1], [1, 0, 2]], speeds = [7, 9.5, 6.5, 11, 8];
+    target.classList.remove('has-pick');
+    info.classList.remove('on'); info.innerHTML = '<p class="cdx-hint">Tap a CD</p>';
+    for (var i = 0; i < 5; i++) {
+      var li = document.createElement('li'), b = document.createElement('button'), disc = document.createElement('span');
+      li.className = 'cdx'; li.style.setProperty('--d', (0.07 * i + 0.05).toFixed(2) + 's');
+      var P = SPOTS[i]; li.style.setProperty('--x', P[0] + '%'); li.style.setProperty('--y', P[1]); li.style.setProperty('--k', P[2]);
+      li.style.setProperty('--bob', P[3] + 's'); li.style.setProperty('--bd', (-P[3] * 0.37 * i).toFixed(2) + 's');
+      b.className = 'cdx-btn'; b.type = 'button'; b.setAttribute('aria-label', 'CD ' + (i + 1));
+      disc.className = 'cdx-disc';
+      disc.style.setProperty('--sp', speeds[i] + 's');
+      disc.style.animationDelay = (-speeds[i] * (0.21 * i)).toFixed(2) + 's';   /* each is at a different turn */
+      var front = document.createElement('span'), back = document.createElement('span'), sh = document.createElement('span');
+      front.className = 'cdx-face'; back.className = 'cdx-face back'; sh.className = 'cdx-shadow';
+      disc.appendChild(front); disc.appendChild(back); b.appendChild(sh);
+      b.appendChild(disc); li.appendChild(b); target.appendChild(li);
+      (function (k, btn) {
+        btn.addEventListener('click', function (e) { e.stopPropagation(); openCD(k, btn, c(pal[labs[k][0]])); });
+      })(i, b);
+    }
+  }
+  /* ---- the CD page ---- */
+  var cdd = document.createElement('div'); cdd.className = 'cdd'; cdd.setAttribute('role', 'dialog'); cdd.setAttribute('aria-modal', 'true'); cdd.setAttribute('aria-hidden', 'true');
+  cdd.innerHTML = '<div class="cdd-veil"></div><div class="cdd-body"><div class="cdd-in"></div></div><div class="cdd-disc" role="button" tabindex="0" aria-label="Close the CD"></div>';
+  document.body.appendChild(cdd);
+  var cdVeil = cdd.querySelector('.cdd-veil'), cdBody = cdd.querySelector('.cdd-body'), cdIn = cdd.querySelector('.cdd-in'), cdDisc = cdd.querySelector('.cdd-disc');
+  var cdFrom = null, cdBusy = false, cdAudio = null, cdRaf = 0, cdTracks = [];
+  function cdPlace(r) { cdDisc.style.left = r.left + 'px'; cdDisc.style.top = r.top + 'px'; cdDisc.style.width = r.width + 'px'; cdDisc.style.height = r.height + 'px'; }
+  function cdTarget() {
+    var W = window.innerWidth, H = window.innerHeight, size = Math.round(Math.min(W * 0.44, H * 0.24, 190));
+    return { left: Math.round((W - size) / 2), top: (window.__safeTop || 0) + 40, width: size, height: size };
+  }
+  var esc = function (t) { return String(t).replace(/[&<>"]/g, function (ch) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]; }); };
+  var IC = '<svg class="ic-play" viewBox="0 0 14 14" aria-hidden="true"><path d="M3.5 1.8v10.4L12 7z" fill="currentColor"/></svg><svg class="ic-pause" viewBox="0 0 14 14" aria-hidden="true"><rect x="2.5" y="1.8" width="3" height="10.4" rx=".6" fill="currentColor"/><rect x="8.5" y="1.8" width="3" height="10.4" rx=".6" fill="currentColor"/></svg>';
+  function fmt(t) { t = Math.max(0, Math.floor(t || 0)); return Math.floor(t / 60) + ':' + ('0' + (t % 60)).slice(-2); }
+  /* the waveform: bars from the song's own sound (read once with Web Audio); until a song is given, a faint
+     resting line so the place is clear, marked 'Sound to come' */
+  function drawWave(T) {
+    var cv = T.cv, dpr = Math.min(2, window.devicePixelRatio || 1), w = cv.clientWidth || 200, h = cv.clientHeight || 36;
+    if (cv.width !== Math.round(w * dpr)) { cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); }
+    var g = cv.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
+    var n = Math.max(12, Math.floor(w / 4)), prog = T.audio && T.audio.duration ? T.audio.currentTime / T.audio.duration : 0;
+    for (var i = 0; i < n; i++) {
+      var v = T.peaks ? T.peaks[Math.floor(i / n * T.peaks.length)] : 0.06, bh = Math.max(2, v * (h - 4)), x = i * 4;
+      g.fillStyle = T.peaks ? (i / n < prog ? T.ink : 'rgba(26,22,18,0.22)') : 'rgba(26,22,18,0.16)';
+      g.beginPath(); if (g.roundRect) g.roundRect(x, (h - bh) / 2, 2, bh, 1); else g.rect(x, (h - bh) / 2, 2, bh); g.fill();
+    }
+  }
+  function loadPeaks(T) {
+    var AC = window.AudioContext || window.webkitAudioContext; if (!AC || !window.fetch) return;
+    fetch(T.src).then(function (r) { return r.arrayBuffer(); }).then(function (buf) {
+      var ac = new AC();
+      return new Promise(function (res, rej) { var p = ac.decodeAudioData(buf, res, rej); if (p && p.then) p.then(res, rej); }).then(function (ab) {
+        var d = ab.getChannelData(0), N = 160, step = Math.floor(d.length / N) || 1, out = [], mx = 0;
+        for (var i = 0; i < N; i++) { var m = 0; for (var j = i * step; j < (i + 1) * step && j < d.length; j += 16) { var a = Math.abs(d[j]); if (a > m) m = a; } out.push(m); if (m > mx) mx = m; }
+        T.peaks = out.map(function (v) { return mx ? Math.pow(v / mx, 0.8) : 0; });
+        if (ac.close) ac.close();
+        drawWave(T);
+      });
+    }).catch(function () {});
+  }
+  function stopAll() { cdTracks.forEach(function (T) { if (T.audio) T.audio.pause(); T.row.classList.remove('playing'); drawWave(T); }); cancelAnimationFrame(cdRaf); cdRaf = 0; }
+  function tick() { var any = false; cdTracks.forEach(function (T) { if (T.audio && !T.audio.paused) { any = true; T.time.textContent = fmt(T.audio.currentTime); drawWave(T); } }); cdRaf = any ? requestAnimationFrame(tick) : 0; }
+  function fill(i, ink) {
+    var d = cdData(i), n = (i < 9 ? '0' : '') + (i + 1), tracks = d.tracks && d.tracks.length ? d.tracks : [{}];
+    var credit = function (label, v) { return '<div><dt>' + label + '</dt><dd' + (v ? '' : ' class="tbc"') + '>' + esc(v || 'To come') + '</dd></div>'; };
+    cdIn.style.setProperty('--ink', ink);
+    cdIn.innerHTML = '<p class="cdd-kick">CD ' + n + '</p><h2 class="cdd-title">' + esc(d.title || 'Title to come') + '</h2>' +
+      '<dl class="cdd-credits">' + credit('Written by', d.written) + credit('Produced by', d.produced) + credit('Performed by', d.performed) + '</dl>' +
+      '<p class="cdd-kick">Tracks</p><ol class="cdd-tracks"></ol>';
+    var ol = cdIn.querySelector('.cdd-tracks'); cdTracks = [];
+    tracks.forEach(function (t, k) {
+      var li = document.createElement('li'), has = !!t.src;
+      li.className = 'cdd-track' + (has ? '' : ' tbc');
+      li.innerHTML = '<button class="cdd-play" type="button"' + (has ? '' : ' disabled') + ' aria-label="' + (has ? 'Play ' + esc(t.title || 'track ' + (k + 1)) : 'Sound to come') + '">' + IC + '</button>' +
+        '<span class="cdd-tname">' + esc(t.title || (has ? 'Track ' + (k + 1) : 'Sound to come')) + '</span><canvas class="cdd-wave" aria-hidden="true"></canvas><span class="cdd-time">' + (has ? '0:00' : '—') + '</span>';
+      ol.appendChild(li);
+      var T = { row: li, cv: li.querySelector('canvas'), time: li.querySelector('.cdd-time'), ink: ink, src: t.src, peaks: null, audio: null };
+      cdTracks.push(T);
+      if (!has) return;
+      T.audio = new Audio(); T.audio.preload = 'metadata'; T.audio.src = t.src;
+      T.audio.addEventListener('loadedmetadata', function () { T.time.textContent = fmt(T.audio.duration); });
+      T.audio.addEventListener('ended', function () { li.classList.remove('playing'); try { T.audio.currentTime = 0; } catch (_) {} T.time.textContent = fmt(T.audio.duration); drawWave(T); });   /* back to the start, ready to play again */
+      li.querySelector('.cdd-play').addEventListener('click', function () {
+        if (T.audio.paused) { stopAll(); T.audio.play().then(function () { li.classList.add('playing'); if (!cdRaf) cdRaf = requestAnimationFrame(tick); }).catch(function () {}); }
+        else { T.audio.pause(); li.classList.remove('playing'); }
+      });
+      T.cv.addEventListener('click', function (e) {   /* tap the waveform to jump there */
+        if (!T.audio.duration) return; var r = T.cv.getBoundingClientRect(); T.audio.currentTime = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)) * T.audio.duration; drawWave(T);
+      });
+      loadPeaks(T);
+    });
+    requestAnimationFrame(function () { cdTracks.forEach(drawWave); });
+  }
+  function openCD(i, btn, ink) {
+    if (cdBusy || cdFrom) return;
+    var src = btn.querySelector('.cdx-disc'), r = btn.getBoundingClientRect();
+    cdFrom = btn; cdBusy = true;
+    cdDisc.innerHTML = ''; var copy = src.cloneNode(true); cdDisc.appendChild(btn.querySelector('.cdx-shadow').cloneNode(true)); cdDisc.appendChild(copy);
+    fill(i, ink);
+    cdd.classList.add('on'); cdd.setAttribute('aria-hidden', 'false');
+    cdDisc.style.transition = 'none'; cdPlace(r); cdDisc.getBoundingClientRect();
+    btn.style.visibility = 'hidden';
+    var t = cdTarget(); cdBody.style.top = (t.top + t.height + 28) + 'px';
+    cdDisc.style.transition = reduceM.matches ? 'none' : '';
+    requestAnimationFrame(function () { cdPlace(t); cdd.classList.add('grown'); setTimeout(function () { cdBusy = false; }, 620); });
+    try { history.pushState({ dv: 2 }, '', location.hash); } catch (_) {}
+    setTimeout(function () { try { cdDisc.focus({ preventScroll: true }); } catch (_) {} }, 60);
+  }
+  window.__cdOpenIs = function () { return !!cdFrom; };
+  window.__cdClose = function (now) {
+    if (!cdFrom) return;
+    var btn = cdFrom, r = btn.getBoundingClientRect();
+    stopAll(); cdBusy = true;
+    cdd.classList.remove('grown');
+    if (now || reduceM.matches) cdDisc.style.transition = 'none';
+    cdPlace(r);
+    setTimeout(function () { btn.style.visibility = ''; cdd.classList.remove('on'); cdd.setAttribute('aria-hidden', 'true'); cdFrom = null; cdBusy = false; cdTracks.forEach(function (T) { if (T.audio) T.audio.src = ''; }); cdTracks = []; }, (now || reduceM.matches) ? 0 : 560);
+  };
+  function cdHome(e) { if (!cdFrom || cdBusy) return; if (e) { e.preventDefault(); e.stopPropagation(); } try { history.back(); } catch (_) { window.__cdClose(); } }
+  cdVeil.addEventListener('click', cdHome); cdDisc.addEventListener('click', cdHome);
+  cdBody.addEventListener('click', function (e) { if (e.target === cdBody || e.target === cdIn) cdHome(e); });
+  cdDisc.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') cdHome(e); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && cdFrom) cdHome(e); });
+  window.addEventListener('resize', function () { if (cdFrom && !cdBusy) { var t = cdTarget(); cdPlace(t); cdBody.style.top = (t.top + t.height + 28) + 'px'; cdTracks.forEach(drawWave); } });
   var openLayer = document.createElement('div'); openLayer.className = 'hall-open'; openLayer.setAttribute('aria-hidden', 'true');
-  openLayer.innerHTML = '<div class="hall-open-veil"></div><div class="hall-open-card"><span class="hall-open-label"></span></div><div class="hall-open-body"><ul class="cd-grid hall-open-cds" aria-label="CDs"></ul><p class="hall-open-soon">Coming soon</p></div>';
+  openLayer.innerHTML = '<div class="hall-open-veil"></div><div class="hall-open-card"><span class="hall-open-label"></span></div><div class="hall-open-body"><ul class="hall-open-cds" aria-label="CDs"></ul><div class="cdx-info"></div><p class="hall-open-soon">Coming soon</p></div>';
   hall.appendChild(openLayer);
-  var oCard = openLayer.querySelector('.hall-open-card'), oLabel = openLayer.querySelector('.hall-open-label'), oBody = openLayer.querySelector('.hall-open-body'), oCDs = openLayer.querySelector('.hall-open-cds');
+  var oCard = openLayer.querySelector('.hall-open-card'), oLabel = openLayer.querySelector('.hall-open-label'), oBody = openLayer.querySelector('.hall-open-body'), oCDs = openLayer.querySelector('.hall-open-cds'), oInfo = openLayer.querySelector('.cdx-info');
   var openFrom = null, openBusy = false, reduceM = window.matchMedia ? matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
   function place(r) { oCard.style.left = r.left + 'px'; oCard.style.top = r.top + 'px'; oCard.style.width = r.width + 'px'; oCard.style.height = r.height + 'px'; }
   function target() {
@@ -8138,7 +8419,7 @@ Lord you are Holy, Holy, Holy</p>
   function tapHome(e) { if (!openFrom || openBusy) return; e.preventDefault(); e.stopPropagation(); try { history.back(); } catch (_) { window.__hallClose(); } }
   oCard.addEventListener('click', tapHome);
   openLayer.querySelector('.hall-open-veil').addEventListener('click', tapHome);
-  oBody.addEventListener('click', function (e) { if (e.target === oBody || e.target === oCDs || e.target.classList.contains('hall-open-soon')) tapHome(e); });
+  oBody.addEventListener('click', function (e) { if (e.target === oBody || e.target === oCDs || e.target === oInfo || e.target.classList.contains('hall-open-soon') || e.target.classList.contains('cdx-hint')) tapHome(e); });
   window.__hallOpenIs = function () { return !!openFrom; };
   window.__hallOpen = function (tile) {
     if (openBusy || openFrom) return;
