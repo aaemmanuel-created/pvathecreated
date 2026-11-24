@@ -3242,19 +3242,33 @@
   #view-project-hall.hall-on .hall-head .hall-tagline { transform: translate(0, -50%); }
   #view-project-hall .hall-head .project-tag { border-radius: 3px 0 0 3px; border-right-width: 0; padding: 3px calc(16px + env(safe-area-inset-right)) 3px 9px; }
   @media (prefers-reduced-motion: reduce) { #view-project-hall .hall-head .hall-tagline { transition: opacity .3s ease; transform: translate(0, -50%); } }
-  .thread-pop { position: absolute; z-index: 5; right: max(16px, env(safe-area-inset-right)); top: calc(16px + env(safe-area-inset-top) + 44px + 10px);
-    width: min(300px, calc(100vw - 32px)); box-sizing: border-box; padding: 16px 18px 18px; border-radius: 18px;
-    background: rgba(255,255,255,0.56); -webkit-backdrop-filter: blur(18px) saturate(1.5); backdrop-filter: blur(18px) saturate(1.5);
-    border: 1px solid rgba(255,255,255,0.75);
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.9), 0 1px 2px rgba(26,22,18,0.06), 0 12px 32px -10px rgba(26,22,18,0.22), 0 30px 60px -30px rgba(26,22,18,0.25);
-    transform-origin: calc(100% - 17px) 0; opacity: 0; transform: translateY(-6px) scale(.96); filter: blur(4px);
-    transition: opacity .32s cubic-bezier(.22,1,.36,1), transform .32s cubic-bezier(.22,1,.36,1), filter .32s cubic-bezier(.22,1,.36,1); }
-  .thread-pop.on { opacity: 1; transform: none; filter: none; }
+  /* The thread's explanation (Emmanuel, 24 Nov: 'the glass pop-up should show in the centre of the screen and blur
+     the rest of the screen out … the glass pop-up should be actual glass'). A veil blurs and lightens the page; the
+     card sits in the middle as glass (DESIGN §6.1): where the browser can bend what is behind it (Chromium), an SVG
+     displacement filter does; everywhere a small blur, a lit top edge, faint warm/cool fringes at the sides and a
+     specular light. It grows from the tag that opened it (from .95) and goes back to it. */
+  .thread-veil { position: fixed; inset: 0; z-index: 2147482600; background: rgba(255,255,255,0); -webkit-backdrop-filter: blur(0px); backdrop-filter: blur(0px);
+    opacity: 0; pointer-events: none; transition: opacity .4s cubic-bezier(.22,1,.36,1), -webkit-backdrop-filter .45s ease, backdrop-filter .45s ease, background .45s ease; }
+  .thread-veil.on { opacity: 1; pointer-events: auto; background: rgba(255,255,255,0.28); -webkit-backdrop-filter: blur(14px) saturate(1.15); backdrop-filter: blur(14px) saturate(1.15); }
+  .thread-pop { position: fixed; z-index: 2147482601; left: 50%; top: 50%; width: min(440px, calc(100vw - 32px)); min-height: min(46vh, 420px); max-height: calc(100vh - 64px); overflow-y: auto; box-sizing: border-box;
+    display: flex; flex-direction: column; justify-content: center; padding: 36px 28px 40px; border-radius: 32px; isolation: isolate;
+    background: linear-gradient(140deg, rgba(255,255,255,0.46) 0%, rgba(255,255,255,0.16) 42%, rgba(255,255,255,0.10) 60%, rgba(255,255,255,0.30) 100%);
+    -webkit-backdrop-filter: blur(5px) saturate(1.8) brightness(1.06); backdrop-filter: blur(5px) saturate(1.8) brightness(1.06);
+    border: 1px solid rgba(255,255,255,0.7);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.95), inset 0 -1px 0 rgba(255,255,255,0.3), inset 1.5px 0 0 rgba(255,150,170,0.22), inset -1.5px 0 0 rgba(140,185,255,0.24),
+                inset 0 0 22px rgba(255,255,255,0.25), 0 2px 6px rgba(26,22,18,0.08), 0 24px 60px -24px rgba(26,22,18,0.38);
+    opacity: 0; transform: translate(calc(-50% + var(--fx, 0px)), calc(-50% + var(--fy, 0px))) scale(.95); filter: blur(3px);
+    transition: opacity .38s cubic-bezier(.22,1,.36,1), transform .45s cubic-bezier(.22,1,.36,1), filter .38s cubic-bezier(.22,1,.36,1); }
+  html.lg-bend .thread-pop { -webkit-backdrop-filter: url(#lg) blur(2px) saturate(1.8) brightness(1.06); backdrop-filter: url(#lg) blur(2px) saturate(1.8) brightness(1.06); }
+  .thread-pop::before { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; z-index: -1;
+    background: radial-gradient(120% 70% at 18% 0%, rgba(255,255,255,0.75), rgba(255,255,255,0) 55%), radial-gradient(90% 60% at 100% 100%, rgba(255,255,255,0.35), rgba(255,255,255,0) 60%); }
+  .thread-pop.on { opacity: 1; transform: translate(-50%, -50%); filter: none; }
+  .thread-pop.off { transition-duration: .3s, .34s, .3s; }
   .thread-pop[hidden] { display: none; }
-  .thread-pop-name { margin: 0 0 8px; font: 700 11px/1.2 'Courier Prime', 'Courier New', monospace; letter-spacing: .22em; text-transform: uppercase; color: var(--thc, #5a2390); }
-  .thread-pop-text { margin: 0; font: 300 14px/1.55 'Helvetica Neue', Helvetica, Arial, sans-serif; color: rgba(26,22,18,0.8); }
-  @media (orientation: landscape) and (max-height: 520px) { .thread-pop { top: calc(12px + env(safe-area-inset-top) + 44px + 8px); max-height: calc(100vh - 80px); overflow-y: auto; } }
-  @media (prefers-reduced-motion: reduce) { .thread-pop { transition: opacity .2s ease; transform: none; filter: none; } }
+  .thread-pop-name { margin: 0 0 16px; font: 300 44px/1.05 'Helvetica Neue', Helvetica, Arial, sans-serif; letter-spacing: -0.01em; color: var(--thc, #5a2390); }   /* 24 Nov (Emmanuel): the thread's name large, in Helvetica */
+  .thread-pop-text { margin: 0; font: 300 17px/1.6 'Helvetica Neue', Helvetica, Arial, sans-serif; color: rgba(26,22,18,0.86); }
+  @media (prefers-reduced-motion: reduce) { .thread-pop { transition: opacity .2s ease; transform: translate(-50%, -50%); filter: none; } .thread-veil { transition: opacity .2s ease; } }
+  @media (prefers-reduced-transparency: reduce) { .thread-pop { background: rgba(250,250,250,0.97); -webkit-backdrop-filter: none; backdrop-filter: none; } .thread-veil.on { background: rgba(255,255,255,0.85); -webkit-backdrop-filter: none; backdrop-filter: none; } }
   .hall-label { font-size: 13px; }
   @media (min-width: 720px) { .hall-label { font-size: 16px; } }
   #view-project-hall .hall-people { margin-top: 24px; }
@@ -3286,8 +3300,40 @@
   #view-project-hall .dv-yah { color: #5a2390; background-image: linear-gradient(100deg, #5a2390 0%, #9c1b22 14%, #c8862a 28%, #2a8a6e 42%, #2f5fb8 56%, #8a3fc0 70%, #d23c6a 84%, #5a2390 100%); }   /* the day colours: this page is white */
   #view-project-hall .hall-ball { width: min(44vw, 72cqh, 400px); }   /* 24 Nov: a little smaller now the card shows more, so the ball keeps clear of the left edge */
   @media (prefers-reduced-motion: reduce) { .hall-desc { transition: none; opacity: 1; filter: none; } }
+  /* A card carried into the top half (24 Nov) */
+  .hall-open { position: fixed; inset: 0; z-index: 2; pointer-events: none; visibility: hidden; }
+  .hall-open.on { visibility: visible; }
+  .hall-open-veil { position: fixed; inset: 0; background: rgba(255,255,255,0); transition: background .4s ease; }
+  .hall-open.grown .hall-open-veil { background: rgba(255,255,255,0.3); pointer-events: auto; cursor: pointer; }
+  .hall-open.grown .hall-open-card { pointer-events: auto; cursor: pointer; }   /* tap the card or outside it to send it home */
+  .hall-open-card { position: fixed; border-radius: 22px; overflow: hidden; background: rgba(255,255,255,0.9);
+    box-shadow: 0 1px 2px rgba(26,22,18,0.04), 0 14px 34px -16px rgba(26,22,18,0.18);
+    display: flex; align-items: flex-end; padding: 16px; box-sizing: border-box;
+    transition: left .55s cubic-bezier(.22,1,.36,1), top .55s cubic-bezier(.22,1,.36,1), width .55s cubic-bezier(.22,1,.36,1), height .55s cubic-bezier(.22,1,.36,1), box-shadow .55s ease; }
+  .hall-open.grown .hall-open-card { box-shadow: 0 1px 2px rgba(26,22,18,0.05), 0 24px 60px -28px rgba(26,22,18,0.3); }
+  .hall-open-card::before { content: ""; position: absolute; inset: 0; background: radial-gradient(120% 90% at 85% 0%, var(--hc, rgba(90,35,144,0.10)), transparent 70%); pointer-events: none; }
+  .hall-open-card::after { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .6; mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .1  0 0 0 0 .08  0 0 0 0 .07  0 0 0 .4 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E"); background-size: 160px 160px; }
+  .hall-open-label { position: relative; z-index: 1; font: 200 13px/1.45 'Helvetica Neue', Helvetica, Arial, sans-serif; letter-spacing: .12em; text-transform: uppercase; white-space: nowrap; color: rgba(26,22,18,0.82); transition: font-size .55s cubic-bezier(.22,1,.36,1), letter-spacing .55s ease; }
+  .hall-open.grown .hall-open-label { font-size: 20px; letter-spacing: .16em; }
+  .hall-open-body { position: fixed; left: 0; right: 0; bottom: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 0 24px calc(32px + env(safe-area-inset-bottom)); box-sizing: border-box;
+    opacity: 0; transform: translateY(16px); transition: opacity .3s ease, transform .3s cubic-bezier(.22,1,.36,1); }
+  .hall-open.grown .hall-open-body { opacity: 1; transform: none; pointer-events: auto; transition: opacity .5s cubic-bezier(.22,1,.36,1) .3s, transform .5s cubic-bezier(.22,1,.36,1) .3s; }
+  .hall-open-cds { display: none; }
+  .hall-open.has-cds .hall-open-cds { display: grid; }
+  .hall-open.grown .hall-open-cds .cd { opacity: 1; transform: none; transition-delay: calc(var(--d, 0s) + .35s); }
+  .hall-open-soon { display: none; margin: 8px 0 0; text-align: center; font: 400 11px/1.4 'Courier Prime', 'Courier New', monospace; letter-spacing: .2em; text-transform: uppercase; color: rgba(26,22,18,0.6); }
+  .hall-open:not(.has-cds) .hall-open-soon { display: block; }
+  /* the rest of the page steps back while a card is open */
+  #view-project-hall .hall-in, #view-project-hall .hall-head .hall-tagline { transition: opacity .4s ease, filter .4s ease; }
+  #view-project-hall.hall-opened .hall-in { opacity: .55; filter: blur(14px); pointer-events: none; }   /* 24 Nov (Emmanuel): blurred, not gone */
+  #view-project-hall > canvas { transition: opacity .4s ease, filter .4s ease; }
+  #view-project-hall.hall-opened > canvas { opacity: .45; filter: blur(14px); }   /* the ball's dots step back too */
+  #view-project-hall.hall-opened .hall-head .hall-tagline { opacity: 0 !important; pointer-events: none; }
+  #view-project-hall.hall-opened .hall-head { z-index: 4; }
+  @media (prefers-reduced-motion: reduce) { .hall-open-card, .hall-open-label, .hall-open-body { transition: none !important; } }
   /* the front card answers a tap: it opens (Music → the CDs) */
-  #view-project-hall .hall-tile.is-cur[data-open] { cursor: pointer; }
+  #view-project-hall .hall-tile.is-cur[data-open] { cursor: pointer; pointer-events: auto; }   /* the front card takes the tap itself (it was passing through to the cards peeking above and below) */
   #view-project-hall .hall-tile.is-cur[data-open]:active { transform: translateY(-50%) translateY(var(--ty, 0%)) translateY(var(--dy, 0px)) scale(.985); }
 
   /* Music: a grid of CDs (Emmanuel, 24 Nov). Each is a square sleeve in the project's own colours with its disc
@@ -4900,6 +4946,7 @@ Lord you are Holy, Holy, Holy</p>
       if (!window.__dvPop && history.state && history.state.dv) { history.back(); return; }
       const currentView = document.querySelector('.view.active');
       if (currentView && currentView.id === 'view-project-music') { showView('view-project-hall'); return; }   /* the CDs → back to the project page */
+      if (currentView && currentView.id === 'view-project-hall' && window.__hallOpenIs && window.__hallOpenIs()) { window.__hallClose(); return; }   /* an open card goes home first */
 
       // Came in through a project circle on the home page? Back goes
       // straight home to the circles (the scroll place is kept).
@@ -7933,9 +7980,19 @@ Lord you are Holy, Holy, Holy</p>
       return z ? z.textContent.trim() : '';
     }
     var hideT = null;
+    document.body.appendChild(pop);   /* out of the header, so it centres on the screen */
+    var veil = document.createElement('div'); veil.className = 'thread-veil'; veil.setAttribute('aria-hidden', 'true'); document.body.appendChild(veil);
+    veil.addEventListener('click', function () { close(); });
+    if (!document.getElementById('lg-svg')) {   /* the glass's bend (Chromium only; Safari keeps the blur) */
+      var NS = 'http://www.w3.org/2000/svg', sv = document.createElementNS(NS, 'svg'); sv.id = 'lg-svg'; sv.setAttribute('width', '0'); sv.setAttribute('height', '0'); sv.setAttribute('aria-hidden', 'true'); sv.style.position = 'absolute';
+      sv.innerHTML = '<filter id="lg" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.008 0.012" numOctaves="2" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="34" xChannelSelector="R" yChannelSelector="G"/></filter>';
+      document.body.appendChild(sv);
+      var ua = navigator.userAgent; if (/Chrome\//.test(ua) && !/(iPhone|iPad|iPod|CriOS|FxiOS|EdgiOS)/.test(ua)) document.documentElement.classList.add('lg-bend');
+    }
+    function fromTag() { var r = tag.getBoundingClientRect(); pop.style.setProperty('--fx', Math.round((r.left + r.width / 2 - window.innerWidth / 2) * 0.55) + 'px'); pop.style.setProperty('--fy', Math.round((r.top + r.height / 2 - window.innerHeight / 2) * 0.55) + 'px'); }
     function close(now) {
-      if (pop.hidden) return; pop.classList.remove('on'); tag.setAttribute('aria-expanded', 'false');
-      clearTimeout(hideT); if (now) pop.hidden = true; else hideT = setTimeout(function () { pop.hidden = true; }, 330);
+      if (pop.hidden) return; fromTag(); pop.classList.add('off'); pop.classList.remove('on'); veil.classList.remove('on'); tag.setAttribute('aria-expanded', 'false');
+      clearTimeout(hideT); if (now) { pop.hidden = true; pop.classList.remove('off'); } else hideT = setTimeout(function () { pop.hidden = true; pop.classList.remove('off'); }, 360);
     }
     function open() {
       var t = tag.getAttribute('data-thread'); if (!t) return;
@@ -7943,8 +8000,8 @@ Lord you are Holy, Holy, Holy</p>
       document.getElementById('thread-pop-name').textContent = NAME[t] || t;
       document.getElementById('thread-pop-text').textContent = words(t);
       pop.style.setProperty('--thc', COL[t] || '#5a2390');
-      pop.hidden = false; tag.setAttribute('aria-expanded', 'true');
-      requestAnimationFrame(function () { requestAnimationFrame(function () { pop.classList.add('on'); }); });
+      fromTag(); pop.classList.remove('off'); pop.hidden = false; tag.setAttribute('aria-expanded', 'true');
+      requestAnimationFrame(function () { requestAnimationFrame(function () { pop.classList.add('on'); veil.classList.add('on'); }); });
     }
     window.__threadPopClose = close;
     tag.addEventListener('click', function (e) { e.stopPropagation(); if (pop.hidden || !pop.classList.contains('on')) open(); else close(); });
@@ -8041,33 +8098,77 @@ Lord you are Holy, Holy, Holy</p>
   });
   window.addEventListener('pointermove', function (e) { if (drag && e.pointerType === 'mouse') dragMove(e.clientY); });
   window.addEventListener('pointerup', function (e) { if (drag && e.pointerType === 'mouse') dragEnd(); });
-  tiles.forEach(function (el, k) { el.addEventListener('click', function () { if (el.classList.contains('is-next')) window.__hallStep(1); else if (el.classList.contains('is-prev')) window.__hallStep(-1); else if (el.classList.contains('is-cur') && el.getAttribute('data-open') === 'music' && window.__openMusic) window.__openMusic(); }); });
-  /* the front card opens when it has a page: Music → the CDs (24 Nov); Film, Conversations and Paintings wait for theirs */
-  tiles.forEach(function (el) { if (/^music$/i.test(el.textContent.trim())) { el.setAttribute('data-open', 'music'); el.setAttribute('role', 'button'); el.setAttribute('tabindex', '0'); el.addEventListener('keydown', function (e) { if ((e.key === 'Enter' || e.key === ' ') && el.classList.contains('is-cur')) { e.preventDefault(); el.click(); } }); } });
-  var musicView = document.getElementById('view-project-music'), cdGrid = document.getElementById('cd-grid');
-  window.__openMusic = function () {
+  /* A card opens where it is (Emmanuel, 24 Nov: 'when users select one of the tiles it should move into the top half
+     of the page and have the information below it — we should see the move, and clicking back should minimise it back
+     to its position'; DESIGN §5.5 'Don't cut. Carry.'). The front card is measured, a copy of it travels and grows into
+     the top half of the screen while the rest of the page steps back, and the card's own content comes in below it.
+     Back (the ‹ circle or the phone's back) carries it home to the same spot. Music → the CDs; the others have nothing
+     to show yet. */
+  tiles.forEach(function (el, k) { el.addEventListener('click', function () { if (el.classList.contains('is-next')) window.__hallStep(1); else if (el.classList.contains('is-prev')) window.__hallStep(-1); else if (el.classList.contains('is-cur') && window.__hallOpen) window.__hallOpen(el); }); });
+  tiles.forEach(function (el) { el.setAttribute('data-open', el.textContent.trim().toLowerCase()); el.setAttribute('role', 'button'); el.setAttribute('tabindex', '0'); el.addEventListener('keydown', function (e) { if ((e.key === 'Enter' || e.key === ' ') && el.classList.contains('is-cur')) { e.preventDefault(); el.click(); } }); });
+  function buildCDs(target) {
     var tab = null; try { tab = sessionStorage.getItem('dvHall'); } catch (_) {}
     var key = tab && /^housepva/.test(tab) ? 'house-pva' : tab, pal = (window.__dvPal && window.__dvPal(key)) || [[90, 35, 144], [156, 27, 34], [168, 122, 28]];
-    document.getElementById('music-project').textContent = document.getElementById('hall-title').textContent;
-    cdGrid.textContent = '';
+    target.textContent = '';
     var c = function (q) { return 'rgb(' + q[0] + ',' + q[1] + ',' + q[2] + ')'; };
     var looks = [[0, 1, 2, 135], [1, 2, 0, 160], [2, 0, 1, 115], [0, 2, 1, 200], [1, 0, 2, 145], [2, 1, 0, 180]];   /* each sleeve mixes the project's three colours its own way */
     for (var i = 0; i < 6; i++) {
       var L = looks[i], li = document.createElement('li'), b = document.createElement('button'), disc = document.createElement('span'), sl = document.createElement('span'), no = document.createElement('span');
-      li.className = 'cd'; li.style.setProperty('--d', (0.08 * i + 0.15).toFixed(2) + 's');
+      li.className = 'cd'; li.style.setProperty('--d', (0.08 * i + 0.1).toFixed(2) + 's');
       b.className = 'cd-btn'; b.type = 'button'; b.setAttribute('aria-label', 'CD ' + (i + 1));
       disc.className = 'cd-disc'; sl.className = 'cd-sleeve';
       sl.style.setProperty('--sl', 'linear-gradient(' + L[3] + 'deg, ' + c(pal[L[0]]) + ', ' + c(pal[L[1]]) + ' 55%, ' + c(pal[L[2]]) + ')');
       no.className = 'cd-no'; no.textContent = (i < 9 ? '0' : '') + (i + 1);
-      sl.appendChild(no); b.appendChild(disc); b.appendChild(sl); li.appendChild(b); cdGrid.appendChild(li);
-      b.addEventListener('click', function () { var me = this.parentNode, was = me.classList.contains('is-out'); [].forEach.call(cdGrid.children, function (x) { x.classList.remove('is-out'); }); if (!was) me.classList.add('is-out'); });
+      sl.appendChild(no); b.appendChild(disc); b.appendChild(sl); li.appendChild(b); target.appendChild(li);
+      b.addEventListener('click', function () { var me = this.parentNode, was = me.classList.contains('is-out'); [].forEach.call(target.children, function (x) { x.classList.remove('is-out'); }); if (!was) me.classList.add('is-out'); });
     }
-    musicView.classList.remove('music-on');
-    showView('view-project-music');
+  }
+  var openLayer = document.createElement('div'); openLayer.className = 'hall-open'; openLayer.setAttribute('aria-hidden', 'true');
+  openLayer.innerHTML = '<div class="hall-open-veil"></div><div class="hall-open-card"><span class="hall-open-label"></span></div><div class="hall-open-body"><ul class="cd-grid hall-open-cds" aria-label="CDs"></ul><p class="hall-open-soon">Coming soon</p></div>';
+  hall.appendChild(openLayer);
+  var oCard = openLayer.querySelector('.hall-open-card'), oLabel = openLayer.querySelector('.hall-open-label'), oBody = openLayer.querySelector('.hall-open-body'), oCDs = openLayer.querySelector('.hall-open-cds');
+  var openFrom = null, openBusy = false, reduceM = window.matchMedia ? matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
+  function place(r) { oCard.style.left = r.left + 'px'; oCard.style.top = r.top + 'px'; oCard.style.width = r.width + 'px'; oCard.style.height = r.height + 'px'; }
+  function target() {
+    var W = window.innerWidth, H = window.innerHeight, land = W > H && H <= 520, top = (window.__safeTop || 0) + 72;
+    if (land) return { left: 24, top: 64, width: Math.round(W * 0.36), height: H - 64 - 24 };
+    return { left: 20, top: top, width: W - 40, height: Math.round(Math.min(H * 0.42, (W - 40) * 1.05)) };
+  }
+  /* 24 Nov (Emmanuel): tapping the open card, or anywhere outside its content, shrinks it home */
+  function tapHome(e) { if (!openFrom || openBusy) return; e.preventDefault(); e.stopPropagation(); try { history.back(); } catch (_) { window.__hallClose(); } }
+  oCard.addEventListener('click', tapHome);
+  openLayer.querySelector('.hall-open-veil').addEventListener('click', tapHome);
+  oBody.addEventListener('click', function (e) { if (e.target === oBody || e.target === oCDs || e.target.classList.contains('hall-open-soon')) tapHome(e); });
+  window.__hallOpenIs = function () { return !!openFrom; };
+  window.__hallOpen = function (tile) {
+    if (openBusy || openFrom) return;
+    var r = tile.getBoundingClientRect(), name = tile.textContent.trim(), kind = name.toLowerCase();
+    openFrom = tile; openBusy = true;
+    oLabel.textContent = name;
+    if (kind === 'music') { buildCDs(oCDs); openLayer.classList.add('has-cds'); } else { oCDs.textContent = ''; openLayer.classList.remove('has-cds'); }
+    openLayer.classList.add('on'); openLayer.setAttribute('aria-hidden', 'false');
+    oCard.style.transition = 'none'; place(r); oCard.getBoundingClientRect();
+    tile.style.visibility = 'hidden'; hall.classList.add('hall-opened');
+    var t = target();
+    oBody.style.top = (t.top + t.height + 24) + 'px';
+    if (window.innerWidth > window.innerHeight && window.innerHeight <= 520) { oBody.style.top = '64px'; oBody.style.left = (t.left + t.width + 24) + 'px'; } else { oBody.style.left = ''; }
+    oCard.style.transition = reduceM.matches ? 'none' : '';
+    requestAnimationFrame(function () { place(t); openLayer.classList.add('grown'); setTimeout(function () { openBusy = false; }, 560); });
     try { history.pushState({ dv: 2 }, '', location.hash); } catch (_) {}
-    musicView.scrollTop = 0;
-    requestAnimationFrame(function () { requestAnimationFrame(function () { musicView.classList.add('music-on'); }); });
+    var bk = hall.querySelector('.hall-back'); if (bk) bk.setAttribute('aria-label', 'Back to the project');
   };
+  window.__hallClose = function (now) {
+    if (!openFrom) return;
+    var tile = openFrom, r = tile.getBoundingClientRect();
+    openBusy = true;
+    openLayer.classList.remove('grown'); hall.classList.remove('hall-opened');
+    if (now || reduceM.matches) { oCard.style.transition = 'none'; }
+    place(r);
+    setTimeout(function () { tile.style.visibility = ''; openLayer.classList.remove('on'); openLayer.setAttribute('aria-hidden', 'true'); openFrom = null; openBusy = false; }, (now || reduceM.matches) ? 0 : 480);
+    var bk = hall.querySelector('.hall-back'); if (bk) bk.setAttribute('aria-label', 'Back');
+  };
+  /* leaving the project page closes an open card at once */
+  if (window.MutationObserver) new MutationObserver(function () { if (!hall.classList.contains('active') && openFrom) window.__hallClose(true); }).observe(hall, { attributes: true, attributeFilter: ['class'] });
   ball.addEventListener('keydown', function (e) { if (e.key === 'ArrowDown' || e.key === 'ArrowRight') { e.preventDefault(); window.__hallStep(1); } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') { e.preventDefault(); window.__hallStep(-1); } });
   /* each time the hall opens, the title, tiles and names fade in again */
   var was = false;
