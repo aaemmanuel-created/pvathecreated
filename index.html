@@ -3222,8 +3222,7 @@
   #view-project-hall .hall-tile { padding: 14px; }
   #view-project-hall .hall-label { white-space: nowrap; letter-spacing: 0.12em; }
   #view-project-hall .hall-desc { white-space: nowrap; }   /* the line stays on one line; fitHallDesc() shrinks it if it must */
-  #hall-names li { position: relative; top: var(--oy, 0px); }   /* side by side, but each at its own height, so they don't sit in straight rows (Emmanuel, 24 Nov) */
-  #view-project-hall .hall-names { row-gap: 14px; }
+  /* (staggered names were tried on 24 Nov and undone the same day: Emmanuel preferred the straight rows) */
   #view-project-hall .hall-tile { aspect-ratio: 2 / 3; }   /* taller cards (Emmanuel, 24 Nov; were 4 : 5) */   /* just the tile's height and a little room for the tiles peeking above and below */
   /* Landscape on a phone, the projects screen (24 Nov): the house, its title, its line and the bars all fit the short
      screen that is left under Safari's bars (svh = the smallest the screen gets) */
@@ -7814,8 +7813,6 @@ Lord you are Holy, Holy, Holy</p>
     if (ORDER[tab]) names = ORDER[tab].slice();
     list.textContent = '';
     names.forEach(function (n, k) { var li = document.createElement('li'); li.textContent = n; li.style.setProperty('--d', (1.3 + k * 0.28).toFixed(2) + 's'); list.appendChild(li); });
-    var OY = [0, 9, -5, 6, -8, 3, -3, 8, -6];
-    [].forEach.call(list.children, function (li, k) { li.style.setProperty('--oy', OY[k % OY.length] + 'px'); });
     hallGo(0, true);
     people.hidden = !names.length;
     fitHallDesc();
