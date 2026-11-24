@@ -3216,9 +3216,14 @@
   .hall-desc:empty { display: none; }
   #view-project-hall.hall-on .hall-desc { opacity: 1; filter: none; }
   #view-project-hall .dv-yah { color: #5a2390; background-image: linear-gradient(100deg, #5a2390 0%, #9c1b22 14%, #c8862a 28%, #2a8a6e 42%, #2f5fb8 56%, #8a3fc0 70%, #d23c6a 84%, #5a2390 100%); }   /* the day colours: this page is white */
-  #view-project-hall .hall-ball { width: min(50vw, 74cqh, 420px); }
+  #view-project-hall .hall-ball { width: min(44vw, 72cqh, 400px); }   /* 24 Nov: a little smaller now the card shows more, so the ball keeps clear of the left edge */
   @media (prefers-reduced-motion: reduce) { .hall-desc { transition: none; opacity: 1; filter: none; } }
-  #view-project-hall .hall-stage { flex: 0 1 auto; --tw: min(66vw, 23vh, 280px); height: calc(var(--tw) * 1.5 + 56px); }
+  #view-project-hall .hall-stage { flex: 0 1 auto; --tw: min(66vw, 26vh, 290px); --tin: 0.88; height: calc(var(--tw) * 1.5 + 56px); }   /* 24 Nov: wider on screen (88% of the card shows) so its name always fits on one line */
+  #view-project-hall .hall-tile { padding: 14px; }
+  #view-project-hall .hall-label { white-space: nowrap; letter-spacing: 0.12em; }
+  #view-project-hall .hall-desc { white-space: nowrap; }   /* the line stays on one line; fitHallDesc() shrinks it if it must */
+  #hall-names li { position: relative; top: var(--oy, 0px); }   /* side by side, but each at its own height, so they don't sit in straight rows (Emmanuel, 24 Nov) */
+  #view-project-hall .hall-names { row-gap: 14px; }
   #view-project-hall .hall-tile { aspect-ratio: 2 / 3; }   /* taller cards (Emmanuel, 24 Nov; were 4 : 5) */   /* just the tile's height and a little room for the tiles peeking above and below */
   /* Landscape on a phone, the projects screen (24 Nov): the house, its title, its line and the bars all fit the short
      screen that is left under Safari's bars (svh = the smallest the screen gets) */
@@ -3244,10 +3249,11 @@
     #view-project-hall .hall-title:has(+ .hall-desc:empty) { margin-bottom: 16px; }
     #view-project-hall .hall-people { grid-area: people; align-self: start; margin-top: 0; padding: 0 8px; }
     #view-project-hall .hall-names { gap: 0 14px; line-height: 1.75; }
-    #view-project-hall .hall-stage.hall-stage { grid-area: stage; --tw: min(20vw, 46vh, 220px); --bw: min(20vw, 42vh, 220px); width: calc(var(--bw) + 18px + var(--tw) * var(--tin, 0.64)); margin: 0; height: calc(var(--tw) * 1.5 + 40px); align-self: center;
+    #view-project-hall .hall-stage.hall-stage { grid-area: stage; --tw: min(22vw, 50vh, 230px); --bw: min(20vw, 42vh, 220px); width: calc(var(--bw) + 18px + var(--tw) * var(--tin, 0.64)); margin: 0; height: calc(var(--tw) * 1.5 + 40px); align-self: center;
       grid-template-columns: auto calc(var(--tw) * var(--tin, 0.64)); }   /* the ball, then the card's visible part; the rest of the card runs off the edge */
     #view-project-hall .hall-ball.hall-ball { width: var(--bw); max-width: none; justify-self: end; margin: 0 18px 0 0; }
     #view-project-hall .hall-tile { left: 0; }
+    #view-project-hall .hall-label { font-size: 13px; }   /* the phone size: the card's name fits its visible part */
   }
   @media (min-width: 720px) { #view-project-hall .hall-stage { --tw: min(30vw, 27vh, 340px); } }
   #view-project-hall .hall-ball { justify-self: end; margin-right: calc(20px - (58vw - var(--tw) * var(--tin, 0.66))); }
@@ -7776,6 +7782,14 @@ Lord you are Holy, Holy, Holy</p>
   /* a project's names in the order Emmanuel set (23 Nov); when given, this list is used as it is */
   var ORDER = { 'overseer': ['Marika "Marika" Bastien', 'Pietro Ciappelli', 'Mallory Oluchi Omegui', 'Dean "Deano" Dobson', 'Simon Kobina "Korby" Nyamekye Imbrah', 'Emmanuel "Thecreated" Anie-Akwetey', 'Joshua Spence', 'Arindy Plet'],
                 'wrestle': ['Mallory Oluchi Omegui', 'Marika "Marika" Bastien', 'Arindy Plet', 'Emmanuel "Thecreated" Anie-Akwetey', 'Joshua Spence', 'Rasharn Powell', 'Pietro Ciappelli'] };
+  /* the line under the title stays on one line: it shrinks (never below 11px) only if it must (24 Nov) */
+  function fitHallDesc() {
+    var d = document.getElementById('hall-desc'); if (!d || !d.textContent) return;
+    d.style.fontSize = '';
+    var cs9 = getComputedStyle(d), room = (d.clientWidth || window.innerWidth) - parseFloat(cs9.paddingLeft) - parseFloat(cs9.paddingRight), w = d.scrollWidth, fs = parseFloat(getComputedStyle(d).fontSize) || 16;
+    if (w > room && room > 0) d.style.fontSize = Math.max(11, Math.floor(fs * room / w * 10) / 10) + 'px';
+  }
+  window.addEventListener('resize', fitHallDesc);
   window.__fillHall = function (tab) {
     try { sessionStorage.setItem('dvHall', tab); } catch (_) {}   /* so a refresh on #project reopens this project */
     var link = document.querySelector('.partner-tab-link[data-tab="' + tab + '"]');
@@ -7800,8 +7814,11 @@ Lord you are Holy, Holy, Holy</p>
     if (ORDER[tab]) names = ORDER[tab].slice();
     list.textContent = '';
     names.forEach(function (n, k) { var li = document.createElement('li'); li.textContent = n; li.style.setProperty('--d', (1.3 + k * 0.28).toFixed(2) + 's'); list.appendChild(li); });
+    var OY = [0, 9, -5, 6, -8, 3, -3, 8, -6];
+    [].forEach.call(list.children, function (li, k) { li.style.setProperty('--oy', OY[k % OY.length] + 'px'); });
     hallGo(0, true);
     people.hidden = !names.length;
+    fitHallDesc();
     var src = TAGS[tab] && document.querySelector(TAGS[tab]), th = src && /thread-(grounding|righteous|lifted)/.exec(src.className);
     tagEl.className = 'project-tag' + (th ? ' thread-' + th[1] : '');
     tagEl.textContent = th ? src.textContent.trim() : ''; tagEl.hidden = !th;
