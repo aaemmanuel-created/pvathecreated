@@ -23,7 +23,7 @@
     try { at = sessionStorage.getItem('dvAt'); tab = sessionStorage.getItem('dvHall'); auth = JSON.parse(sessionStorage.getItem('pvathecreated:auth') || '[]') || []; } catch (e) {}
     var kind = (h === '#project' && tab && auth.indexOf(tab) >= 0) ? 'hall' : ((h === '#project') || (!h && at === 'seeds')) ? 'seeds' : '';
     /* the bar colour (theme-color) is written here, already right, so Safari never sees the dove's purple first */
-    var tm = document.createElement('meta'); tm.name = 'theme-color'; tm.content = kind === 'hall' ? '#ffffff' : kind === 'seeds' ? '#000000' : '#5a2f9a';
+    var tm = document.createElement('meta'); tm.name = 'theme-color'; tm.content = kind === 'hall' ? '#ffffff' : kind === 'seeds' ? '#000000' : '#7e48c0';   /* the purple at the very top of the dove page (24 Nov: the bar was a darker purple on refresh) */
     document.head.appendChild(tm);
     if (!kind) return;
     c.classList.add('dv-boot', 'dv-boot-' + kind);
@@ -3525,7 +3525,7 @@ window.__dvNight = !/[?&]paper\b/.test(location.search); if (window.__dvNight) d
 <!-- iPhone Safari (iOS 26) colours its top and bottom bars from whatever is pinned
      to those edges of the page. These two thin strips carry the page's own colour
      there (set by window.__tint), so the bars match. -->
-<div id="tint-top" aria-hidden="true" style="position:fixed;top:0;left:0;right:0;height:6px;background-color:#5a2f9a;pointer-events:none;z-index:2147483000"></div>
+<div id="tint-top" aria-hidden="true" style="position:fixed;top:0;left:0;right:0;height:6px;background-color:#7e48c0;pointer-events:none;z-index:2147483000"></div>
 <div id="tint-bot" aria-hidden="true" style="position:fixed;bottom:0;left:0;right:0;height:6px;background-color:#000000;pointer-events:none;z-index:2147483000"></div>
 <style>@media (hover: hover) and (pointer: fine) { #tint-top, #tint-bot { display: none; } }</style>   <!-- phones and tablets only -->
 <script>
@@ -6121,7 +6121,7 @@ Lord you are Holy, Holy, Holy</p>
        bar the colour at its foot, read from the drawn frame a few times a second;
        on the paper pages both are paper */
     var light = !window.__dvNight && p > 0.8, e = window.__dvBar;   /* __dvBar: the eased colours from the drawing loop */
-    var top = e ? e.top : (light ? '#ffffff' : '#5a2f9a'), bot = e ? e.bot : (light ? '#ffffff' : '#000000');
+    var top = e ? e.top : (light ? '#ffffff' : '#7e48c0'), bot = e ? e.bot : (light ? '#ffffff' : '#000000');
     var c = top + bot;
     if (c === lastChrome) return;
     lastChrome = c;
@@ -7161,7 +7161,7 @@ Lord you are Holy, Holy, Holy</p>
 
   // ---- the loop ----
   var phase = Math.PI / 2, beats = 0, prevC = 0, glowAuto = 0, autoA = 0;
-  var edgeN = 0, edgePx = new Uint8Array(4), edgeT = null, edgeB = null, PAPER = window.__dvNight ? [0, 0, 0] : [255, 255, 255], barT = [90, 47, 154], barB = [0, 0, 0];
+  var edgeN = 0, edgePx = new Uint8Array(4), edgeT = null, edgeB = null, PAPER = window.__dvNight ? [0, 0, 0] : [255, 255, 255], barT = [126, 72, 192], barB = [0, 0, 0];   /* starts on the page's own top purple, #7e48c0 */
   if (document.documentElement.classList.contains('dv-boot-seeds')) { barT = PAPER.slice(); barB = PAPER.slice(); }   /* a refresh on the projects: the bars start in the page's colour, not the dove's purple (24 Nov) */
   function edgeHex(q) { function h(v) { v = Math.min(255, Math.round(v / 3) * 3); return (v < 16 ? '0' : '') + v.toString(16); } return '#' + h(q[0]) + h(q[1]) + h(q[2]); }
   var bHoldV = null, riseS = 0, wipeS = 0, bleedT = 0, bleedRate = 0, restA = 0, restT = 0, appS = 0, bSlow = 0, dustS = 0, ps = 0, pPrev = 0, velS = 0, freqS = 0.3, last = performance.now(), clock = 0;
