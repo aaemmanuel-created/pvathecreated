@@ -3197,8 +3197,59 @@
      ball, tiles and names sit together as one group in the middle of the screen instead of the stage taking all the
      height, and the ball sits just left of the front tile (20px apart) instead of in the middle of its half */
   #view-project-hall .hall-in { justify-content: center; }
-  #view-project-hall .hall-stage { flex: 0 1 auto; --tw: min(66vw, 25vh, 300px); height: calc(var(--tw) * 1.25 + 56px); }   /* just the tile's height and a little room for the tiles peeking above and below */
-  @media (min-width: 720px) { #view-project-hall .hall-stage { --tw: min(30vw, 30vh, 380px); } }
+  /* 24 Nov (Emmanuel): the standard back control from the design guidelines (§9.2: one ‹ circle, top left, 44px,
+     always there); the thread tag (Grounding · Righteous · Lifted) top right, level with it; under the title the
+     project's own line, 'Yahweh revealed as …', as on the projects screen; a larger ball */
+  #view-project-hall .hall-head { min-height: 44px; padding: calc(16px + env(safe-area-inset-top)) 16px 0; }
+  #view-project-hall .hall-back { width: 44px; height: 44px; padding: 0; border-radius: 50%; display: grid; place-items: center;
+    border: 1px solid rgba(26,22,18,0.14); background: rgba(255,255,255,0.72); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+    color: rgba(26,22,18,0.78); opacity: 1; letter-spacing: 0; text-transform: none; font: 300 26px/1 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+  #view-project-hall .hall-back span { display: block; transform: translate(-1px, -2px); }
+  #view-project-hall .hall-back::before { inset: 0; }
+  #view-project-hall .hall-back:hover, #view-project-hall .hall-back:focus-visible { border-color: rgba(26,22,18,0.32); color: #1a1612; outline: none; }
+  #view-project-hall .hall-back:active { transform: scale(.97); }
+  #view-project-hall .hall-head .hall-tagline { position: absolute; right: 16px; top: calc(16px + env(safe-area-inset-top) + 22px); transform: translateY(-50%); margin: 0 !important; min-height: 0; }
+  #view-project-hall .hall-title { margin-bottom: 8px; }
+  #view-project-hall .hall-title:has(+ .hall-desc:empty) { margin-bottom: 24px; }
+  .hall-desc { flex: none; margin: 0 0 24px; padding: 0 8px; text-align: center; text-wrap: balance; font: 200 16px/1.5 'Helvetica Neue', Helvetica, Arial, sans-serif; color: rgba(26,22,18,0.72);
+    opacity: 0; filter: blur(6px); transition: opacity 1.1s cubic-bezier(.22,1,.36,1) .25s, filter 1.1s cubic-bezier(.22,1,.36,1) .25s; }
+  .hall-desc:empty { display: none; }
+  #view-project-hall.hall-on .hall-desc { opacity: 1; filter: none; }
+  #view-project-hall .dv-yah { color: #5a2390; background-image: linear-gradient(100deg, #5a2390 0%, #9c1b22 14%, #c8862a 28%, #2a8a6e 42%, #2f5fb8 56%, #8a3fc0 70%, #d23c6a 84%, #5a2390 100%); }   /* the day colours: this page is white */
+  #view-project-hall .hall-ball { width: min(50vw, 74cqh, 420px); }
+  @media (prefers-reduced-motion: reduce) { .hall-desc { transition: none; opacity: 1; filter: none; } }
+  #view-project-hall .hall-stage { flex: 0 1 auto; --tw: min(66vw, 23vh, 280px); height: calc(var(--tw) * 1.5 + 56px); }
+  #view-project-hall .hall-tile { aspect-ratio: 2 / 3; }   /* taller cards (Emmanuel, 24 Nov; were 4 : 5) */   /* just the tile's height and a little room for the tiles peeking above and below */
+  /* Landscape on a phone, the projects screen (24 Nov): the house, its title, its line and the bars all fit the short
+     screen that is left under Safari's bars (svh = the smallest the screen gets) */
+  @media (orientation: landscape) and (max-height: 520px) {
+    .dv-ring { width: min(60vw, 42svh, 300px); }
+    .dv-seeds { padding: 2svh 0 calc(60px + env(safe-area-inset-bottom)); }
+    .dv-seed { gap: 4px; }
+    .dv-name { font-size: 16px; }
+    .dv-desc { font-size: 14px; }
+    .dv-pager { bottom: calc(4px + env(safe-area-inset-bottom)); }
+    .dv-swipe { bottom: calc(52px + env(safe-area-inset-bottom)); }
+  }
+  /* Landscape on a phone (Emmanuel, 24 Nov: 'improve how it looks in landscape'): the words on the left — title,
+     line, names — and the ball and the cards on the right, running off the edge as in portrait; the back circle and
+     the tag float over the top corners, clear of the notch; everything fits the short screen without scrolling */
+  @media (orientation: landscape) and (max-height: 520px) {
+    #view-project-hall .hall-head { position: absolute; left: 0; right: 0; top: 0; z-index: 3; padding: calc(12px + env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) 0 max(16px, env(safe-area-inset-left)); }
+    #view-project-hall .hall-head .hall-tagline { top: calc(12px + env(safe-area-inset-top) + 22px); right: max(16px, env(safe-area-inset-right)); }
+    #view-project-hall .hall-in { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto auto auto; grid-template-areas: "title stage" "desc stage" "people stage";
+      align-content: center; align-items: center; column-gap: 8px; max-width: none; width: 100%; height: 100%; margin: 0; padding: 0 0 env(safe-area-inset-bottom) max(24px, env(safe-area-inset-left)); box-sizing: border-box; }
+    #view-project-hall .hall-title { grid-area: title; align-self: end; margin: 0 0 8px; padding: 0 8px; }
+    #view-project-hall .hall-desc { grid-area: desc; margin: 0 0 16px; padding: 0 8px; font-size: 14px; }
+    #view-project-hall .hall-title:has(+ .hall-desc:empty) { margin-bottom: 16px; }
+    #view-project-hall .hall-people { grid-area: people; align-self: start; margin-top: 0; padding: 0 8px; }
+    #view-project-hall .hall-names { gap: 0 14px; line-height: 1.75; }
+    #view-project-hall .hall-stage.hall-stage { grid-area: stage; --tw: min(20vw, 46vh, 220px); --bw: min(20vw, 42vh, 220px); width: calc(var(--bw) + 18px + var(--tw) * var(--tin, 0.64)); margin: 0; height: calc(var(--tw) * 1.5 + 40px); align-self: center;
+      grid-template-columns: auto calc(var(--tw) * var(--tin, 0.64)); }   /* the ball, then the card's visible part; the rest of the card runs off the edge */
+    #view-project-hall .hall-ball.hall-ball { width: var(--bw); max-width: none; justify-self: end; margin: 0 18px 0 0; }
+    #view-project-hall .hall-tile { left: 0; }
+  }
+  @media (min-width: 720px) { #view-project-hall .hall-stage { --tw: min(30vw, 27vh, 340px); } }
   #view-project-hall .hall-ball { justify-self: end; margin-right: calc(20px - (58vw - var(--tw) * var(--tin, 0.66))); }
 
   /* The projects arrive softly (Emmanuel, 23 Nov: 'maybe it has to do with how section 2 fades in?'). Coming from
@@ -3550,11 +3601,12 @@ window.__tint = function (top, bot) {
      ============================================================ -->
 <section id="view-project-hall" class="view project-view">
   <header class="pg-header hall-head">
-    <button class="back-btn" data-back>&larr; back</button>
+    <button class="back-btn hall-back" data-back aria-label="Back"><span aria-hidden="true">&lsaquo;</span></button>
+    <p class="hall-tagline"><span class="project-tag" id="hall-tag" hidden></span></p>
   </header>
   <div class="hall-in">
     <h1 class="hall-title" id="hall-title">Project</h1>
-    <p class="hall-tagline"><span class="project-tag" id="hall-tag" hidden></span></p>
+    <p class="hall-desc" id="hall-desc"></p>
     <div class="hall-stage">
       <div class="hall-ball" id="hall-ball" tabindex="0" role="slider" aria-label="Swipe up or down to move between the parts of this project" aria-valuemin="1" aria-valuemax="4" aria-valuenow="1" aria-valuetext="Music"></div>
       <ul class="hall-stack" id="hall-stack" aria-label="Parts of this project">
@@ -7722,13 +7774,26 @@ Lord you are Holy, Holy, Holy</p>
   /* people added to a project who have no role written on its old page yet (Emmanuel, 23 Nov) */
   var MORE = {};
   /* a project's names in the order Emmanuel set (23 Nov); when given, this list is used as it is */
-  var ORDER = { 'overseer': ['Marika "Marika" Bastien', 'Pietro Ciappelli', 'Mallory Oluchi Omegui', 'Dean "Deano" Dobson', 'Simon Kobina "Korby" Nyamekye Imbrah', 'Emmanuel', 'Joshua Spence', 'Arindy'] };
+  var ORDER = { 'overseer': ['Marika "Marika" Bastien', 'Pietro Ciappelli', 'Mallory Oluchi Omegui', 'Dean "Deano" Dobson', 'Simon Kobina "Korby" Nyamekye Imbrah', 'Emmanuel "Thecreated" Anie-Akwetey', 'Joshua Spence', 'Arindy Plet'],
+                'wrestle': ['Mallory Oluchi Omegui', 'Marika "Marika" Bastien', 'Arindy Plet', 'Emmanuel "Thecreated" Anie-Akwetey', 'Joshua Spence', 'Rasharn Powell', 'Pietro Ciappelli'] };
   window.__fillHall = function (tab) {
     try { sessionStorage.setItem('dvHall', tab); } catch (_) {}   /* so a refresh on #project reopens this project */
     var link = document.querySelector('.partner-tab-link[data-tab="' + tab + '"]');
     var sn = document.querySelector('.dv-seed[data-tab="' + tab + '"]:not(.dv-multi) .dv-name');   /* the house's own name first, then the Partner list's */
     var name = sn ? (sn.getAttribute('aria-label') || sn.textContent).trim() : link ? (link.firstChild ? link.firstChild.textContent : link.textContent).replace(/[\u2192→]/g, '').trim() : 'Project';
     titleEl.textContent = name;
+    /* the project's own line from the projects screen, 'Yahweh revealed as …' (24 Nov) */
+    var descEl = document.getElementById('hall-desc');
+    if (descEl) {
+      var dkey = /^housepva/.test(tab) ? 'house-pva' : tab, dsrc = document.querySelector('.dv-seed[data-tab="' + dkey + '"] .dv-desc');
+      var line = dsrc ? dsrc.textContent.replace(/\s+/g, ' ').trim() : '';
+      descEl.textContent = '';
+      if (line) {
+        var m9 = /^Yahweh\b/.exec(line);
+        if (m9) { var y9 = document.createElement('span'); y9.className = 'dv-yah'; y9.textContent = 'Yahweh'; descEl.appendChild(y9); line = line.slice(6); }
+        descEl.appendChild(document.createTextNode(line));
+      }
+    }
     var seen = {}, names = [];
     [].forEach.call(NAMES[tab] ? document.querySelectorAll(NAMES[tab]) : [], function (b) { var n = b.textContent.trim(); if (n && !seen[n]) { seen[n] = 1; names.push(n); } });
     (MORE[tab] || []).forEach(function (n) { if (!seen[n]) { seen[n] = 1; names.push(n); } });
