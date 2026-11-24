@@ -6086,9 +6086,11 @@ Lord you are Holy, Holy, Holy</p>
 </script>
 <!-- ============================================================
      DOVE HOME — scene + particle rings (2026-11-21)
-     three.js r149 (MIT) from jsDelivr, pinned with an integrity hash.
+     three.js 0.187.0 (MIT), kept on this site in vendor/ (built 24 Nov 2026 from the npm package into one classic
+     script; was r149 from jsDelivr). Upgrading: build the new version the same way (see Design-System.md), recompute the
+     integrity hash, and copy vendor/ on deploy.
      ============================================================ -->
-<script src="https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js" integrity="sha384-RRHfJ6w1mTlKUBMYT/hvnRiOzEB/vyRV3DrQOseb6oYfvaZSfdd0byS4bHps0k2R" crossorigin="anonymous"></script>
+<script src="vendor/three-0.187.0.min.js" integrity="sha384-lGE+LDUmS/YaB8EYdG3AHRBovJF47OxKK0B86uZDK/MdcR0+WmornmiOh52fEURU"></script>
 <script>
 (function () {
   var scroller = document.getElementById('dv-scroll');
@@ -6353,7 +6355,10 @@ Lord you are Holy, Holy, Holy</p>
   } catch (e) { fallback(); return; }
 
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-  renderer.outputEncoding = THREE.sRGBEncoding;
+  /* three.js 0.187 (was r149): the same output as before — sRGB out, and colours given in code left as they are
+     (r149 had no colour management; turning it off keeps every colour exactly as tuned) */
+  if (THREE.ColorManagement) THREE.ColorManagement.enabled = false;
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.0;
   renderer.autoClear = true;
@@ -6430,10 +6435,11 @@ Lord you are Holy, Holy, Holy</p>
   scene.add(bg);
 
   // ---- light ----
-  scene.add(new THREE.HemisphereLight(0xffffff, 0x9c938a, 0.9));
-  var key = new THREE.DirectionalLight(0xfff5e6, 1.5); key.position.set(2.5, 6, 5); scene.add(key);
-  var front = new THREE.DirectionalLight(0xfffaf2, 0.9); front.position.set(0, -1.5, 8); scene.add(front);
-  var rim = new THREE.DirectionalLight(0xfff0d4, 1.6); rim.position.set(-1.5, 3, -6); scene.add(rim);
+  /* lights × π: three.js r155+ measures light physically; this keeps the code-built dove lit as it was under r149 */
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x9c938a, 0.9 * Math.PI));
+  var key = new THREE.DirectionalLight(0xfff5e6, 1.5 * Math.PI); key.position.set(2.5, 6, 5); scene.add(key);
+  var front = new THREE.DirectionalLight(0xfffaf2, 0.9 * Math.PI); front.position.set(0, -1.5, 8); scene.add(front);
+  var rim = new THREE.DirectionalLight(0xfff0d4, 1.6 * Math.PI); rim.position.set(-1.5, 3, -6); scene.add(rim);
 
   // ---- materials ----
   var featherMat = new THREE.MeshStandardMaterial({
@@ -6686,7 +6692,7 @@ Lord you are Holy, Holy, Holy</p>
   // Time in the clip creeps forward in slow motion at rest and runs faster
   // as you swipe. ?dove=3d keeps the code-built dove instead.
   var VID = window.__dvVid = { on: false, frames: [], dur: 8, T: 0, autoT: 0, capPhase: 0, W: 400, H: 225, ia: -1, ib: -1 };
-  var TEXFMT = renderer.capabilities.isWebGL2 ? THREE.RedFormat : THREE.LuminanceFormat;   // one channel: brightness
+  var TEXFMT = THREE.RedFormat;   // one channel: brightness (three.js 0.187 is WebGL 2 only; LuminanceFormat is gone)
   var texA = new THREE.DataTexture(new Uint8Array(VID.W * VID.H), VID.W, VID.H, TEXFMT, THREE.UnsignedByteType);
   var texB = new THREE.DataTexture(new Uint8Array(VID.W * VID.H), VID.W, VID.H, TEXFMT, THREE.UnsignedByteType);
   texA.unpackAlignment = texB.unpackAlignment = 1;
@@ -7907,14 +7913,98 @@ Lord you are Holy, Holy, Holy</p>
       var rg = rings[i];
       /* Emmanuel, 24 Nov: 'let the light start to bleed before the particles disperse' — the light begins in
          the whole house first; the dots break away only once it is glowing */
-      var bleeding = !reduceQ.matches && lightBleed(i, rg);
-      if (rg && !reduceQ.matches) { if (bleeding) setTimeout(function () { rg.doorT = 1; }, BLEED_LEAD); else rg.doorT = 1; }   /* the house disperses */
+      /* 24 Nov, later (Emmanuel: 'zoom in and then a bright light … a light tunnel … entering the tunnel with speed of
+         light'): the light tunnel replaced the bleed (lightBleed is kept below, unused) */
+      var dust0 = handoff(i);   /* where the house's dust is before the zoom, for the small house that follows */
+      var going = !reduceQ.matches && lightTunnel(i, rg);
+      if (rg && !reduceQ.matches) { if (going) setTimeout(function () { rg.doorT = 1; }, TUNNEL_BURST); else rg.doorT = 1; }   /* the house disperses */
       setTimeout(function () {
-        if (window.__dvMark) window.__dvMark.go(handoff(i), rg ? rg.pal : null);
+        if (window.__dvMark) window.__dvMark.go(going ? dust0 : handoff(i), rg ? rg.pal : null);
         openSeed(tab);
         // the house is whole again by the time you come back
         setTimeout(function () { if (rg) { rg.doorT = 0; rg.door = 0; } delete btn.dataset.busy; }, 900);
-      }, reduceQ.matches ? 0 : bleeding ? BLEED_FULL : 950);
+      }, reduceQ.matches ? 0 : going ? TUNNEL_FULL : 950);
+  }
+  /* The light tunnel (Emmanuel, 24 Nov: 'when a user clicks on the particles and puts in the password … a zoom in and
+     then a bright light, like a light tunnel … like entering the tunnel with the speed of light'). Three parts, one
+     move: the screen pushes into the house (the projects section grows from the house's centre and fades); each of the
+     house's specks, with more stars around it, becomes a streak of light racing outward from that centre, slow at first
+     and then faster and longer (light speed); a white light at the centre swells until the whole screen is white, the
+     project page is put in underneath and the light lifts away. */
+  var TUNNEL_FULL = 1600, TUNNEL_OUT = 600, TUNNEL_BURST = 250, STREAKS = false;
+  function lightTunnel(ri, rg) {
+    if (!rg) return false;
+    var cv = document.createElement('canvas'), ctx = cv.getContext('2d'); if (!ctx) return false;
+    var vw = window.innerWidth, vh = window.innerHeight, dpr = Math.min(2, window.devicePixelRatio || 1);
+    cv.width = Math.round(vw * dpr); cv.height = Math.round(vh * dpr); cv.setAttribute('aria-hidden', 'true');
+    cv.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:2147481000';
+    document.body.appendChild(cv);
+    var sr = sec.getBoundingClientRect(), pal = rg.pal || FALLBACK, diag = Math.hypot(vw, vh);
+    /* the tunnel's heart: the middle of the house as it is drawn now */
+    var mine = [], cx = 0, cy = 0;
+    for (var k = 0; k < parts.length; k++) if (parts[k].ri === ri) { var q = parts[k]; mine.push(q); cx += q.x; cy += q.y; }
+    if (!mine.length) { cv.remove(); return false; }
+    cx = cx / mine.length + sr.left; cy = cy / mine.length + sr.top;
+    var stars = [], step = Math.max(1, Math.floor(mine.length / 240));
+    function star(dx, dy, own) {
+      var r0 = Math.hypot(dx, dy), a = r0 > 0.5 ? Math.atan2(dy, dx) : Math.random() * 6.2832, c = Math.random() < 0.72 ? [255, 255, 255] : pal[Math.floor(Math.random() * pal.length)];
+      stars.push({ a: a, ca: Math.cos(a), sa: Math.sin(a), r0: r0, sp: 0.65 + Math.random() * 0.8, c: c, own: own, w: 0.6 + Math.random() * 0.9 });
+    }
+    for (var k2 = 0; k2 < mine.length; k2 += step) star(mine[k2].x + sr.left - cx, mine[k2].y + sr.top - cy, true);   /* the house's own specks */
+    for (var k3 = 0; k3 < 170; k3++) { var ra = Math.random() * 6.2832, rr = diag * (0.08 + 0.5 * Math.sqrt(Math.random())); star(Math.cos(ra) * rr, Math.sin(ra) * rr, false); }   /* the stars around */
+    /* 1 · the zoom: the projects section grows from the house's heart and fades into the tunnel */
+    var seedsSec = document.getElementById('dv-seeds');
+    if (seedsSec) {
+      var or = seedsSec.getBoundingClientRect();
+      seedsSec.style.transformOrigin = (cx - or.left) + 'px ' + (cy - or.top) + 'px';
+      seedsSec.style.transition = 'transform 1.1s cubic-bezier(.55,0,.85,.35), opacity .9s ease-in .15s';
+      requestAnimationFrame(function () { seedsSec.style.transform = 'scale(3.2)'; seedsSec.style.opacity = '0'; });
+    }
+    var t0 = performance.now(), K = 4.4, EK = Math.exp(K) - 1;
+    var run = function (p) { return (Math.exp(K * p) - 1) / EK; };   /* slow, then light speed */
+    function frame(now) {
+      var e = now - t0;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, vw, vh);
+      if (e < TUNNEL_FULL) {
+        var p = e / TUNNEL_FULL, go = run(p), tail = 0.035 + 0.16 * p * p, shine = Math.min(1, p * 4);
+        /* 2 · the streaks — off (Emmanuel, 24 Nov: 'I just want the light explosion, not the streaks'); set
+           STREAKS = true to bring them back */
+        ctx.globalCompositeOperation = 'lighter'; ctx.lineCap = 'round';
+        for (var j = 0; STREAKS && j < stars.length; j++) {
+          var S = stars[j], pa = Math.max(0, p - tail), r1 = S.r0 + diag * 1.25 * go * S.sp, r2 = S.r0 + diag * 1.25 * run(pa) * S.sp;
+          if (r2 > diag) continue;
+          var x1 = cx + S.ca * r1, y1 = cy + S.sa * r1, x2 = cx + S.ca * r2, y2 = cy + S.sa * r2;
+          var al = shine * (S.own ? 0.95 : 0.7) * Math.min(1, 0.3 + r2 / (diag * 0.25));
+          var gr = ctx.createLinearGradient(x2, y2, x1, y1);
+          gr.addColorStop(0, 'rgba(' + S.c[0] + ',' + S.c[1] + ',' + S.c[2] + ',0)');
+          gr.addColorStop(1, 'rgba(' + S.c[0] + ',' + S.c[1] + ',' + S.c[2] + ',' + al.toFixed(3) + ')');
+          ctx.strokeStyle = gr; ctx.lineWidth = S.w * (0.8 + 2.6 * p);
+          ctx.beginPath(); ctx.moveTo(x2, y2); ctx.lineTo(x1, y1); ctx.stroke();
+        }
+        /* 3 · the light at the end of the tunnel swells */
+        /* a blinding white core with a soft glow round it in a lighter shade of the project's colour (no grey disc) */
+        var gw = Math.max(0, (p - (STREAKS ? 0.3 : 0.08)) / (STREAKS ? 0.7 : 0.92)), gR = diag * (0.05 + 1.5 * gw * gw * gw), tc = pal[0].map(function (v) { return Math.round(v + (255 - v) * 0.55); });
+        var g2 = ctx.createRadialGradient(cx, cy, 0, cx, cy, gR);
+        g2.addColorStop(0, 'rgba(255,255,255,1)'); g2.addColorStop(0.12, 'rgba(255,255,255,' + Math.min(1, 0.55 + gw).toFixed(3) + ')');
+        g2.addColorStop(0.32, 'rgba(255,255,255,' + Math.min(1, 0.18 + gw * 0.9).toFixed(3) + ')');
+        g2.addColorStop(0.62, 'rgba(' + tc[0] + ',' + tc[1] + ',' + tc[2] + ',' + Math.min(0.6, 0.06 + gw * 0.5).toFixed(3) + ')');
+        g2.addColorStop(1, 'rgba(' + tc[0] + ',' + tc[1] + ',' + tc[2] + ',0)');
+        ctx.fillStyle = g2; ctx.fillRect(0, 0, vw, vh);
+        var wf = Math.max(0, (p - 0.8) / 0.2);   /* and the last of the dark goes white */
+        if (wf > 0) { ctx.globalCompositeOperation = 'source-over'; ctx.fillStyle = 'rgba(255,255,255,' + (wf * wf).toFixed(3) + ')'; ctx.fillRect(0, 0, vw, vh); }
+        requestAnimationFrame(frame); return;
+      }
+      /* through: white, the project page underneath, the light lifts */
+      var o = Math.min(1, (e - TUNNEL_FULL) / TUNNEL_OUT);
+      ctx.globalCompositeOperation = 'source-over'; ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, vw, vh);
+      cv.style.opacity = String(1 - o * o * (3 - 2 * o));
+      if (o < 1) { requestAnimationFrame(frame); return; }
+      cv.remove();
+      /* the projects screen is put back only now, out of sight (resetting it earlier let it flash through the white) */
+      if (seedsSec) setTimeout(function () { seedsSec.style.transition = 'none'; seedsSec.style.transform = ''; seedsSec.style.opacity = ''; seedsSec.style.transformOrigin = ''; requestAnimationFrame(function () { seedsSec.style.transition = ''; }); }, 1000);   /* after the old page's own fade-out (1.2 s from the swap) has ended */
+    }
+    requestAnimationFrame(frame);
+    return true;
   }
   /* Light bleeds from the dust (Emmanuel, 24 Nov: 'a light bleed from the particles into the rest of the screen —
      the white bleeds into the black from the particles'). As the house disperses, every speck starts to glow; the
