@@ -7915,15 +7915,33 @@ Lord you are Holy, Holy, Holy</p>
          the whole house first; the dots break away only once it is glowing */
       /* 24 Nov, later (Emmanuel: 'zoom in and then a bright light … a light tunnel … entering the tunnel with speed of
          light'): the light tunnel replaced the bleed (lightBleed is kept below, unused) */
-      var dust0 = handoff(i);   /* where the house's dust is before the zoom, for the small house that follows */
-      var going = !reduceQ.matches && lightTunnel(i, rg);
-      if (rg && !reduceQ.matches) { if (going) setTimeout(function () { rg.doorT = 1; }, TUNNEL_BURST); else rg.doorT = 1; }   /* the house disperses */
+      /* 25 Nov (Emmanuel: 'I don't like the light explosion' → a slow zoom was tried, then 'don't zoom into the text —
+         let the text fade away and then the particles do their disperse thing'): the words fade first, then the house
+         breaks into dots and the dots gather into the project page's ball. No zoom, no flash. lightTunnel and
+         lightBleed are kept below, unused. */
+      var calm = !reduceQ.matches && fadeWords();
       setTimeout(function () {
-        if (window.__dvMark) window.__dvMark.go(going ? dust0 : handoff(i), rg ? rg.pal : null);
-        openSeed(tab);
-        // the house is whole again by the time you come back
-        setTimeout(function () { if (rg) { rg.doorT = 0; rg.door = 0; } delete btn.dataset.busy; }, 900);
-      }, reduceQ.matches ? 0 : going ? TUNNEL_FULL : 950);
+        if (rg && !reduceQ.matches) rg.doorT = 1;   /* the house disperses once the words have gone */
+        setTimeout(function () {
+          if (window.__dvMark) window.__dvMark.go(handoff(i), rg ? rg.pal : null);
+          openSeed(tab);
+          if (calm) calm();
+          // the house is whole again by the time you come back
+          setTimeout(function () { if (rg) { rg.doorT = 0; rg.door = 0; } delete btn.dataset.busy; }, 900);
+        }, reduceQ.matches ? 0 : 950);
+      }, calm ? WORDS_OUT : 0);
+  }
+  /* The words step back first (25 Nov): every title, line and the swipe/bars fade out; the dots stay. Returns the
+     function that brings them back once the projects screen is out of sight. */
+  var WORDS_OUT = 600;
+  function fadeWords() {
+    var els = [].slice.call(sec.querySelectorAll('.dv-name, .dv-desc, .dv-ways'));
+    [].forEach.call(sec.children, function (c) { if (c.tagName !== 'CANVAS' && c.id !== 'dv-grid') els.push(c); });
+    var pv = document.getElementById('dv-pass'); if (pv) els.push(pv);
+    els.forEach(function (e) { e.style.transition = 'opacity ' + WORDS_OUT + 'ms ease'; e.style.opacity = '0'; });
+    return function () {
+      setTimeout(function () { els.forEach(function (e) { e.style.transition = 'none'; e.style.opacity = ''; requestAnimationFrame(function () { e.style.transition = ''; }); }); }, 1500);
+    };
   }
   /* The light tunnel (Emmanuel, 24 Nov: 'when a user clicks on the particles and puts in the password … a zoom in and
      then a bright light, like a light tunnel … like entering the tunnel with the speed of light'). Three parts, one
