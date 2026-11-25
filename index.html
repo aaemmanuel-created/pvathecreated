@@ -3337,7 +3337,8 @@
   .hall-open.has-cds .hall-open-cds { display: flex; flex-direction: column; gap: 24px; height: auto; max-width: 380px; margin: 24px auto 0; padding: 0 8px; }
   .hall-open-cds .cdx { position: relative; left: auto; top: auto; width: auto; aspect-ratio: auto; display: flex; align-items: center; gap: 16px; }
   .hall-open-cds .cdx > .cdx-btn { flex: none; width: 40px; height: 40px; animation: none; }
-  .hall-open-cds .cdx-name { font: 400 16px/1.35 'Courier Prime', 'Courier New', monospace; letter-spacing: 0; }   /* the scriptwriter's typeface */
+  .hall-open-cds .cdx-name { font: 700 16px/1.35 'Courier Prime', 'Courier New', monospace; letter-spacing: 0; }   /* the scriptwriter's typeface, bold (Emmanuel, 25 Nov) */
+  .hall-open-body::after { content: ""; display: block; height: var(--room, 0px); }   /* just enough room to scroll the card down to its bar */
   .hall-open-cds .cdx > .cdx-btn { order: 2; }   /* the CD on the right of its title */
   .hall-open-cds .cdx-label { order: 1; }
   .cdx-label { flex: 1; min-width: 0; padding: 4px 0; text-align: left; border: 0; background: none; cursor: pointer; -webkit-tap-highlight-color: transparent; touch-action: manipulation; color: inherit; }
@@ -7488,6 +7489,13 @@ Lord you are Holy, Holy, Holy</p>
     for (var i = 0; i < parts.length; i++) { var q = parts[i]; if (np) { var gx9 = (Math.random() + Math.random() - 1) ; q.fx0 = window.__dvPtsReal ? P2[(Math.random() * np | 0) * 2] + (Math.random() - 0.5) * 10 : W * 0.5 + gx9 * W * 0.26; q.fs = vh0 * (-0.7 + Math.random() * 0.9); q.fa = 0; q.fcol = 1; continue; }   /* the dove's dust carries on falling from where it went in section 1: across the bird's own width (where its last specks were), coming down from above (Emmanuel, 23 Nov: 'it just needs to make sense placement wise') */ q.fs = nt ? vh0 * (0.27 + Math.random() * 0.24) : -(0.03 + Math.random() * 0.42) * vh0; q.fx0 = nt ? W * (0.5 + (Math.random() + Math.random() - 1) * 0.34) : W * (-0.05 + Math.random() * 1.1); q.fa = 0; }
     fallOn = true; fallT = 0;
   };
+  /* Back from the project page by its ball (25 Nov): the ball's dots, where they were thrown, gather again into the
+     house. pts are screen points; they are placed once the projects screen is showing (first frame). */
+  var gatherPts = null;
+  window.__dvGather = function (pts) {
+    if (reduceQ.matches || !pts || !pts.length) return;
+    gatherPts = pts; fallOn = true; fallT = 0;
+  };
   function frame(now) {
     requestAnimationFrame(frame);
     var dt = Math.min(0.05, (now - last) / 1000); last = now;
@@ -7518,6 +7526,11 @@ Lord you are Holy, Holy, Holy</p>
 
     // swiping on past the projects: the shapes come apart; swiping back re-forms them
     var srect = sec.getBoundingClientRect(), vh = window.innerHeight || H;
+    if (gatherPts) {   /* the ball's dots become the house's starting places */
+      var gn = gatherPts.length;
+      for (var gi0 = 0; gi0 < parts.length; gi0++) { var gq = parts[gi0], gp0 = gatherPts[(Math.random() * gn) | 0]; gq.fx0 = gp0[0] - srect.left + (Math.random() - 0.5) * 8; gq.fs = gp0[1] + (Math.random() - 0.5) * 8; gq.fcol = 2; gq.fa = 1; }
+      gatherPts = null; fallT = 0;
+    }
     // the fall follows your scroll: it starts as the section rises into view and
     // finishes as it reaches the top, so you see the dust falling into place (Emmanuel)
     var arrT = reduce ? 1 : clamp01(1 - srect.top / (vh * 0.85));
@@ -7589,7 +7602,12 @@ Lord you are Holy, Holy, Holy</p>
       var f = clamp01(arr * 1.35 - q.d2 * 0.35); f = f * f * (3 - 2 * f);
       var fx = q.x0 + (tx - q.x0) * f, fy = q.y0 + (ty - q.y0) * f;
       var k = reduce ? 1 : 0.18;
-      if (fallOn && q.fs !== undefined) {
+      if (fallOn && q.fcol === 2) {   /* gathering back from the project page's ball: eases from where it was thrown into the house */
+        var gu = clamp01((fallT - q.d * 0.45) / (1.3 + 0.5 * q.d2)), ge = gu * gu * gu * (gu * (gu * 6 - 15) + 10);
+        var gy0 = q.fs - srect.top;
+        q.x = q.fx0 + (tx - q.fx0) * ge + 4 * ge * (1 - ge) * g.R * 0.12 * Math.sin(t * 1.3 + q.ph);
+        q.y = gy0 + (ty - gy0) * ge; q.fa = 1;
+      } else if (fallOn && q.fs !== undefined) {
         var fu = q.fcol ? clamp01((fallT - 0.25 - q.d * 1.0) / (2.0 + 0.7 * q.d2)) : clamp01((fallT - (window.__dvPts ? 0.25 : 0) - q.d * 1.25) / (2.5 + 0.9 * q.d2)), fe = fu * fu * fu * (fu * (fu * 6 - 15) + 10);   /* slower and softer (23 Nov): eases away and eases in, like the dust rising on the way back */
         var fxu = q.fcol ? clamp01((fu - 0.3) / 0.7) : fu, fex = fxu * fxu * fxu * (fxu * (fxu * 6 - 15) + 10);   /* in the stream the dust falls first and only spreads into the house near the end */
         var hold = 0;
@@ -8139,6 +8157,14 @@ Lord you are Holy, Holy, Holy</p>
     requestAnimationFrame(frame);
     var dt = Math.min(0.05, ((now - last) / 1000) || 0.016); last = now; t += dt;
     if (stars && P.length < 1200) grow();
+    if (burst >= 0) {
+      burst += dt;
+      if (burst >= BURST && burstCb) {   /* hand over where every dot is now (screen coordinates) */
+        var cb0 = burstCb, out = []; burstCb = null;
+        for (var o1 = 0; o1 < P.length; o1 += 2) out.push([P[o1].x, P[o1].y]);
+        cb0(out);
+      }
+    }
     var s0 = spot(), G = stars ? hallGeo(dt) : null;
     ctx.clearRect(0, 0, W, H);
     for (var i = 0; i < P.length; i++) {
@@ -8151,6 +8177,10 @@ Lord you are Holy, Holy, Holy</p>
           var lump = 1 + 0.08 * Math.sin(3 * Math.atan2(q.by, bx) + t * 0.4 + q.ph);
           tx = G.cx + bx * G.R * q.rv * lump; ty = G.cy + q.by * G.R * q.rv * lump;
           al = q.a * (0.45 + 0.55 * (bz + 1) / 2); z = q.sz * (0.85 + 0.35 * (bz + 1) / 2) * Math.max(1, Math.min(1.8, G.R / 60)); rate = 2.4;   /* bigger ball, bigger dots */
+          if (burst >= 0) {   /* tapped (25 Nov): the ball breaks outward before its dots gather on the projects screen */
+            var bu = Math.min(1, burst / BURST), be2 = bu * bu * (3 - 2 * bu), bl = Math.sqrt(bx * bx + q.by * q.by) || 1, bd = G.R * (0.5 + 2.1 * q.sx) * be2;
+            tx += bx / bl * bd; ty += q.by / bl * bd * 0.9; rate = 4.5;
+          }
         } else {   /* the trail, flowing from the ball to the tile */
           /* 23 Nov: three strands braided round each other, wide where they leave the ball and
              drawn together as they reach the tile, gathering speed on the way, like thread being spun */
@@ -8201,7 +8231,8 @@ Lord you are Holy, Holy, Holy</p>
     make(from); cv.style.display = 'block';
     if (!on) { on = true; last = performance.now(); requestAnimationFrame(frame); }
   }
-  function hide() { on = false; cv.style.display = 'none'; ctx.clearRect(0, 0, W, H); }
+  function hide() { on = false; burst = -1; burstCb = null; cv.style.display = 'none'; ctx.clearRect(0, 0, W, H); }
+  var burst = -1, burstCb = null, BURST = 0.75;
   size(); addEventListener('resize', size);
   var handed = false, stars = false, hallEl = document.getElementById('view-project-hall');
   function setStars(on2) {   /* behind the hall's tiles: the canvas moves into the hall, under its content */
@@ -8210,7 +8241,8 @@ Lord you are Holy, Holy, Holy</p>
     else { document.body.appendChild(cv); cv.style.zIndex = '2147482000'; }
     for (var i = 0; i < P.length; i++) P[i].d = Math.random() * 0.4; t = 0;
   }
-  window.__dvMark = { go: function (from, p) { handed = true; setPal(p); pendingFrom = from; }, pal: function (p) { setPal(p); } };
+  window.__dvMark = { go: function (from, p) { handed = true; setPal(p); pendingFrom = from; }, pal: function (p) { setPal(p); },
+    burst: function (cb) { if (!on || !stars || reduce) { cb(null); return; } burst = 0; burstCb = cb; } };
   var pendingFrom = null;
   /* follow the page in view: away from home the small house is there; at home it goes */
   function check() {
@@ -8352,9 +8384,22 @@ Lord you are Holy, Holy, Holy</p>
   var drag = null, lastMoved = 0;
   /* a tap on the ball goes back to the list of projects (Emmanuel, 25 Nov) — the hall's own ‹, so the dots and
      history behave exactly as Back does; a drag (moved more than 8px) is a swipe, not a tap */
+  /* 25 Nov, later (Emmanuel: 'clicking on the ball … should also disperse it and have it gather again in the project
+     list section'): the words fade, the ball breaks outward, and its dots are handed to the projects screen, where
+     they gather back into the house */
+  var leaving = false;
   ball.addEventListener('click', function () {
     if (lastMoved > 8) { lastMoved = 0; return; }
-    var bk = document.querySelector('#view-project-hall .hall-back'); if (bk) bk.click();
+    var bk = document.querySelector('#view-project-hall .hall-back'); if (!bk || leaving) return;
+    if (!window.__dvMark || !window.__dvMark.burst) { bk.click(); return; }
+    leaving = true;
+    var els = [].filter.call(hall.children, function (c) { return c.tagName !== 'CANVAS'; });
+    els.forEach(function (e) { e.style.transition = 'opacity 450ms ease'; e.style.opacity = '0'; });
+    window.__dvMark.burst(function (pts) {
+      if (pts && window.__dvGather) window.__dvGather(pts);
+      bk.click();
+      setTimeout(function () { els.forEach(function (e) { e.style.transition = 'none'; e.style.opacity = ''; requestAnimationFrame(function () { e.style.transition = ''; }); }); leaving = false; }, 400);
+    });
   });
   ball.style.cursor = 'pointer';
   function dragStart(y) { lastMoved = 0; drag = { y0: y, ly: y, lt: performance.now(), v: 0, dy: 0 }; stack.classList.add('dragging'); }
@@ -8575,6 +8620,15 @@ Lord you are Holy, Holy, Holy</p>
   openLayer.querySelector('.hall-open-veil').addEventListener('click', tapHome);
   oBody.addEventListener('click', function (e) { if (e.target === oBody || e.target === oCDs || e.target === oInfo || e.target.classList.contains('hall-open-soon') || e.target.classList.contains('cdx-hint')) tapHome(e); });
   window.__hallOpenIs = function () { return !!openFrom; };
+  /* swiping up the open card's page shrinks the card, pixel for pixel, down to a slim bar (Emmanuel, 25 Nov:
+     'when I start swiping up to see more of the page the tile should reduce'); swiping back down grows it again */
+  var oT = null, MINH = 64;
+  oBody.addEventListener('scroll', function () {
+    if (!oT || !openFrom) return;
+    var span = oT.height - MINH, s = Math.max(0, Math.min(oBody.scrollTop, span)), p = span > 0 ? s / span : 0;
+    oCard.style.transition = 'none'; oCard.style.height = (oT.height - s) + 'px';
+    oLabel.style.fontSize = (20 - 5 * p).toFixed(2) + 'px';
+  }, { passive: true });
   window.__hallOpen = function (tile) {
     if (openBusy || openFrom) return;
     var r = tile.getBoundingClientRect(), name = tile.textContent.trim(), kind = name.toLowerCase();
@@ -8585,8 +8639,13 @@ Lord you are Holy, Holy, Holy</p>
     oCard.style.transition = 'none'; place(r); oCard.getBoundingClientRect();
     tile.style.visibility = 'hidden'; hall.classList.add('hall-opened');
     var t = target();
-    oBody.style.top = (t.top + t.height + 24) + 'px';
-    if (window.innerWidth > window.innerHeight && window.innerHeight <= 520) { oBody.style.top = '64px'; oBody.style.left = (t.left + t.width + 24) + 'px'; } else { oBody.style.left = ''; }
+    oBody.style.top = (t.top + t.height + 24) + 'px'; oBody.scrollTop = 0; oT = null; oBody.style.paddingTop = ''; oBody.style.setProperty('--room', '0px'); oLabel.style.fontSize = '';
+    if (window.innerWidth > window.innerHeight && window.innerHeight <= 520) { oBody.style.top = '64px'; oBody.style.left = (t.left + t.width + 24) + 'px'; }
+    else {   /* portrait: the list scrolls up under the card, and the card shrinks with it (Emmanuel, 25 Nov) */
+      oBody.style.left = ''; oT = t;
+      oBody.style.top = (t.top + MINH + 24) + 'px'; oBody.style.paddingTop = (t.height - MINH) + 'px';
+      requestAnimationFrame(function () { if (oT !== t) return; var rest = oBody.scrollHeight - (t.height - MINH); oBody.style.setProperty('--room', Math.max(0, oBody.clientHeight - rest) + 'px'); });
+    }
     oCard.style.transition = reduceM.matches ? 'none' : '';
     requestAnimationFrame(function () { place(t); openLayer.classList.add('grown'); setTimeout(function () { openBusy = false; }, 560); });
     try { history.pushState({ dv: 2 }, '', location.hash); } catch (_) {}
@@ -8597,7 +8656,8 @@ Lord you are Holy, Holy, Holy</p>
     var tile = openFrom, r = tile.getBoundingClientRect();
     openBusy = true;
     openLayer.classList.remove('grown'); hall.classList.remove('hall-opened');
-    if (now || reduceM.matches) { oCard.style.transition = 'none'; }
+    oT = null; oLabel.style.fontSize = '';
+    oCard.style.transition = (now || reduceM.matches) ? 'none' : '';
     place(r);
     setTimeout(function () { tile.style.visibility = ''; openLayer.classList.remove('on'); openLayer.setAttribute('aria-hidden', 'true'); openFrom = null; openBusy = false; }, (now || reduceM.matches) ? 0 : 480);
     var bk = hall.querySelector('.hall-back'); if (bk) bk.setAttribute('aria-label', 'Back');
