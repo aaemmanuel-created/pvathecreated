@@ -3330,6 +3330,21 @@
   .cdx { position: absolute; left: calc(var(--x) - var(--u) * var(--k) / 2); top: calc(var(--u) * var(--y)); width: calc(var(--u) * var(--k)); aspect-ratio: 1; opacity: 0; transform: translateY(12px) scale(.94);
     transition: opacity .7s cubic-bezier(.22,1,.36,1), transform .7s cubic-bezier(.22,1,.36,1); transition-delay: var(--d, 0s); }
   .hall-open.grown .cdx { opacity: 1; transform: none; transition-delay: calc(var(--d, 0s) + .35s); }
+  /* a list down the page (Emmanuel, 25 Nov: 'list the CDs vertically'): the spinning CD on the left, its number
+     and title beside it; tapping either opens the CD */
+  /* smaller + evener (Emmanuel, 25 Nov: 'make the CDs smaller and better spacing'): 40px CDs, no float so the rows
+     line up, 24px between rows, the list centred under the card */
+  .hall-open.has-cds .hall-open-cds { display: flex; flex-direction: column; gap: 24px; height: auto; max-width: 380px; margin: 24px auto 0; padding: 0 8px; }
+  .hall-open-cds .cdx { position: relative; left: auto; top: auto; width: auto; aspect-ratio: auto; display: flex; align-items: center; gap: 16px; }
+  .hall-open-cds .cdx > .cdx-btn { flex: none; width: 40px; height: 40px; animation: none; }
+  .hall-open-cds .cdx-name { font: 400 16px/1.35 'Courier Prime', 'Courier New', monospace; letter-spacing: 0; }   /* the scriptwriter's typeface */
+  .hall-open-cds .cdx > .cdx-btn { order: 2; }   /* the CD on the right of its title */
+  .hall-open-cds .cdx-label { order: 1; }
+  .cdx-label { flex: 1; min-width: 0; padding: 4px 0; text-align: left; border: 0; background: none; cursor: pointer; -webkit-tap-highlight-color: transparent; touch-action: manipulation; color: inherit; }
+  .cdx-no { display: block; margin: 0 0 4px; font: 400 11px/1.4 'Courier Prime', 'Courier New', monospace; letter-spacing: .2em; color: rgba(26,22,18,0.6); }
+  .cdx-name { display: block; font: 300 20px/1.25 'Helvetica Neue', Helvetica, Arial, sans-serif; color: rgba(26,22,18,0.86); }
+  .cdx-name.tbc { color: rgba(26,22,18,0.6); }
+  .cdx-label:focus-visible { outline: 1.5px solid rgba(26,22,18,0.4); outline-offset: 4px; border-radius: 4px; }
   .hall-open.grown .hall-open-cds.has-pick .cdx:not(.is-on) { opacity: .45; transition-delay: 0s; }
   .cdx-btn { animation: cdxBob var(--bob, 5s) ease-in-out infinite; animation-delay: var(--bd, 0s); }
   @keyframes cdxBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
@@ -3345,12 +3360,13 @@
         transparent 172deg, rgba(255,255,255,0.08) 182deg, rgba(255,255,255,0.45) 196deg, rgba(255,255,255,0.66) 203deg, rgba(210,170,255,0.42) 211deg, rgba(140,220,255,0.2) 222deg, transparent 238deg),
       conic-gradient(from 20deg at 50% 50%, transparent 0deg, rgba(120,200,255,0.12) 10deg, rgba(255,255,255,0.34) 22deg, rgba(220,150,255,0.24) 32deg, rgba(150,255,210,0.1) 44deg, transparent 60deg,
         transparent 190deg, rgba(150,255,210,0.12) 202deg, rgba(255,255,255,0.3) 214deg, rgba(170,180,255,0.16) 226deg, transparent 244deg),
-      radial-gradient(circle, #3a3c42 0, #24262b 30%, #141519 62%, #0e0f12 86%, #2a2c31 99%);
-    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.22), inset 0 0 0 2px rgba(0,0,0,0.5); }
+      conic-gradient(from 90deg at 50% 50%, rgba(90,96,108,0) 0deg, rgba(90,96,108,0.22) 70deg, rgba(90,96,108,0) 120deg, rgba(90,96,108,0) 250deg, rgba(90,96,108,0.2) 300deg, rgba(90,96,108,0) 350deg),
+      radial-gradient(circle, #eef0f3 0, #d6d9de 30%, #c3c7ce 55%, #dfe2e6 78%, #a9aeb6 99%);   /* silver (Emmanuel, 25 Nov: 'all the CDs should be silver') */
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.7), inset 0 0 0 2px rgba(60,64,72,0.35); }
   .cdx-face.back { transform: rotateY(180deg); }
   .cdx-face::after { content: ""; position: absolute; inset: 0; border-radius: 50%;   /* the thin bright rings round the hub */
     background: radial-gradient(circle, transparent 0 12.5%, rgba(255,255,255,0.75) 13% 13.8%, transparent 14.6% 17.6%, rgba(255,255,255,0.55) 18% 18.7%, transparent 19.5% 24.5%, rgba(255,255,255,0.8) 25% 25.8%, transparent 26.6% 27.6%, rgba(255,255,255,0.45) 28% 28.6%, transparent 29.4%),
-      radial-gradient(circle, rgba(8,8,10,0.85) 0 12.5%, transparent 13%); }
+      radial-gradient(circle, rgba(120,126,136,0.55) 0 12.5%, transparent 13%); }
   .cdx-shadow { position: absolute; left: 14%; right: 14%; bottom: -12%; height: 10%; border-radius: 50%; background: radial-gradient(closest-side, rgba(26,22,18,0.22), transparent); pointer-events: none; }
   .cdx-btn:focus-visible { outline: 1.5px solid rgba(26,22,18,0.4); outline-offset: 6px; }
   @keyframes cdxTurn { from { transform: rotateY(0deg); } to { transform: rotateY(360deg); } }   /* upright: no backward tilt (it read as leaning, 24 Nov) */
@@ -3848,7 +3864,7 @@ window.__tint = function (top, bot) {
     <h1 class="hall-title" id="hall-title">Project</h1>
     <p class="hall-desc" id="hall-desc"></p>
     <div class="hall-stage">
-      <div class="hall-ball" id="hall-ball" tabindex="0" role="slider" aria-label="Swipe up or down to move between the parts of this project" aria-valuemin="1" aria-valuemax="4" aria-valuenow="1" aria-valuetext="Music"></div>
+      <div class="hall-ball" id="hall-ball" tabindex="0" role="slider" aria-label="Swipe up or down to move between the parts of this project; tap to go back to the projects" aria-valuemin="1" aria-valuemax="4" aria-valuenow="1" aria-valuetext="Music"></div>
       <ul class="hall-stack" id="hall-stack" aria-label="Parts of this project">
         <li class="hall-tile is-cur"><span class="hall-label">Music</span></li>
         <li class="hall-tile is-next"><span class="hall-label">Film</span></li>
@@ -8333,8 +8349,15 @@ Lord you are Holy, Holy, Holy</p>
   /* 23 Nov (feel): the tiles follow the finger with resistance and only move on if the pull was
      far enough or quick; otherwise they spring back. A wheel needs a firm push and a pause between steps. */
   function rubber(x, d) { return (1 - 1 / (0.55 * x / d + 1)) * d; }
-  var drag = null;
-  function dragStart(y) { drag = { y0: y, ly: y, lt: performance.now(), v: 0, dy: 0 }; stack.classList.add('dragging'); }
+  var drag = null, lastMoved = 0;
+  /* a tap on the ball goes back to the list of projects (Emmanuel, 25 Nov) — the hall's own ‹, so the dots and
+     history behave exactly as Back does; a drag (moved more than 8px) is a swipe, not a tap */
+  ball.addEventListener('click', function () {
+    if (lastMoved > 8) { lastMoved = 0; return; }
+    var bk = document.querySelector('#view-project-hall .hall-back'); if (bk) bk.click();
+  });
+  ball.style.cursor = 'pointer';
+  function dragStart(y) { lastMoved = 0; drag = { y0: y, ly: y, lt: performance.now(), v: 0, dy: 0 }; stack.classList.add('dragging'); }
   function dragMove(y) {
     if (!drag) return;
     var now = performance.now(); if (now > drag.lt) { drag.v = drag.v * 0.6 + ((drag.ly - y) / (now - drag.lt)) * 0.4; drag.ly = y; drag.lt = now; }
@@ -8344,7 +8367,7 @@ Lord you are Holy, Holy, Holy</p>
   function dragEnd() {
     if (!drag) return;
     var d = drag.dy, go = Math.abs(d) > 64 || (Math.abs(drag.v) > 0.5 && Math.abs(d) > 24 && (drag.v > 0) === (d > 0));
-    drag = null; stack.classList.remove('dragging'); stack.style.setProperty('--dy', '0px');
+    lastMoved = Math.abs(d); drag = null; stack.classList.remove('dragging'); stack.style.setProperty('--dy', '0px');
     if (go) { lastStep = 0; window.__hallStep(d > 0 ? 1 : -1); }
   }
   [ball, stack].forEach(function (el) {
@@ -8395,7 +8418,10 @@ Lord you are Holy, Holy, Holy</p>
      To fill one in: CDS['<project>'][i] = { title: '…', written: '…', produced: '…', performed: '…',
        tracks: [{ title: '…', src: 'music/<file>.mp3' }] }   (put the files in Thecreated/music/ and copy that
      folder on deploy; same-origin files only, so the waveform can be read). */
-  var CDS = window.__CDS = {};
+  var CDS = window.__CDS = {
+    /* The Overseer's CDs, in Emmanuel's order (25 Nov) */
+    overseer: [{ title: 'The Overseer’s Interlude' }, { title: 'The Overseer' }, { title: 'Right Here (BEHOLD)' }, { title: 'Instruction' }, { title: 'ABBA Figure' }]
+  };
   function cdData(i) { var tab = null; try { tab = sessionStorage.getItem('dvHall'); } catch (_) {} var list = CDS[tab] || []; return list[i] || {}; }
   /* where each CD sits: [centre across %, top in units, size in units, float seconds] */
   var SPOTS = [[17, 0.12, 0.86, 5.2], [47, 0, 0.7, 4.4], [80, 0.2, 0.95, 6], [32, 1.08, 1.05, 5.6], [66, 1.2, 0.78, 4.8]];
@@ -8415,9 +8441,16 @@ Lord you are Holy, Holy, Holy</p>
       var front = document.createElement('span'), back = document.createElement('span'), sh = document.createElement('span');
       front.className = 'cdx-face'; back.className = 'cdx-face back'; sh.className = 'cdx-shadow';
       disc.appendChild(front); disc.appendChild(back); b.appendChild(sh);
-      b.appendChild(disc); li.appendChild(b); target.appendChild(li);
+      b.appendChild(disc); li.appendChild(b);
+      var d = cdData(i), lab = document.createElement('button');
+      lab.className = 'cdx-label'; lab.type = 'button';
+      lab.innerHTML = '<span class="cdx-name' + (d.title ? '' : ' tbc') + '">' + (i + 1) + '. ' + esc(d.title || 'Title to come') + '</span>';
+      if (d.title) b.setAttribute('aria-label', 'CD ' + (i + 1) + ': ' + d.title);
+      lab.setAttribute('tabindex', '-1'); lab.setAttribute('aria-hidden', 'true');   /* the disc button already names it */
+      li.appendChild(lab); target.appendChild(li);
       (function (k, btn) {
         btn.addEventListener('click', function (e) { e.stopPropagation(); openCD(k, btn, c(pal[labs[k][0]])); });
+        lab.addEventListener('click', function (e) { e.stopPropagation(); openCD(k, btn, c(pal[labs[k][0]])); });
       })(i, b);
     }
   }
