@@ -3241,6 +3241,9 @@
   #view-project-hall .hall-head .hall-tagline { right: 0 !important; transform: translate(100%, -50%); transition: opacity 1.1s cubic-bezier(.22,1,.36,1) .35s, transform .7s cubic-bezier(.22,1,.36,1) .45s; }
   #view-project-hall.hall-on .hall-head .hall-tagline { transform: translate(0, -50%); }
   #view-project-hall .hall-head .project-tag { border-radius: 3px 0 0 3px; border-right-width: 0; padding: 3px calc(16px + env(safe-area-inset-right)) 3px 9px; }
+  #view-project-hall .hall-head .project-tag.thread-grounding { background: #4a1d80; border-color: #4a1d80; }   /* a deeper purple (Emmanuel, 26 Nov) */
+  #view-project-hall .hall-head .project-tag { box-sizing: border-box; width: calc(40px + env(safe-area-inset-right)); overflow: hidden; white-space: nowrap; text-indent: -999px; }   /* shorter (Emmanuel, 26 Nov: 'reduce the length of the grounding tag'); the word stays for screen readers */
+  #view-project-hall .hall-head .project-tag::before { inset: -13px -6px -13px -24px; }   /* still a 44px place to press */
   @media (prefers-reduced-motion: reduce) { #view-project-hall .hall-head .hall-tagline { transition: opacity .3s ease; transform: translate(0, -50%); } }
   /* The thread's explanation (Emmanuel, 24 Nov: 'the glass pop-up should show in the centre of the screen and blur
      the rest of the screen out … the glass pop-up should be actual glass'). A veil blurs and lightens the page; the
@@ -3338,7 +3341,8 @@
   .hall-open-cds .cdx { position: relative; left: auto; top: auto; width: auto; aspect-ratio: auto; display: flex; align-items: center; gap: 16px; }
   .hall-open-cds .cdx > .cdx-btn { flex: none; width: 40px; height: 40px; animation: none; }
   .hall-open-cds .cdx-name { font: 700 16px/1.35 'Courier Prime', 'Courier New', monospace; letter-spacing: 0; }   /* the scriptwriter's typeface, bold (Emmanuel, 25 Nov) */
-  .hall-open-body::after { content: ""; display: block; height: var(--room, 0px); }   /* just enough room to scroll the card down to its bar */
+  .hall-open-body::after { content: ""; display: block; height: var(--room, 0px); }
+  .hall-open-body { z-index: 1; } .hall-open-card { z-index: 2; }   /* the card's glass lies over the list as it scrolls behind (26 Nov) */   /* just enough room to scroll the card down to its bar */
   .hall-open-cds .cdx > .cdx-btn { order: 2; }   /* the CD on the right of its title */
   .hall-open-cds .cdx-label { order: 1; }
   .cdx-label { flex: 1; min-width: 0; padding: 4px 0; text-align: left; border: 0; background: none; cursor: pointer; -webkit-tap-highlight-color: transparent; touch-action: manipulation; color: inherit; }
@@ -3406,6 +3410,9 @@
   .cdd-play .ic-pause { display: none; } .cdd-track.playing .cdd-play .ic-pause { display: block; } .cdd-track.playing .cdd-play .ic-play { display: none; }
   .cdd-wave { width: 100%; height: 36px; display: block; cursor: pointer; touch-action: manipulation; }
   .cdd-track.tbc .cdd-wave { cursor: default; }
+  .cdd-part { margin: 32px 0 0; }   /* Scripture · Inspiration · Notes · Lyrics under the tracks (26 Nov) */
+  .cdd-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; font: 300 16px/1.45 'Helvetica Neue', Helvetica, Arial, sans-serif; color: rgba(26,22,18,0.86); }
+  .cdd-lyrics { margin: 0; white-space: pre-line; font: 300 16px/1.6 'Helvetica Neue', Helvetica, Arial, sans-serif; color: rgba(26,22,18,0.86); }
   .cdd-time { font: 400 11px/1 'Courier Prime', 'Courier New', monospace; letter-spacing: .08em; color: rgba(26,22,18,0.6); font-variant-numeric: tabular-nums; min-width: 40px; text-align: right; }
   @media (prefers-reduced-motion: reduce) { .cdd-disc, .cdd-body, .cdd-veil { transition: none !important; } }
   .cdx-info { display: none; max-width: 420px; margin: 24px auto 0; text-align: center; }
@@ -3430,6 +3437,29 @@
   @media (prefers-reduced-motion: reduce) { .hall-open-card, .hall-open-label, .hall-open-body { transition: none !important; } }
   /* the front card answers a tap: it opens (Music → the CDs) */
   #view-project-hall .hall-tile.is-cur[data-open] { cursor: pointer; pointer-events: auto; }   /* the front card takes the tap itself (it was passing through to the cards peeking above and below) */
+  /* Liquid glass Music tile (Emmanuel, 26 Nov: 'make the music tile look like liquid glass'): a clear body with a bright
+     rim, red/blue fringes at the edges, a top-left highlight and a soft lens shade, over a slow wash of the project's own
+     colours that drifts like liquid. The open Music card wears the same glass. Recipe after DESIGN §6.1 / #thread-pop. */
+  #view-project-hall .hall-tile[data-open="music"], .hall-open.has-cds .hall-open-card {
+    background: linear-gradient(140deg, rgba(255,255,255,0.42) 0%, rgba(255,255,255,0.12) 42%, rgba(255,255,255,0.08) 60%, rgba(255,255,255,0.28) 100%);
+    -webkit-backdrop-filter: blur(6px) saturate(1.8) brightness(1.05); backdrop-filter: blur(6px) saturate(1.8) brightness(1.05);
+    border: 1px solid rgba(255,255,255,0.75); box-sizing: border-box; isolation: isolate;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.95), inset 0 -1px 0 rgba(255,255,255,0.35), inset 1.5px 0 0 rgba(255,150,170,0.28), inset -1.5px 0 0 rgba(140,185,255,0.3),
+                inset 0 0 24px rgba(255,255,255,0.35), inset 3px 4px 8px -3px rgba(255,255,255,1), inset -4px -6px 14px -6px rgba(26,22,18,0.16), inset 0 0 0 1px rgba(26,22,18,0.05), 0 2px 6px rgba(26,22,18,0.07), 0 24px 56px -26px rgba(26,22,18,0.34); }
+  #view-project-hall .hall-tile[data-open="music"].is-cur { filter: none; }
+  .hall-open.has-cds .hall-open-card { -webkit-backdrop-filter: blur(2.5px) saturate(1.8) brightness(1.05); backdrop-filter: blur(2.5px) saturate(1.8) brightness(1.05); }   /* the list shows through as it scrolls behind (26 Nov) */   /* Safari drops the glass under a filter */
+  html.lg-bend #view-project-hall .hall-tile[data-open="music"], html.lg-bend .hall-open.has-cds .hall-open-card {
+    -webkit-backdrop-filter: url(#lg) blur(2px) saturate(1.8) brightness(1.05); backdrop-filter: url(#lg) blur(2px) saturate(1.8) brightness(1.05); }
+  #view-project-hall .hall-tile[data-open="music"]::before, .hall-open.has-cds .hall-open-card::before {   /* the liquid: the project's colours, blurred, drifting slowly */
+    inset: -20%; z-index: -1; filter: blur(18px);
+    background: radial-gradient(48% 38% at 26% 74%, var(--hl1, rgba(90,35,144,0.42)), transparent 72%), radial-gradient(44% 36% at 78% 32%, var(--hl2, rgba(176,136,40,0.42)), transparent 72%), radial-gradient(50% 40% at 62% 92%, var(--hl1, rgba(90,35,144,0.42)), transparent 72%), radial-gradient(40% 34% at 18% 18%, var(--hc, rgba(90,35,144,0.13)), transparent 70%);
+    animation: hallLiquid 16s ease-in-out infinite alternate; }
+  #view-project-hall .hall-tile[data-open="music"]::after, .hall-open.has-cds .hall-open-card::after {   /* the highlight instead of the grain */
+    opacity: 1; mix-blend-mode: normal; background-size: auto;
+    background-image: linear-gradient(118deg, rgba(255,255,255,0) 30%, rgba(255,255,255,0.55) 40%, rgba(255,255,255,0) 46%, rgba(255,255,255,0) 52%, rgba(255,255,255,0.3) 56%, rgba(255,255,255,0) 62%), radial-gradient(120% 70% at 18% 0%, rgba(255,255,255,0.7), rgba(255,255,255,0) 55%), radial-gradient(90% 60% at 100% 100%, rgba(255,255,255,0.3), rgba(255,255,255,0) 60%); }
+  @keyframes hallLiquid { 0% { transform: translate(0, 0) rotate(0deg) scale(1); } 50% { transform: translate(6%, -5%) rotate(18deg) scale(1.08); } 100% { transform: translate(-5%, 4%) rotate(-12deg) scale(0.96); } }
+  @media (prefers-reduced-motion: reduce) { #view-project-hall .hall-tile[data-open="music"]::before, .hall-open.has-cds .hall-open-card::before { animation: none; } }
+  @media (prefers-reduced-transparency: reduce) { #view-project-hall .hall-tile[data-open="music"], .hall-open.has-cds .hall-open-card { background: rgba(250,250,250,0.97); -webkit-backdrop-filter: none; backdrop-filter: none; } }
   #view-project-hall .hall-tile.is-cur[data-open]:active { transform: translateY(-50%) translateY(var(--ty, 0%)) translateY(var(--dy, 0px)) scale(.985); }
 
   /* Music: a grid of CDs (Emmanuel, 24 Nov). Each is a square sleeve in the project's own colours with its disc
@@ -8360,6 +8390,8 @@ Lord you are Holy, Holy, Holy</p>
     var key = /^housepva/.test(tab) ? 'house-pva' : tab, pal = window.__dvPal && window.__dvPal(key);
     if (pal) {
       hall.style.setProperty('--hc', 'rgba(' + pal[1].join(',') + ',0.13)');
+      hall.style.setProperty('--hl1', 'rgba(' + pal[0].join(',') + ',0.42)');   /* the liquid inside the Music glass (26 Nov) */
+      hall.style.setProperty('--hl2', 'rgba(' + pal[2].join(',') + ',0.42)');
       if (window.__dvMark && window.__dvMark.pal) window.__dvMark.pal(pal);
     }
   };
@@ -8465,7 +8497,10 @@ Lord you are Holy, Holy, Holy</p>
      folder on deploy; same-origin files only, so the waveform can be read). */
   var CDS = window.__CDS = {
     /* The Overseer's CDs, in Emmanuel's order (25 Nov) */
-    overseer: [{ title: 'The Overseer’s Interlude' }, { title: 'The Overseer' }, { title: 'Right Here (BEHOLD)' }, { title: 'Instruction' }, { title: 'ABBA Figure' }]
+    /* 26 Nov: Emmanuel's details for the first two, word for word (lyrics, credits, scripture, inspiration, notes) */
+    overseer: [{"title": "The Overseer’s Interlude", "scripture": ["Psalm 42:1-2", "Psalm 63:1", "Psalm 27:4", "Psalm 71:8"], "inspo": ["Fold", "Jackie Brown", "Yebba’s Heartbreak"], "notes": "High Voice Tone and Keys", "lyrics": "Hold on I’ll say\n\nNo pity party\nLet’s not pour out liquor\n\nDon’t beat up yourself\nMakes your soul disfigured\n\nSo depend on him\nUnless your goal is bitter\n\nFather I’m here yearning\nFather I’m here to pray (praise but as a harmony)"},
+      {"title": "The Overseer", "written": "Emmanuel ‘Thecreated’ Anie-Akwetey, Dean ‘Deano’ Dobson", "performed": "Emmanuel ‘Thecreated’ Anie-Akwetey, Dean ‘Deano’ Dobson, Marika ‘Marika’ Bastien", "produced": "Simon Kobina ‘Korby’ Nyamekye Imbrah", "scripture": ["Psalm 135:1-3 ESV", "Psalm 55:22", "Acts 2:25-28", "Ezekiel 18:4 ESV", "Psalm 24:3-4"], "inspo": ["Welcome Him (live) by Jesus Image", "Fold by Sutra", "Yielded (live) by Jordan G Welch", "appeal: at your feet by Jordan G Welch", "Gang over Luv by Brent Faiyaz", "Trust by Brent Faiyaz", "Waiting Room by Marika", "Moon by Kanye West", "alottmusic on ig"], "lyrics": "“David said about him: “ ‘I saw the Lord always before me. Because he is at my right hand, I will not be shaken.\nTherefore my heart is glad and my tongue rejoices; my body also will rest in hope,\nbecause you will not abandon me to the realm of the dead, you will not let your holy one see decay.\nYou have made known to me the paths of life; you will fill me with joy in your presence.’”\n\nHallelujah\nHallelujah\nHallelujah (voice mesh)\n\nI’ll sing your praise\nI’ll praise your name\nYour name is great\nLord you cover my soul\nOverseeing my soul (2x)\n\nYou can do no wrong\nIf I’m found busy\nYou say lay low\nLove overflow\nJesus you’re bleedin\nYou paid it all\n\nLike wash off\nLike wash out\nLike wash all (2x)\n\nI’ll sing your praise\nI’ll praise your name\nYour name is great\nLord you’re over my soul\nOverseeing my soul (2x)\n\nNights that you stayed\nAll while I laid awake\nThinking over you I know I won’t stay the same (Marika BV)\nI give it all to you\nI know my hearts in it’s place (Marika BV)\nYou’re guiding my ways\n\nIn the last days [HALLELUJAH]\nI will see you shine\nShine\nShine\nIn the last days\nI will see you shine\nShine\nShine\nIn the last days\nI will see you Shine\nShine\nShine\n\nLord you are Holy, Holy, Holy [HALLELUJAH]\nLord you are Holy, Holy, Holy\nLord you are Holy, Holy, Holy"},
+      { title: 'Right Here (BEHOLD)' }, { title: 'Instruction' }, { title: 'ABBA Figure' }]
   };
   function cdData(i) { var tab = null; try { tab = sessionStorage.getItem('dvHall'); } catch (_) {} var list = CDS[tab] || []; return list[i] || {}; }
   /* where each CD sits: [centre across %, top in units, size in units, float seconds] */
@@ -8543,11 +8578,14 @@ Lord you are Holy, Holy, Holy</p>
   function tick() { var any = false; cdTracks.forEach(function (T) { if (T.audio && !T.audio.paused) { any = true; T.time.textContent = fmt(T.audio.currentTime); drawWave(T); } }); cdRaf = any ? requestAnimationFrame(tick) : 0; }
   function fill(i, ink) {
     var d = cdData(i), n = (i < 9 ? '0' : '') + (i + 1), tracks = d.tracks && d.tracks.length ? d.tracks : [{}];
+    var part = function (label, v) { if (!v || (v.join && !v.length)) return ''; var list = v.join ? v : [v]; return '<section class="cdd-part"><p class="cdd-kick">' + label + '</p><ul class="cdd-list">' + list.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul></section>'; };
     var credit = function (label, v) { return '<div><dt>' + label + '</dt><dd' + (v ? '' : ' class="tbc"') + '>' + esc(v || 'To come') + '</dd></div>'; };
     cdIn.style.setProperty('--ink', ink);
     cdIn.innerHTML = '<p class="cdd-kick">CD ' + n + '</p><h2 class="cdd-title">' + esc(d.title || 'Title to come') + '</h2>' +
-      '<dl class="cdd-credits">' + credit('Written by', d.written) + credit('Produced by', d.produced) + credit('Performed by', d.performed) + '</dl>' +
-      '<p class="cdd-kick">Tracks</p><ol class="cdd-tracks"></ol>';
+      '<dl class="cdd-credits">' + credit('Written by', d.written) + credit('Performed by', d.performed) + credit('Produced by', d.produced) + credit('Mixed and mastered by', d.mixed) + '</dl>' +
+      '<p class="cdd-kick">Tracks</p><ol class="cdd-tracks"></ol>' +
+      part('Scripture', d.scripture) + part('Inspiration', d.inspo) + part('Notes', d.notes) +
+      (d.lyrics ? '<section class="cdd-part"><p class="cdd-kick">Lyrics</p><p class="cdd-lyrics">' + esc(d.lyrics) + '</p></section>' : '');
     var ol = cdIn.querySelector('.cdd-tracks'); cdTracks = [];
     tracks.forEach(function (t, k) {
       var li = document.createElement('li'), has = !!t.src;
@@ -8643,8 +8681,10 @@ Lord you are Holy, Holy, Holy</p>
     if (window.innerWidth > window.innerHeight && window.innerHeight <= 520) { oBody.style.top = '64px'; oBody.style.left = (t.left + t.width + 24) + 'px'; }
     else {   /* portrait: the list scrolls up under the card, and the card shrinks with it (Emmanuel, 25 Nov) */
       oBody.style.left = ''; oT = t;
-      oBody.style.top = (t.top + MINH + 24) + 'px'; oBody.style.paddingTop = (t.height - MINH) + 'px';
-      requestAnimationFrame(function () { if (oT !== t) return; var rest = oBody.scrollHeight - (t.height - MINH); oBody.style.setProperty('--room', Math.max(0, oBody.clientHeight - rest) + 'px'); });
+      /* 26 Nov (Emmanuel: 'allow the text under the music tab to be scrolled above the music tab and when behind make it
+         look like liquid glass'): the list starts at the card's top and runs on up behind the glass bar */
+      oBody.style.top = t.top + 'px'; oBody.style.paddingTop = (t.height + 24) + 'px';
+      requestAnimationFrame(function () { if (oT !== t) return; oBody.style.setProperty('--room', Math.max(0, oBody.clientHeight - MINH - 24) + 'px'); });
     }
     oCard.style.transition = reduceM.matches ? 'none' : '';
     requestAnimationFrame(function () { place(t); openLayer.classList.add('grown'); setTimeout(function () { openBusy = false; }, 560); });
