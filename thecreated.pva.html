@@ -3119,6 +3119,10 @@
   @media (prefers-reduced-transparency: reduce) { .dv-pass { background: #fff; -webkit-backdrop-filter: none; backdrop-filter: none; } }
 
   /* Project hall (Emmanuel, 23 Nov) */
+  /* black → white on a house tap (Emmanuel, 26 Nov: 'make the transition from black to white smoother'): the white page fades in
+     slowly over the black, which stays until it is covered, so there is no grey dip between them */
+  html.dv-to-hall #view-project-hall { transition: opacity 1.4s cubic-bezier(.4,0,.2,1); }
+  html.dv-to-hall #view-home { transition: opacity 0s linear 1.4s; }
   #view-project-hall { background: #fff;   /* pure white, no grain, to match the tiles (Emmanuel, 23 Nov) */
     color: #1a1612; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; }
   #view-project-hall .hall-head { position: relative; z-index: 2; padding-top: calc(28px + env(safe-area-inset-top)); }
@@ -3139,7 +3143,7 @@
     background: rgba(255,255,255,0.78);
     box-shadow: 0 1px 2px rgba(26,22,18,0.04), 0 14px 34px -16px rgba(26,22,18,0.18);
     display: flex; align-items: flex-end; padding: 16px;
-    transform: translateY(-50%) translateY(var(--ty, 0%)) translateY(var(--dy, 0px)) scale(var(--sc, 1)); opacity: var(--op, 0); filter: blur(var(--bl, 0px));
+    transform: translateX(var(--sx, 0px)) translateY(-50%) translateY(var(--ty, 0%)) translateY(var(--dy, 0px)) scale(var(--sc, 1)); opacity: var(--op, 0); filter: blur(var(--bl, 0px));
     transition: transform .8s cubic-bezier(.34,1.18,.64,1), opacity .7s cubic-bezier(.22,1,.36,1), filter .7s cubic-bezier(.22,1,.36,1);   /* a soft spring with a touch of give */
     pointer-events: none; }
   .hall-stack.dragging .hall-tile { transition: opacity .7s cubic-bezier(.22,1,.36,1), filter .7s cubic-bezier(.22,1,.36,1); }   /* follows the finger exactly while held */
@@ -3149,6 +3153,9 @@
   .hall-tile.is-far-d { --ty: 110%; --sc: .6; --op: 0; }
   .hall-tile.is-far-u { --ty: -110%; --sc: .6; --op: 0; }
   #view-project-hall:not(.hall-on) .hall-tile { --op: 0 !important; --bl: 6px !important; }   /* fade in on arrival */
+  #view-project-hall:not(.hall-formed) .hall-tile { --sx: 100vw; }
+  #view-project-hall.hall-arriving .hall-tile { transition: transform 1.8s cubic-bezier(.22,1,.36,1), opacity .7s cubic-bezier(.22,1,.36,1), filter .7s cubic-bezier(.22,1,.36,1); }   /* the arrival slide is slower (Emmanuel, 26 Nov); swipes keep their spring */   /* once the ball has formed the cards slide in from the right of the screen (Emmanuel, 26 Nov) */
+  @media (prefers-reduced-motion: reduce) { #view-project-hall:not(.hall-formed) .hall-tile { --sx: 0px; } }
   @media (min-width: 720px) { .hall-stage { --tw: min(30vw, 46vh, 380px); --tin: 0.72; grid-template-columns: 46% 54%; min-height: min(68vh, 600px); } .hall-stack { height: min(68vh, 600px); } .hall-tile { padding: 22px; } }
   .hall-tile::after { content: ""; position: absolute; inset: 0; pointer-events: none; border-radius: inherit; opacity: .6; mix-blend-mode: multiply;   /* a fine grain (Emmanuel, 23 Nov) */
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .1  0 0 0 0 .08  0 0 0 0 .07  0 0 0 .4 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E"); background-size: 160px 160px; }
@@ -3178,7 +3185,7 @@
     font: 400 13px/1.9 'Courier Prime', 'Courier New', monospace; letter-spacing: .02em; color: rgba(26,22,18,0.8); }   /* the script font (Emmanuel, 23 Nov) */
   .hall-names li { opacity: 0; filter: blur(6px); transform: translateY(6px); transition: opacity 1.3s cubic-bezier(.22,1,.36,1), filter 1.3s cubic-bezier(.22,1,.36,1), transform 1.3s cubic-bezier(.22,1,.36,1); }
   #view-project-hall.hall-on .hall-title { opacity: 1; filter: none; }
-  #view-project-hall.hall-on .hall-names li { opacity: 1; filter: none; transform: none; transition-delay: var(--d, 1.4s); }   /* the names fade in one by one after the tile */
+  #view-project-hall.hall-on.hall-formed .hall-names li { opacity: 1; filter: none; transform: none; transition-delay: calc(var(--d, 1.4s) - 0.1s); }   /* the names fade in one by one after the tile, which waits for the ball (26 Nov) */
   @media (prefers-reduced-motion: reduce) { .hall-title, .hall-tile, .hall-names li { transition: none !important; } .hall-title, .hall-names li { opacity: 1 !important; filter: none !important; transform: none !important; } }
 
   /* The old home now sits at the foot of the white page */
@@ -3389,7 +3396,7 @@
   .cdd-disc .cdx-disc { animation-duration: 9s; }
   .cdd-disc .cdx-shadow { bottom: -9%; }
   .cdd-body { position: absolute; left: 0; right: 0; bottom: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; z-index: 1;
-    padding: 0 24px calc(40px + env(safe-area-inset-bottom)); box-sizing: border-box; text-align: center;
+    padding: 0 24px calc(40px + env(safe-area-inset-bottom)); box-sizing: border-box; text-align: left;   /* left-aligned (Emmanuel, 26 Nov) */
     opacity: 0; transform: translateY(14px); transition: opacity .3s ease, transform .3s cubic-bezier(.22,1,.36,1); }
   .cdd.grown .cdd-body { opacity: 1; transform: none; transition: opacity .5s cubic-bezier(.22,1,.36,1) .3s, transform .5s cubic-bezier(.22,1,.36,1) .3s; }
   .cdd-in { max-width: 420px; margin: 0 auto; }
@@ -3412,6 +3419,7 @@
   .cdd-track.tbc .cdd-wave { cursor: default; }
   .cdd-part { margin: 32px 0 0; }   /* Scripture · Inspiration · Notes · Lyrics under the tracks (26 Nov) */
   .cdd-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; font: 300 16px/1.45 'Helvetica Neue', Helvetica, Arial, sans-serif; color: rgba(26,22,18,0.86); }
+  .cdd-line { margin: 0; font: 300 16px/1.5 'Helvetica Neue', Helvetica, Arial, sans-serif; color: rgba(26,22,18,0.86); }
   .cdd-lyrics { margin: 0; white-space: pre-line; font: 300 16px/1.6 'Helvetica Neue', Helvetica, Arial, sans-serif; color: rgba(26,22,18,0.86); }
   .cdd-time { font: 400 11px/1 'Courier Prime', 'Courier New', monospace; letter-spacing: .08em; color: rgba(26,22,18,0.6); font-variant-numeric: tabular-nums; min-width: 40px; text-align: right; }
   @media (prefers-reduced-motion: reduce) { .cdd-disc, .cdd-body, .cdd-veil { transition: none !important; } }
@@ -3447,7 +3455,7 @@
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.95), inset 0 -1px 0 rgba(255,255,255,0.35), inset 1.5px 0 0 rgba(255,150,170,0.28), inset -1.5px 0 0 rgba(140,185,255,0.3),
                 inset 0 0 24px rgba(255,255,255,0.35), inset 3px 4px 8px -3px rgba(255,255,255,1), inset -4px -6px 14px -6px rgba(26,22,18,0.16), inset 0 0 0 1px rgba(26,22,18,0.05), 0 2px 6px rgba(26,22,18,0.07), 0 24px 56px -26px rgba(26,22,18,0.34); }
   #view-project-hall .hall-tile[data-open="music"].is-cur { filter: none; }
-  .hall-open.has-cds .hall-open-card { -webkit-backdrop-filter: blur(2.5px) saturate(1.8) brightness(1.05); backdrop-filter: blur(2.5px) saturate(1.8) brightness(1.05); }   /* the list shows through as it scrolls behind (26 Nov) */   /* Safari drops the glass under a filter */
+  .hall-open.has-cds .hall-open-card { -webkit-backdrop-filter: blur(1.2px) saturate(1.8) brightness(1.05); backdrop-filter: blur(1.2px) saturate(1.8) brightness(1.05); }   /* the list shows through as it scrolls behind (26 Nov) */   /* Safari drops the glass under a filter */
   html.lg-bend #view-project-hall .hall-tile[data-open="music"], html.lg-bend .hall-open.has-cds .hall-open-card {
     -webkit-backdrop-filter: url(#lg) blur(2px) saturate(1.8) brightness(1.05); backdrop-filter: url(#lg) blur(2px) saturate(1.8) brightness(1.05); }
   #view-project-hall .hall-tile[data-open="music"]::before, .hall-open.has-cds .hall-open-card::before {   /* the liquid: the project's colours, blurred, drifting slowly */
@@ -3460,7 +3468,7 @@
   @keyframes hallLiquid { 0% { transform: translate(0, 0) rotate(0deg) scale(1); } 50% { transform: translate(6%, -5%) rotate(18deg) scale(1.08); } 100% { transform: translate(-5%, 4%) rotate(-12deg) scale(0.96); } }
   @media (prefers-reduced-motion: reduce) { #view-project-hall .hall-tile[data-open="music"]::before, .hall-open.has-cds .hall-open-card::before { animation: none; } }
   @media (prefers-reduced-transparency: reduce) { #view-project-hall .hall-tile[data-open="music"], .hall-open.has-cds .hall-open-card { background: rgba(250,250,250,0.97); -webkit-backdrop-filter: none; backdrop-filter: none; } }
-  #view-project-hall .hall-tile.is-cur[data-open]:active { transform: translateY(-50%) translateY(var(--ty, 0%)) translateY(var(--dy, 0px)) scale(.985); }
+  #view-project-hall .hall-tile.is-cur[data-open]:active { transform: translateX(var(--sx, 0px)) translateY(-50%) translateY(var(--ty, 0%)) translateY(var(--dy, 0px)) scale(.985); }
 
   /* Music: a grid of CDs (Emmanuel, 24 Nov). Each is a square sleeve in the project's own colours with its disc
      tucked behind; on a hover or a press the disc slides out and turns. */
@@ -7988,12 +7996,26 @@ Lord you are Holy, Holy, Holy</p>
         if (rg && !reduceQ.matches) rg.doorT = 1;   /* the house disperses once the words have gone */
         setTimeout(function () {
           if (window.__dvMark) window.__dvMark.go(handoff(i), rg ? rg.pal : null);
+          if (!reduceQ.matches) { var de = document.documentElement; de.classList.add('dv-to-hall'); clearTimeout(window.__dvToHallT); window.__dvToHallT = setTimeout(function () { de.classList.remove('dv-to-hall'); }, 1700); }
           openSeed(tab);
+          if (!reduceQ.matches) barsToWhite();
           if (calm) calm();
           // the house is whole again by the time you come back
           setTimeout(function () { if (rg) { rg.doorT = 0; rg.door = 0; } delete btn.dataset.busy; }, 900);
         }, reduceQ.matches ? 0 : 950);
       }, calm ? WORDS_OUT : 0);
+  }
+  /* the phone's bars follow the page from black to white in small steps (Safari reads a bar colour only when its strip is
+     put on the page, so each step is a fresh strip), in time with the 1.4 s fade (26 Nov) */
+  function barsToWhite() {
+    var N = 8, m = document.querySelector('meta[name="theme-color"]');
+    for (var k = 0; k <= N; k++) (function (k) {
+      setTimeout(function () {
+        var x = k / N, e = x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2, v = Math.round(255 * e), h = '#' + ('0' + v.toString(16)).slice(-2).repeat(3);
+        if (m) m.setAttribute('content', h); document.documentElement.style.backgroundColor = h; document.body.style.backgroundColor = h;
+        if (window.__tint) window.__tint(h, h);
+      }, k * 175);
+    })(k);
   }
   /* The words step back first (25 Nov): every title, line and the swipe/bars fade out; the dots stay. Returns the
      function that brings them back once the projects screen is out of sight. */
@@ -8498,7 +8520,7 @@ Lord you are Holy, Holy, Holy</p>
   var CDS = window.__CDS = {
     /* The Overseer's CDs, in Emmanuel's order (25 Nov) */
     /* 26 Nov: Emmanuel's details for the first two, word for word (lyrics, credits, scripture, inspiration, notes) */
-    overseer: [{"title": "The Overseer’s Interlude", "scripture": ["Psalm 42:1-2", "Psalm 63:1", "Psalm 27:4", "Psalm 71:8"], "inspo": ["Fold", "Jackie Brown", "Yebba’s Heartbreak"], "notes": "High Voice Tone and Keys", "lyrics": "Hold on I’ll say\n\nNo pity party\nLet’s not pour out liquor\n\nDon’t beat up yourself\nMakes your soul disfigured\n\nSo depend on him\nUnless your goal is bitter\n\nFather I’m here yearning\nFather I’m here to pray (praise but as a harmony)"},
+    overseer: [{"title": "The Overseer’s Interlude", "written": "Emmanuel ‘Thecreated’ Anie-Akwetey", "performed": "Emmanuel ‘Thecreated’ Anie-Akwetey", "produced": "Simon Kobina ‘Korby’ Nyamekye Imbrah", "scripture": ["Psalm 42:1-2", "Psalm 63:1", "Psalm 27:4", "Psalm 71:8"], "inspo": ["Fold", "Jackie Brown", "Yebba’s Heartbreak"], "notes": "High Voice Tone and Keys", "lyrics": "Hold on I’ll say\n\nNo pity party\nLet’s not pour out liquor\n\nDon’t beat up yourself\nMakes your soul disfigured\n\nSo depend on him\nUnless your goal is bitter\n\nFather I’m here yearning\nFather I’m here to pray (praise but as a harmony)"},
       {"title": "The Overseer", "written": "Emmanuel ‘Thecreated’ Anie-Akwetey, Dean ‘Deano’ Dobson", "performed": "Emmanuel ‘Thecreated’ Anie-Akwetey, Dean ‘Deano’ Dobson, Marika ‘Marika’ Bastien", "produced": "Simon Kobina ‘Korby’ Nyamekye Imbrah", "scripture": ["Psalm 135:1-3 ESV", "Psalm 55:22", "Acts 2:25-28", "Ezekiel 18:4 ESV", "Psalm 24:3-4"], "inspo": ["Welcome Him (live) by Jesus Image", "Fold by Sutra", "Yielded (live) by Jordan G Welch", "appeal: at your feet by Jordan G Welch", "Gang over Luv by Brent Faiyaz", "Trust by Brent Faiyaz", "Waiting Room by Marika", "Moon by Kanye West", "alottmusic on ig"], "lyrics": "“David said about him: “ ‘I saw the Lord always before me. Because he is at my right hand, I will not be shaken.\nTherefore my heart is glad and my tongue rejoices; my body also will rest in hope,\nbecause you will not abandon me to the realm of the dead, you will not let your holy one see decay.\nYou have made known to me the paths of life; you will fill me with joy in your presence.’”\n\nHallelujah\nHallelujah\nHallelujah (voice mesh)\n\nI’ll sing your praise\nI’ll praise your name\nYour name is great\nLord you cover my soul\nOverseeing my soul (2x)\n\nYou can do no wrong\nIf I’m found busy\nYou say lay low\nLove overflow\nJesus you’re bleedin\nYou paid it all\n\nLike wash off\nLike wash out\nLike wash all (2x)\n\nI’ll sing your praise\nI’ll praise your name\nYour name is great\nLord you’re over my soul\nOverseeing my soul (2x)\n\nNights that you stayed\nAll while I laid awake\nThinking over you I know I won’t stay the same (Marika BV)\nI give it all to you\nI know my hearts in it’s place (Marika BV)\nYou’re guiding my ways\n\nIn the last days [HALLELUJAH]\nI will see you shine\nShine\nShine\nIn the last days\nI will see you shine\nShine\nShine\nIn the last days\nI will see you Shine\nShine\nShine\n\nLord you are Holy, Holy, Holy [HALLELUJAH]\nLord you are Holy, Holy, Holy\nLord you are Holy, Holy, Holy"},
       { title: 'Right Here (BEHOLD)' }, { title: 'Instruction' }, { title: 'ABBA Figure' }]
   };
@@ -8582,10 +8604,12 @@ Lord you are Holy, Holy, Holy</p>
     var credit = function (label, v) { return '<div><dt>' + label + '</dt><dd' + (v ? '' : ' class="tbc"') + '>' + esc(v || 'To come') + '</dd></div>'; };
     cdIn.style.setProperty('--ink', ink);
     cdIn.innerHTML = '<p class="cdd-kick">CD ' + n + '</p><h2 class="cdd-title">' + esc(d.title || 'Title to come') + '</h2>' +
-      '<dl class="cdd-credits">' + credit('Written by', d.written) + credit('Performed by', d.performed) + credit('Produced by', d.produced) + credit('Mixed and mastered by', d.mixed) + '</dl>' +
-      '<p class="cdd-kick">Tracks</p><ol class="cdd-tracks"></ol>' +
-      part('Scripture', d.scripture) + part('Inspiration', d.inspo) + part('Notes', d.notes) +
-      (d.lyrics ? '<section class="cdd-part"><p class="cdd-kick">Lyrics</p><p class="cdd-lyrics">' + esc(d.lyrics) + '</p></section>' : '');
+      /* 26 Nov (Emmanuel): the waveform first, then the scripture, then the details — credits, lyrics and the rest */
+      '<ol class="cdd-tracks"></ol>' +
+      (d.scripture && d.scripture.length ? '<section class="cdd-part"><p class="cdd-kick">Scripture</p><p class="cdd-line">' + esc([].concat(d.scripture).join('; ')) + '</p></section>' : '') +   /* one sentence, references set apart (26 Nov) */
+      '<dl class="cdd-credits cdd-part">' + credit('Written by', d.written) + credit('Performed by', d.performed) + credit('Produced by', d.produced) + credit('Mixed and mastered by', d.mixed) + '</dl>' +
+      (d.lyrics ? '<section class="cdd-part"><p class="cdd-kick">Lyrics</p><p class="cdd-lyrics">' + esc(d.lyrics) + '</p></section>' : '') +
+      part('Inspiration', d.inspo) + part('Notes', d.notes);
     var ol = cdIn.querySelector('.cdd-tracks'); cdTracks = [];
     tracks.forEach(function (t, k) {
       var li = document.createElement('li'), has = !!t.src;
@@ -8666,7 +8690,23 @@ Lord you are Holy, Holy, Holy</p>
     var span = oT.height - MINH, s = Math.max(0, Math.min(oBody.scrollTop, span)), p = span > 0 ? s / span : 0;
     oCard.style.transition = 'none'; oCard.style.height = (oT.height - s) + 'px';
     oLabel.style.fontSize = (20 - 5 * p).toFixed(2) + 'px';
+    bend(oT.top, oT.top + oT.height - s);
   }, { passive: true });
+  /* rows bend as they pass under the glass bar (Emmanuel, 26 Nov: 'bend the lettering when it goes under the glass'). Safari can't
+     bend what lies behind glass, so each row bends itself: inside the bar it tilts back as if wrapped round a curved lens,
+     a little larger in the middle and squeezed at the rim; just below the bar it begins to curve as it nears the edge */
+  function bend(top, bot) {
+    var rows = oCDs.children, mid = (top + bot) / 2, half = Math.max(1, (bot - top) / 2), edge = 28;
+    for (var i = 0; i < rows.length; i++) {
+      var el = rows[i], r = el.getBoundingClientRect(), cy = r.top + r.height / 2;
+      if (cy > bot + edge || r.bottom < top - 4 || reduceM.matches) { if (el.style.transform) { el.style.transform = ''; el.style.transition = ''; } continue; }
+      var u = (cy - mid) / half;   /* −1 top of the bar … 1 bottom; beyond 1 = just below */
+      var k = u > 1 ? Math.max(0, 1 - (u - 1) * half / edge) : 1, uc = Math.max(-1, Math.min(1, u));
+      var tilt = -uc * 38 * k, mag = 1 + 0.1 * (1 - uc * uc) * k, sq = 1 - 0.3 * Math.pow(Math.abs(uc), 3) * k;
+      el.style.transition = 'none';
+      el.style.transform = 'perspective(260px) rotateX(' + tilt.toFixed(1) + 'deg) scale(' + mag.toFixed(3) + ',' + (mag * sq).toFixed(3) + ')';
+    }
+  }
   window.__hallOpen = function (tile) {
     if (openBusy || openFrom) return;
     var r = tile.getBoundingClientRect(), name = tile.textContent.trim(), kind = name.toLowerCase();
@@ -8706,11 +8746,14 @@ Lord you are Holy, Holy, Holy</p>
   if (window.MutationObserver) new MutationObserver(function () { if (!hall.classList.contains('active') && openFrom) window.__hallClose(true); }).observe(hall, { attributes: true, attributeFilter: ['class'] });
   ball.addEventListener('keydown', function (e) { if (e.key === 'ArrowDown' || e.key === 'ArrowRight') { e.preventDefault(); window.__hallStep(1); } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') { e.preventDefault(); window.__hallStep(-1); } });
   /* each time the hall opens, the title, tiles and names fade in again */
-  var was = false;
+  var was = false, formT = 0;
   new MutationObserver(function () {
     var now = hall.classList.contains('active');
-    if (now && !was) { was = true; if (hall.classList.contains('hall-on')) hall.classList.remove('hall-on'); hall.scrollTop = 0; setTimeout(function () { hall.classList.add('hall-on'); }, 350); }
-    if (!now && hall.classList.contains('hall-on')) hall.classList.remove('hall-on');   /* only when needed: removing an absent class still counts as a change and would call this again */
+    if (now && !was) { was = true; if (hall.classList.contains('hall-on')) hall.classList.remove('hall-on'); if (hall.classList.contains('hall-formed')) hall.classList.remove('hall-formed'); hall.scrollTop = 0; setTimeout(function () { hall.classList.add('hall-on'); }, 350);
+      /* the particle ball forms first, then the Music tile and the names fade in (Emmanuel, 26 Nov) — the dots take ~1.8 s to gather */
+      clearTimeout(formT); formT = setTimeout(function () { if (!hall.classList.contains('active')) return; hall.classList.add('hall-formed', 'hall-arriving'); formT = setTimeout(function () { hall.classList.remove('hall-arriving'); }, 1900); }, reduceM.matches ? 0 : 1900); }
+    if (!now && hall.classList.contains('hall-on')) hall.classList.remove('hall-on');
+    if (!now && hall.classList.contains('hall-formed')) { clearTimeout(formT); hall.classList.remove('hall-formed', 'hall-arriving'); }   /* only when needed: removing an absent class still counts as a change and would call this again */
     was = now;
   }).observe(hall, { attributes: true, attributeFilter: ['class'] });
 })();
