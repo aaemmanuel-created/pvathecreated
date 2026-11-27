@@ -3355,6 +3355,7 @@
   .hall-open-cds .cdx { position: relative; left: auto; top: auto; width: auto; aspect-ratio: auto; display: flex; align-items: center; gap: 16px; }
   .hall-open-cds .cdx > .cdx-btn { flex: none; width: 40px; height: 40px; animation: none; }
   .hall-open-cds .cdx-name { font: 700 16px/1.35 'Courier Prime', 'Courier New', monospace; letter-spacing: 0; }   /* the scriptwriter's typeface, bold (Emmanuel, 25 Nov) */
+  .hall-open.no-anim, .hall-open.no-anim *, .hall-open.no-anim *::before, .cdd.no-anim, .cdd.no-anim * { transition: none !important; transition-delay: 0s !important; }   /* restoring after a refresh */
   .hall-open-body::after { content: ""; display: block; height: var(--room, 0px); }
   .hall-open-body { z-index: 1; } .hall-open-card { z-index: 2; }   /* the card's glass lies over the list as it scrolls behind (26 Nov) */   /* just enough room to scroll the card down to its bar */
   .hall-open-cds .cdx > .cdx-btn { order: 2; }   /* the CD on the right of its title */
@@ -3388,7 +3389,10 @@
       radial-gradient(circle, rgba(120,126,136,0.55) 0 12.5%, transparent 13%); }
   .cdx-shadow { position: absolute; left: 14%; right: 14%; bottom: -12%; height: 10%; border-radius: 50%; background: radial-gradient(closest-side, rgba(26,22,18,0.22), transparent); pointer-events: none; }
   .cdx-btn:focus-visible { outline: 1.5px solid rgba(26,22,18,0.4); outline-offset: 6px; }
-  @keyframes cdxTurn { from { transform: rotateY(0deg); } to { transform: rotateY(360deg); } }   /* upright: no backward tilt (it read as leaning, 24 Nov) */
+  @keyframes cdxTurn { from { transform: rotateY(0deg); } to { transform: rotateY(360deg); } }
+  /* 27 Nov (Emmanuel): no CDs in the list — only the names; the CD appears, turning, when a name is tapped. The list's discs stay
+     in place unseen, so the CD still grows out of its row and goes back into it */
+  .hall-open-cds .cdx > .cdx-btn { visibility: hidden; pointer-events: none; }   /* upright: no backward tilt (it read as leaning, 24 Nov) */
   /* A CD opened (Emmanuel, 24 Nov: 'when you click on a CD take it to the top of the screen, blur everything —
      then have the written by, produced by, performed by and also waveforms that will play the actual music').
      The tapped disc is carried (still turning) to the top of the screen over a blur of everything; its credits and
@@ -3408,7 +3412,7 @@
   .cdd.grown .cdd-body { opacity: 1; transform: none; transition: opacity .5s cubic-bezier(.22,1,.36,1) .3s, transform .5s cubic-bezier(.22,1,.36,1) .3s; }
   .cdd-in { max-width: 420px; margin: 0 auto; }
   .cdd-kick { margin: 0 0 8px; font: 400 11px/1.4 'Courier Prime', 'Courier New', monospace; letter-spacing: .2em; text-transform: uppercase; color: rgba(26,22,18,0.6); }
-  .cdd-title { margin: 0 0 24px; font: 300 28px/1.15 'Helvetica Neue', Helvetica, Arial, sans-serif; color: var(--ink, #1a1612); }
+  .cdd-title { margin: 0 0 24px; font: 700 24px/1.25 'Courier Prime', 'Courier New', monospace; letter-spacing: 0; color: var(--ink, #1a1612); }   /* the script font, like the CD list (Emmanuel, 27 Nov; was Helvetica Neue 300 28px) */
   .cdd-credits { margin: 0 0 32px; padding: 0; display: grid; gap: 12px; }
   .cdd-credits div { display: grid; gap: 4px; }
   .cdd-credits dt { font: 400 11px/1.4 'Courier Prime', 'Courier New', monospace; letter-spacing: .2em; text-transform: uppercase; color: rgba(26,22,18,0.6); }
@@ -3426,6 +3430,8 @@
   .cdd-track.tbc .cdd-wave { cursor: default; }
   .cdd-part { margin: 32px 0 0; }   /* Scripture · Inspiration · Notes · Lyrics under the tracks (26 Nov) */
   .cdd-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; font: 300 16px/1.45 'Helvetica Neue', Helvetica, Arial, sans-serif; color: rgba(26,22,18,0.86); }
+  .cdd-verses { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: repeat(var(--rows, 2), auto); grid-auto-flow: column; gap: 8px 12px; }   /* each column fills (at least two rows) before the next (Emmanuel, 27 Nov) */
+  .cdd-verses li { font: 400 13px/1.35 'Helvetica Neue', Helvetica, Arial, sans-serif; color: var(--vc, #1a1612); overflow-wrap: anywhere; }
   .cdd-line { margin: 0; font: 300 16px/1.5 'Helvetica Neue', Helvetica, Arial, sans-serif; color: rgba(26,22,18,0.86); }
   .cdd-lyrics { margin: 0; white-space: pre-line; font: 300 16px/1.6 'Helvetica Neue', Helvetica, Arial, sans-serif; color: rgba(26,22,18,0.86); }
   .cdd-time { font: 400 11px/1 'Courier Prime', 'Courier New', monospace; letter-spacing: .08em; color: rgba(26,22,18,0.6); font-variant-numeric: tabular-nums; min-width: 40px; text-align: right; }
@@ -5502,7 +5508,7 @@ Lord you are Holy, Holy, Holy</p>
     let hallTab = null; try { hallTab = sessionStorage.getItem('dvHall'); } catch (_) {}
     const clearHash = () => { try { history.replaceState(null, '', location.pathname + location.search); } catch (_) {} };
     if (hash === '#project' && hallTab && getAuthedTabs().indexOf(hallTab) >= 0) {   /* that project's password was given in this tab */
-      const reopen = () => { if (window.__fillHall) window.__fillHall(hallTab); showView('view-project-hall'); document.getElementById('view-project-hall').classList.add('hall-on'); requestAnimationFrame(() => requestAnimationFrame(() => { if (window.__bootDone) window.__bootDone(); })); };
+      const reopen = () => { if (window.__fillHall) window.__fillHall(hallTab); showView('view-project-hall'); document.getElementById('view-project-hall').classList.add('hall-on'); setTimeout(() => { if (window.__hallRestore) window.__hallRestore(); requestAnimationFrame(() => requestAnimationFrame(() => { if (window.__bootDone) window.__bootDone(); })); }, 0); };   /* 27 Nov: and the Music card / song page that was open */
       if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', reopen); else setTimeout(reopen, 0);
       return;
     }
@@ -8500,6 +8506,25 @@ Lord you are Holy, Holy, Holy</p>
      Back (the ‹ circle or the phone's back) carries it home to the same spot. Music → the CDs; the others have nothing
      to show yet. */
   tiles.forEach(function (el, k) { el.addEventListener('click', function () { if (el.classList.contains('is-next')) window.__hallStep(1); else if (el.classList.contains('is-prev')) window.__hallStep(-1); else if (el.classList.contains('is-cur') && window.__hallOpen) window.__hallOpen(el); }); });
+  /* A refresh on the Music card or on a song page comes back to it (Emmanuel, 27 Nov: 'when a user clicks refresh within the
+     music tab … the refresh should happen on that page'). The card and song page open at once (no animation), and the
+     history step is replaced, not added, so Back still goes back one page at a time. */
+  window.__hallRestore = function () {
+    var kind = null, cd = null; try { kind = sessionStorage.getItem('dvOpen'); cd = sessionStorage.getItem('dvCD'); } catch (_) {}
+    if (!kind) return false;
+    var tile = null; tiles.forEach(function (el, k) { if (el.getAttribute('data-open') === kind) { tile = el; hallGo(k, true); } });
+    if (!tile || !window.__hallOpen) return false;
+    window.__dvRestoring = true;
+    hall.classList.add('hall-on', 'hall-formed');
+    openLayer.classList.add('no-anim'); cdd.classList.add('no-anim');
+    try {
+      window.__hallOpen(tile);
+      var n = cd === null ? -1 : parseInt(cd, 10), li = n >= 0 ? oCDs.children[n] : null, lab = li && li.querySelector('.cdx-label');
+      if (lab) lab.click();
+    } finally { window.__dvRestoring = false; }
+    setTimeout(function () { openLayer.classList.remove('no-anim'); cdd.classList.remove('no-anim'); openBusy = false; cdBusy = false; }, 700);
+    return true;
+  };
   tiles.forEach(function (el) { el.setAttribute('data-open', el.textContent.trim().toLowerCase()); el.setAttribute('role', 'button'); el.setAttribute('tabindex', '0'); el.addEventListener('keydown', function (e) { if ((e.key === 'Enter' || e.key === ' ') && el.classList.contains('is-cur')) { e.preventDefault(); el.click(); } }); });
   function buildCDs(target) {
     var tab = null; try { tab = sessionStorage.getItem('dvHall'); } catch (_) {}
@@ -8537,7 +8562,7 @@ Lord you are Holy, Holy, Holy</p>
   function buildSpin(target, pal, c) {
     var info = oInfo, labs = [[0, 1, 2], [1, 2, 0], [2, 0, 1], [0, 2, 1], [1, 0, 2]], speeds = [7, 9.5, 6.5, 11, 8];
     target.classList.remove('has-pick');
-    info.classList.remove('on'); info.innerHTML = '<p class="cdx-hint">Tap a CD</p>';
+    info.classList.remove('on'); info.innerHTML = '<p class="cdx-hint">Tap a song</p>';
     for (var i = 0; i < 5; i++) {
       var li = document.createElement('li'), b = document.createElement('button'), disc = document.createElement('span');
       li.className = 'cdx'; li.style.setProperty('--d', (0.07 * i + 0.05).toFixed(2) + 's');
@@ -8554,12 +8579,12 @@ Lord you are Holy, Holy, Holy</p>
       var d = cdData(i), lab = document.createElement('button');
       lab.className = 'cdx-label'; lab.type = 'button';
       lab.innerHTML = '<span class="cdx-name' + (d.title ? '' : ' tbc') + '">' + (i + 1) + '. ' + esc(d.title || 'Title to come') + '</span>';
-      if (d.title) b.setAttribute('aria-label', 'CD ' + (i + 1) + ': ' + d.title);
-      lab.setAttribute('tabindex', '-1'); lab.setAttribute('aria-hidden', 'true');   /* the disc button already names it */
+      b.setAttribute('tabindex', '-1'); b.setAttribute('aria-hidden', 'true');   /* the name is what you tap now; the disc is unseen */
+      lab.setAttribute('aria-label', 'CD ' + (i + 1) + ': ' + (d.title || 'title to come'));
       li.appendChild(lab); target.appendChild(li);
       (function (k, btn) {
         btn.addEventListener('click', function (e) { e.stopPropagation(); openCD(k, btn, c(pal[labs[k][0]])); });
-        lab.addEventListener('click', function (e) { e.stopPropagation(); openCD(k, btn, c(pal[labs[k][0]])); });
+        lab.addEventListener('click', function (e) { e.stopPropagation(); window.__cdKb = e.detail === 0; openCD(k, btn, c(pal[labs[k][0]])); });   /* focus moves to the CD only for keyboard users (no ring after a tap) */
       })(i, b);
     }
   }
@@ -8607,15 +8632,16 @@ Lord you are Holy, Holy, Holy</p>
   function tick() { var any = false; cdTracks.forEach(function (T) { if (T.audio && !T.audio.paused) { any = true; T.time.textContent = fmt(T.audio.currentTime); drawWave(T); } }); cdRaf = any ? requestAnimationFrame(tick) : 0; }
   function fill(i, ink) {
     var d = cdData(i), n = (i < 9 ? '0' : '') + (i + 1), tracks = d.tracks && d.tracks.length ? d.tracks : [{}];
+    var RAINBOW = ['#c62828', '#d2641a', '#b08900', '#2e7d32', '#1565c0', '#3f3ab0', '#7b2fa8'];   /* red, orange, gold, green, blue, indigo, violet — dark enough to read on white */
     var part = function (label, v) { if (!v || (v.join && !v.length)) return ''; var list = v.join ? v : [v]; return '<section class="cdd-part"><p class="cdd-kick">' + label + '</p><ul class="cdd-list">' + list.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul></section>'; };
     var credit = function (label, v) { return '<div><dt>' + label + '</dt><dd' + (v ? '' : ' class="tbc"') + '>' + esc(v || 'To come') + '</dd></div>'; };
     cdIn.style.setProperty('--ink', ink);
     cdIn.innerHTML = '<p class="cdd-kick">CD ' + n + '</p><h2 class="cdd-title">' + esc(d.title || 'Title to come') + '</h2>' +
       /* 26 Nov (Emmanuel): the waveform first, then the scripture, then the details — credits, lyrics and the rest */
       '<ol class="cdd-tracks"></ol>' +
-      (d.scripture && d.scripture.length ? '<section class="cdd-part"><p class="cdd-kick">Scripture</p><p class="cdd-line">' + esc([].concat(d.scripture).join('; ')) + '</p></section>' : '') +   /* one sentence, references set apart (26 Nov) */
+      (d.scripture && d.scripture.length ? '<section class="cdd-part"><p class="cdd-kick">Scripture</p><ul class="cdd-verses" style="--rows:' + Math.max(2, Math.ceil([].concat(d.scripture).length / 4)) + '">' + [].concat(d.scripture).map(function (x, k) { return '<li style="--vc:' + RAINBOW[k % RAINBOW.length] + '">' + esc(x) + '</li>'; }).join('') + '</ul></section>' : '') +   /* side by side in four columns, in rainbow colours (Emmanuel, 27 Nov) */
+      (d.lyrics ? '<section class="cdd-part"><p class="cdd-kick">Lyrics</p><p class="cdd-lyrics">' + esc(d.lyrics) + '</p></section>' : '') +   /* the credits come after the lyrics (Emmanuel, 27 Nov) */
       '<dl class="cdd-credits cdd-part">' + credit('Written by', d.written) + credit('Performed by', d.performed) + credit('Produced by', d.produced) + credit('Mixed and mastered by', d.mixed) + '</dl>' +
-      (d.lyrics ? '<section class="cdd-part"><p class="cdd-kick">Lyrics</p><p class="cdd-lyrics">' + esc(d.lyrics) + '</p></section>' : '') +
       part('Inspiration', d.inspo) + part('Notes', d.notes);
     var ol = cdIn.querySelector('.cdd-tracks'); cdTracks = [];
     tracks.forEach(function (t, k) {
@@ -8653,14 +8679,16 @@ Lord you are Holy, Holy, Holy</p>
     var t = cdTarget(); cdBody.style.top = (t.top + t.height + 28) + 'px';
     cdDisc.style.transition = reduceM.matches ? 'none' : '';
     requestAnimationFrame(function () { cdPlace(t); cdd.classList.add('grown'); setTimeout(function () { cdBusy = false; }, 620); });
-    try { history.pushState({ dv: 2 }, '', location.hash); } catch (_) {}
-    setTimeout(function () { try { cdDisc.focus({ preventScroll: true }); } catch (_) {} }, 60);
+    try { if (window.__dvRestoring) history.replaceState({ dv: 2 }, '', location.hash); else history.pushState({ dv: 2 }, '', location.hash); } catch (_) {}
+    try { sessionStorage.setItem('dvCD', String(i)); } catch (_) {}
+    if (!window.__dvRestoring && window.__cdKb) setTimeout(function () { try { cdDisc.focus({ preventScroll: true }); } catch (_) {} }, 60);   /* no focus ring when it reopens after a refresh */
   }
   window.__cdOpenIs = function () { return !!cdFrom; };
   window.__cdClose = function (now) {
     if (!cdFrom) return;
     var btn = cdFrom, r = btn.getBoundingClientRect();
     stopAll(); cdBusy = true;
+    try { sessionStorage.removeItem('dvCD'); } catch (_) {}
     cdd.classList.remove('grown');
     if (now || reduceM.matches) cdDisc.style.transition = 'none';
     cdPlace(r);
@@ -8735,7 +8763,8 @@ Lord you are Holy, Holy, Holy</p>
     }
     oCard.style.transition = reduceM.matches ? 'none' : '';
     requestAnimationFrame(function () { place(t); openLayer.classList.add('grown'); setTimeout(function () { openBusy = false; }, 560); });
-    try { history.pushState({ dv: 2 }, '', location.hash); } catch (_) {}
+    try { if (window.__dvRestoring) history.replaceState({ dv: 2 }, '', location.hash); else history.pushState({ dv: 2 }, '', location.hash); } catch (_) {}
+    try { sessionStorage.setItem('dvOpen', kind); } catch (_) {}   /* a refresh reopens this card (27 Nov) */
     var bk = hall.querySelector('.hall-back'); if (bk) bk.setAttribute('aria-label', 'Back to the project');
   };
   window.__hallClose = function (now) {
@@ -8744,6 +8773,7 @@ Lord you are Holy, Holy, Holy</p>
     openBusy = true;
     openLayer.classList.remove('grown'); hall.classList.remove('hall-opened');
     oT = null; oLabel.style.fontSize = '';
+    try { sessionStorage.removeItem('dvOpen'); sessionStorage.removeItem('dvCD'); } catch (_) {}
     oCard.style.transition = (now || reduceM.matches) ? 'none' : '';
     place(r);
     setTimeout(function () { tile.style.visibility = ''; openLayer.classList.remove('on'); openLayer.setAttribute('aria-hidden', 'true'); openFrom = null; openBusy = false; }, (now || reduceM.matches) ? 0 : 480);
