@@ -3148,8 +3148,8 @@
     pointer-events: none; }
   .hall-stack.dragging .hall-tile { transition: opacity .7s cubic-bezier(.22,1,.36,1), filter .7s cubic-bezier(.22,1,.36,1); }   /* follows the finger exactly while held */
   .hall-tile.is-cur  { --ty: 0%;   --sc: 1;   --op: 1;   --bl: 0px; z-index: 3; }
-  .hall-tile.is-next { --ty: 38%;  --sc: .56; --op: .24; --bl: 1px; z-index: 2; pointer-events: auto; cursor: pointer; }
-  .hall-tile.is-prev { --ty: -38%; --sc: .56; --op: .24; --bl: 1px; z-index: 2; pointer-events: auto; cursor: pointer; }
+  .hall-tile.is-next { --ty: 30%;  --sc: .56; --op: .24; --bl: 1px; z-index: 2; pointer-events: auto; cursor: pointer; }
+  .hall-tile.is-prev { --ty: -30%; --sc: .56; --op: .24; --bl: 1px; z-index: 2; pointer-events: auto; cursor: pointer; }
   .hall-tile.is-far-d { --ty: 110%; --sc: .6; --op: 0; }
   .hall-tile.is-far-u { --ty: -110%; --sc: .6; --op: 0; }
   #view-project-hall:not(.hall-on) .hall-tile { --op: 0 !important; --bl: 6px !important; }   /* fade in on arrival */
@@ -3249,6 +3249,8 @@
   #view-project-hall.hall-on .hall-head .hall-tagline { transform: translate(0, -50%); }
   #view-project-hall .hall-head .project-tag { border-radius: 3px 0 0 3px; border-right-width: 0; padding: 3px calc(16px + env(safe-area-inset-right)) 3px 9px; }
   #view-project-hall .hall-head .project-tag.thread-grounding { background: #4a1d80; border-color: #4a1d80; }   /* a deeper purple (Emmanuel, 26 Nov) */
+  #view-project-hall .hall-head .project-tag.thread-righteous { background: #8a1820; border-color: #8a1820; }   /* Righteous: deep red (27 Nov) */
+  #view-project-hall .hall-head .project-tag.thread-lifted { background: #a07818; border-color: #a07818; }
   #view-project-hall .hall-head .project-tag { box-sizing: border-box; width: calc(40px + env(safe-area-inset-right)); overflow: hidden; white-space: nowrap; text-indent: -999px; }   /* shorter (Emmanuel, 26 Nov: 'reduce the length of the grounding tag'); the word stays for screen readers */
   #view-project-hall .hall-head .project-tag::before { inset: -13px -6px -13px -24px; }   /* still a 44px place to press */
   @media (prefers-reduced-motion: reduce) { #view-project-hall .hall-head .hall-tagline { transition: opacity .3s ease; transform: translate(0, -50%); } }
@@ -3392,7 +3394,27 @@
   @keyframes cdxTurn { from { transform: rotateY(0deg); } to { transform: rotateY(360deg); } }
   /* 27 Nov (Emmanuel): no CDs in the list — only the names; the CD appears, turning, when a name is tapped. The list's discs stay
      in place unseen, so the CD still grows out of its row and goes back into it */
-  .hall-open-cds .cdx > .cdx-btn { visibility: hidden; pointer-events: none; }   /* upright: no backward tilt (it read as leaning, 24 Nov) */
+  .hall-open-cds .cdx > .cdx-btn { visibility: hidden; pointer-events: none; }
+  /* 27 Nov, later (Emmanuel: 'bring the list of songs closer together and make it clear that you can tap them — let them pulse'):
+     rows 12px apart (the unseen disc shrinks to 24px so it no longer sets the row height), and each name breathes softly in
+     turn, a ripple down the list */
+  .hall-open.has-cds .hall-open-cds { gap: 12px; }
+  .hall-open-cds .cdx > .cdx-btn { width: 24px; height: 24px; }
+  /* 27 Nov, later (Emmanuel: 'don't let it move like a wave … let it pulse like it's alive, like a heartbeat, but slowly'): all the
+     names beat together — a soft double beat (lub-dub), then a long rest — once every 3.6 s */
+  .hall-open-cds .cdx-name { display: inline-block; transform-origin: left center; animation: cdxPulse 5s ease-in-out infinite; }
+  /* 27 Nov, later still (Emmanuel: 'don't let the list all pulse at the same time … pulse at different times'): each name keeps its own
+     heartbeat — its own start and a slightly different pace, out of order, so they never line up into a wave */
+  .hall-open-cds .cdx:nth-child(5n+1) .cdx-name { animation-duration: 5s; animation-delay: -1.2s; }
+  .hall-open-cds .cdx:nth-child(5n+2) .cdx-name { animation-duration: 6s; animation-delay: -4.1s; }
+  .hall-open-cds .cdx:nth-child(5n+3) .cdx-name { animation-duration: 4.6s; animation-delay: -2.7s; }
+  .hall-open-cds .cdx:nth-child(5n+4) .cdx-name { animation-duration: 5.6s; animation-delay: -.4s; }
+  .hall-open-cds .cdx:nth-child(5n+5) .cdx-name { animation-duration: 5.3s; animation-delay: -3.5s; }
+  .hall-open-cds.has-pick .cdx-name, .hall-open-cds .cdx-label:active .cdx-name { animation: none; }
+  /* a gentle fade in and out (Emmanuel, 27 Nov: 'not flickering like that — like a gentle fade in and out'); each row on its own
+     slow clock, so they rise and fall at different moments */
+  @keyframes cdxPulse { 0%, 100% { opacity: .4; } 50% { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) { .hall-open-cds .cdx-name { animation: none; } }   /* upright: no backward tilt (it read as leaning, 24 Nov) */
   /* A CD opened (Emmanuel, 24 Nov: 'when you click on a CD take it to the top of the screen, blur everything —
      then have the written by, produced by, performed by and also waveforms that will play the actual music').
      The tapped disc is carried (still turning) to the top of the screen over a blur of everything; its credits and
@@ -3461,26 +3483,26 @@
   /* Liquid glass Music tile (Emmanuel, 26 Nov: 'make the music tile look like liquid glass'): a clear body with a bright
      rim, red/blue fringes at the edges, a top-left highlight and a soft lens shade, over a slow wash of the project's own
      colours that drifts like liquid. The open Music card wears the same glass. Recipe after DESIGN §6.1 / #thread-pop. */
-  #view-project-hall .hall-tile[data-open="music"], .hall-open.has-cds .hall-open-card {
+  #view-project-hall .hall-tile, .hall-open.has-cds .hall-open-card {
     background: linear-gradient(140deg, rgba(255,255,255,0.42) 0%, rgba(255,255,255,0.12) 42%, rgba(255,255,255,0.08) 60%, rgba(255,255,255,0.28) 100%);
     -webkit-backdrop-filter: blur(6px) saturate(1.8) brightness(1.05); backdrop-filter: blur(6px) saturate(1.8) brightness(1.05);
     border: 1px solid rgba(255,255,255,0.75); box-sizing: border-box; isolation: isolate;
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.95), inset 0 -1px 0 rgba(255,255,255,0.35), inset 1.5px 0 0 rgba(255,150,170,0.28), inset -1.5px 0 0 rgba(140,185,255,0.3),
                 inset 0 0 24px rgba(255,255,255,0.35), inset 3px 4px 8px -3px rgba(255,255,255,1), inset -4px -6px 14px -6px rgba(26,22,18,0.16), inset 0 0 0 1px rgba(26,22,18,0.05), 0 2px 6px rgba(26,22,18,0.07), 0 24px 56px -26px rgba(26,22,18,0.34); }
-  #view-project-hall .hall-tile[data-open="music"].is-cur { filter: none; }
+  #view-project-hall .hall-tile.is-cur { filter: none; }
   .hall-open.has-cds .hall-open-card { -webkit-backdrop-filter: blur(1.2px) saturate(1.8) brightness(1.05); backdrop-filter: blur(1.2px) saturate(1.8) brightness(1.05); }   /* the list shows through as it scrolls behind (26 Nov) */   /* Safari drops the glass under a filter */
-  html.lg-bend #view-project-hall .hall-tile[data-open="music"], html.lg-bend .hall-open.has-cds .hall-open-card {
+  html.lg-bend #view-project-hall .hall-tile, html.lg-bend .hall-open.has-cds .hall-open-card {
     -webkit-backdrop-filter: url(#lg) blur(2px) saturate(1.8) brightness(1.05); backdrop-filter: url(#lg) blur(2px) saturate(1.8) brightness(1.05); }
-  #view-project-hall .hall-tile[data-open="music"]::before, .hall-open.has-cds .hall-open-card::before {   /* the liquid: the project's colours, blurred, drifting slowly */
-    inset: -20%; z-index: -1; filter: blur(18px);
-    background: radial-gradient(48% 38% at 26% 74%, var(--hl1, rgba(90,35,144,0.42)), transparent 72%), radial-gradient(44% 36% at 78% 32%, var(--hl2, rgba(176,136,40,0.42)), transparent 72%), radial-gradient(50% 40% at 62% 92%, var(--hl1, rgba(90,35,144,0.42)), transparent 72%), radial-gradient(40% 34% at 18% 18%, var(--hc, rgba(90,35,144,0.13)), transparent 70%);
+  #view-project-hall .hall-tile::before, .hall-open.has-cds .hall-open-card::before {   /* the liquid: the project's colours, blurred, drifting slowly */
+    inset: -20%; z-index: -1; filter: blur(26px);   /* 27 Nov: one smooth flow from light (top) to deep (bottom), no patches */
+    background: radial-gradient(70% 55% at 30% 80%, var(--hl1, rgba(90,35,144,0.42)), transparent 100%), radial-gradient(65% 50% at 75% 30%, var(--hl2, rgba(176,136,40,0.42)), transparent 100%), linear-gradient(165deg, rgba(255,255,255,0) 10%, var(--hl2, rgba(176,136,40,0.3)) 45%, var(--hl1, rgba(90,35,144,0.42)) 95%);
     animation: hallLiquid 16s ease-in-out infinite alternate; }
-  #view-project-hall .hall-tile[data-open="music"]::after, .hall-open.has-cds .hall-open-card::after {   /* the highlight instead of the grain */
+  #view-project-hall .hall-tile::after, .hall-open.has-cds .hall-open-card::after {   /* the highlight instead of the grain */
     opacity: 1; mix-blend-mode: normal; background-size: auto;
-    background-image: linear-gradient(118deg, rgba(255,255,255,0) 30%, rgba(255,255,255,0.55) 40%, rgba(255,255,255,0) 46%, rgba(255,255,255,0) 52%, rgba(255,255,255,0.3) 56%, rgba(255,255,255,0) 62%), radial-gradient(120% 70% at 18% 0%, rgba(255,255,255,0.7), rgba(255,255,255,0) 55%), radial-gradient(90% 60% at 100% 100%, rgba(255,255,255,0.3), rgba(255,255,255,0) 60%); }
+    background-image: linear-gradient(118deg, rgba(255,255,255,0) 22%, rgba(255,255,255,0.32) 40%, rgba(255,255,255,0) 58%),   /* a softer sheen (27 Nov) */ radial-gradient(120% 70% at 18% 0%, rgba(255,255,255,0.7), rgba(255,255,255,0) 55%), radial-gradient(90% 60% at 100% 100%, rgba(255,255,255,0.3), rgba(255,255,255,0) 60%); }
   @keyframes hallLiquid { 0% { transform: translate(0, 0) rotate(0deg) scale(1); } 50% { transform: translate(6%, -5%) rotate(18deg) scale(1.08); } 100% { transform: translate(-5%, 4%) rotate(-12deg) scale(0.96); } }
-  @media (prefers-reduced-motion: reduce) { #view-project-hall .hall-tile[data-open="music"]::before, .hall-open.has-cds .hall-open-card::before { animation: none; } }
-  @media (prefers-reduced-transparency: reduce) { #view-project-hall .hall-tile[data-open="music"], .hall-open.has-cds .hall-open-card { background: rgba(250,250,250,0.97); -webkit-backdrop-filter: none; backdrop-filter: none; } }
+  @media (prefers-reduced-motion: reduce) { #view-project-hall .hall-tile::before, .hall-open.has-cds .hall-open-card::before { animation: none; } }
+  @media (prefers-reduced-transparency: reduce) { #view-project-hall .hall-tile, .hall-open.has-cds .hall-open-card { background: rgba(250,250,250,0.97); -webkit-backdrop-filter: none; backdrop-filter: none; } }
   #view-project-hall .hall-tile.is-cur[data-open]:active { transform: translateX(var(--sx, 0px)) translateY(-50%) translateY(var(--ty, 0%)) translateY(var(--dy, 0px)) scale(.985); }
 
   /* Music: a grid of CDs (Emmanuel, 24 Nov). Each is a square sleeve in the project's own colours with its disc
@@ -4722,10 +4744,12 @@ Lord you are Holy, Holy, Holy</p>
     const __pv = document.getElementById(id); const isLightView = (id === 'view-partner-welcome' || !!(__pv && __pv.classList.contains('project-view')));
     const chromeColor = (isLightView || (id === 'view-home' && window.__dvIsWhite && window.__dvIsWhite())) ? '#ffffff' : '#000000';
     const themeMeta = document.querySelector('meta[name="theme-color"]');
+    if (!window.__dvBarsHold) {   /* while the bars ease black → white (house tap) they are left to that, so they never flash */
     if (themeMeta) themeMeta.setAttribute('content', chromeColor);
     document.documentElement.style.backgroundColor = chromeColor;
     document.body.style.backgroundColor = chromeColor;
     if (window.__tint) window.__tint(chromeColor, chromeColor);
+    }
     if (id === 'view-home' && window.__dvChrome) window.__dvChrome();   /* the dove page sets its own top and foot colours */
     // Returning home? restore the pills + tagline that dusted away.
     if (id === 'view-home' && typeof restoreDust === 'function') restoreDust();
@@ -8009,9 +8033,8 @@ Lord you are Holy, Holy, Holy</p>
         if (rg && !reduceQ.matches) rg.doorT = 1;   /* the house disperses once the words have gone */
         setTimeout(function () {
           if (window.__dvMark) window.__dvMark.go(handoff(i), rg ? rg.pal : null);
-          if (!reduceQ.matches) { var de = document.documentElement; de.classList.add('dv-to-hall'); clearTimeout(window.__dvToHallT); window.__dvToHallT = setTimeout(function () { de.classList.remove('dv-to-hall'); }, 1700); }
+          if (!reduceQ.matches) { var de = document.documentElement; de.classList.add('dv-to-hall'); clearTimeout(window.__dvToHallT); window.__dvToHallT = setTimeout(function () { de.classList.remove('dv-to-hall'); }, 1700); barsToWhite(); }
           openSeed(tab);
-          if (!reduceQ.matches) barsToWhite();
           if (calm) calm();
           // the house is whole again by the time you come back
           setTimeout(function () { if (rg) { rg.doorT = 0; rg.door = 0; } delete btn.dataset.busy; }, 900);
@@ -8021,14 +8044,22 @@ Lord you are Holy, Holy, Holy</p>
   /* the phone's bars follow the page from black to white in small steps (Safari reads a bar colour only when its strip is
      put on the page, so each step is a fresh strip), in time with the 1.4 s fade (26 Nov) */
   function barsToWhite() {
-    var N = 8, m = document.querySelector('meta[name="theme-color"]');
-    for (var k = 0; k <= N; k++) (function (k) {
-      setTimeout(function () {
-        var x = k / N, e = x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2, v = Math.round(255 * e), h = '#' + ('0' + v.toString(16)).slice(-2).repeat(3);
-        if (m) m.setAttribute('content', h); document.documentElement.style.backgroundColor = h; document.body.style.backgroundColor = h;
-        if (window.__tint) window.__tint(h, h);
-      }, k * 175);
-    })(k);
+    /* 27 Nov (Emmanuel: 'the transition from the dark bars to the white bars … feels a bit glitchy'): the bars now follow the page's own
+       1.4 s fade frame by frame on the same curve (cubic-bezier(.4,0,.2,1)), in small steps of grey, and the page change can no longer
+       set them to white first (window.__dvBarsHold) — that early white, then black, was the flash */
+    var m = document.querySelector('meta[name="theme-color"]'), t0 = performance.now(), D = 1400, last = -1;
+    window.__dvBarsHold = true;
+    function curve(x) {   /* cubic-bezier(.4,0,.2,1): solve for t with Newton steps */
+      var t = x; for (var i = 0; i < 6; i++) { var cx = 3 * .4 * t * (1 - t) * (1 - t) + 3 * .2 * t * t * (1 - t) + t * t * t - x, dx = 3 * .4 * (1 - t) * (1 - 3 * t) + 3 * .2 * t * (2 - 3 * t) + 3 * t * t; if (Math.abs(dx) < 1e-6) break; t -= cx / dx; t = Math.max(0, Math.min(1, t)); }
+      return 3 * t * (1 - t) * (1 - t) * 0 + 3 * t * t * (1 - t) * 1 + t * t * t;
+    }
+    function put(v) { var h = '#' + ('0' + v.toString(16)).slice(-2).repeat(3); if (m) m.setAttribute('content', h); document.documentElement.style.backgroundColor = h; document.body.style.backgroundColor = h; if (window.__tint) window.__tint(h, h); }
+    put(0); last = 0;
+    (function step(now) {
+      var x = Math.min(1, (now - t0) / D), v = Math.round(255 * curve(x));
+      if (v - last >= 4 || x >= 1) { put(v); last = v; }
+      if (x < 1) requestAnimationFrame(step); else window.__dvBarsHold = false;
+    })(t0);
   }
   /* The words step back first (25 Nov): every title, line and the swipe/bars fade out; the dots stay. Returns the
      function that brings them back once the projects screen is out of sight. */
@@ -8333,6 +8364,8 @@ Lord you are Holy, Holy, Holy</p>
   var titleEl = document.getElementById('hall-title'), people = document.getElementById('hall-people'), list = document.getElementById('hall-names');
   /* the names come from each project's own page, so they stay in step with it */
   /* the thread tag comes from the project's own page; only Grounding, Righteous or Lifted are shown */
+  var THREAD = { 'overseer': 'grounding', 'selfquake': 'righteous', 'wrestle': 'righteous' };
+  var THREAD_RGB = { grounding: [[74, 29, 128], [150, 110, 214]], righteous: [[138, 24, 32], [214, 92, 100]], lifted: [[160, 120, 24], [222, 186, 96]] };   /* deep, light */
   var TAGS = { 'overseer': '#view-project-overseer .pg-header .project-tag', 'righthere': '#view-project-righthere .pg-header .project-tag' };
   var tagEl = document.getElementById('hall-tag');
   var NAMES = { 'overseer': '#view-project-overseer .role-tabs .role-tab', 'renew-verse': '#view-project-renew .role-tab[data-role]' };
@@ -8416,18 +8449,28 @@ Lord you are Holy, Holy, Holy</p>
     hallGo(0, true);
     people.hidden = !names.length;
     fitHallDesc();
-    var src = TAGS[tab] && document.querySelector(TAGS[tab]), th = src && /thread-(grounding|righteous|lifted)/.exec(src.className);
+    var src = TAGS[tab] && document.querySelector(TAGS[tab]), m0 = src && /thread-(grounding|righteous|lifted)/.exec(src.className);
+    /* each project's thread (Emmanuel, 27 Nov: Selfquake and Wrestle fall under Righteous, The Overseer under Grounding) */
+    var thName = THREAD[tab] || (m0 && m0[1]) || null, th = thName ? [null, thName] : null, thWord = thName ? thName.charAt(0).toUpperCase() + thName.slice(1) : '';
     tagEl.className = 'project-tag' + (th ? ' thread-' + th[1] : '');
-    tagEl.textContent = th ? src.textContent.trim() : ''; tagEl.hidden = !th;
+    tagEl.textContent = thWord; tagEl.hidden = !th;
     tagEl.setAttribute('data-thread', th ? th[1] : '');
-    if (th) { tagEl.setAttribute('role', 'button'); tagEl.setAttribute('tabindex', '0'); tagEl.setAttribute('aria-label', src.textContent.trim() + ': what this thread means'); tagEl.setAttribute('aria-expanded', 'false'); tagEl.setAttribute('aria-controls', 'thread-pop'); }
+    if (th) { tagEl.setAttribute('role', 'button'); tagEl.setAttribute('tabindex', '0'); tagEl.setAttribute('aria-label', thWord + ': what this thread means'); tagEl.setAttribute('aria-expanded', 'false'); tagEl.setAttribute('aria-controls', 'thread-pop'); }
     if (window.__threadPopClose) window.__threadPopClose(true);
     var key = /^housepva/.test(tab) ? 'house-pva' : tab, pal = window.__dvPal && window.__dvPal(key);
+    var tc = th && THREAD_RGB[th[1]];
     if (pal) {
       hall.style.setProperty('--hc', 'rgba(' + pal[1].join(',') + ',0.13)');
       hall.style.setProperty('--hl1', 'rgba(' + pal[0].join(',') + ',0.42)');   /* the liquid inside the Music glass (26 Nov) */
       hall.style.setProperty('--hl2', 'rgba(' + pal[2].join(',') + ',0.42)');
       if (window.__dvMark && window.__dvMark.pal) window.__dvMark.pal(pal);
+    }
+    /* the tiles take the tag's colour (Emmanuel, 27 Nov: 'let those tiles match the tag'): the wash on every tile and the liquid in
+       the glass Music tile and its open card are the thread's colour, deep and light */
+    if (tc) {
+      hall.style.setProperty('--hc', 'rgba(' + tc[0].join(',') + ',0.26)');
+      hall.style.setProperty('--hl1', 'rgba(' + tc[0].join(',') + ',0.5)');
+      hall.style.setProperty('--hl2', 'rgba(' + tc[1].join(',') + ',0.5)');
     }
   };
   /* the tiles go round: one in front, the one before above it and the next below, faint */
