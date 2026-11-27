@@ -3154,7 +3154,7 @@
   .hall-tile.is-far-u { --ty: -110%; --sc: .6; --op: 0; }
   #view-project-hall:not(.hall-on) .hall-tile { --op: 0 !important; --bl: 6px !important; }   /* fade in on arrival */
   #view-project-hall:not(.hall-formed) .hall-tile { --sx: 100vw; }
-  #view-project-hall.hall-arriving .hall-tile { transition: transform 1.8s cubic-bezier(.22,1,.36,1), opacity .7s cubic-bezier(.22,1,.36,1), filter .7s cubic-bezier(.22,1,.36,1); }   /* the arrival slide is slower (Emmanuel, 26 Nov); swipes keep their spring */   /* once the ball has formed the cards slide in from the right of the screen (Emmanuel, 26 Nov) */
+  #view-project-hall.hall-arriving .hall-tile { transition: transform 2.8s cubic-bezier(.22,1,.36,1), opacity .7s cubic-bezier(.22,1,.36,1), filter .7s cubic-bezier(.22,1,.36,1); }   /* the arrival slide is slower (Emmanuel, 26 Nov); swipes keep their spring */   /* once the ball has formed the cards slide in from the right of the screen (Emmanuel, 26 Nov) */
   @media (prefers-reduced-motion: reduce) { #view-project-hall:not(.hall-formed) .hall-tile { --sx: 0px; } }
   @media (min-width: 720px) { .hall-stage { --tw: min(30vw, 46vh, 380px); --tin: 0.72; grid-template-columns: 46% 54%; min-height: min(68vh, 600px); } .hall-stack { height: min(68vh, 600px); } .hall-tile { padding: 22px; } }
   .hall-tile::after { content: ""; position: absolute; inset: 0; pointer-events: none; border-radius: inherit; opacity: .6; mix-blend-mode: multiply;   /* a fine grain (Emmanuel, 23 Nov) */
@@ -3185,7 +3185,7 @@
     font: 400 13px/1.9 'Courier Prime', 'Courier New', monospace; letter-spacing: .02em; color: rgba(26,22,18,0.8); }   /* the script font (Emmanuel, 23 Nov) */
   .hall-names li { opacity: 0; filter: blur(6px); transform: translateY(6px); transition: opacity 1.3s cubic-bezier(.22,1,.36,1), filter 1.3s cubic-bezier(.22,1,.36,1), transform 1.3s cubic-bezier(.22,1,.36,1); }
   #view-project-hall.hall-on .hall-title { opacity: 1; filter: none; }
-  #view-project-hall.hall-on.hall-formed .hall-names li { opacity: 1; filter: none; transform: none; transition-delay: calc(var(--d, 1.4s) - 0.1s); }   /* the names fade in one by one after the tile, which waits for the ball (26 Nov) */
+  #view-project-hall.hall-on.hall-formed .hall-names li { opacity: 1; filter: none; transform: none; transition-delay: calc(var(--d, 1.4s) + 1.6s); }   /* the names fade in one by one after the tile, which waits for the ball (26 Nov) */
   @media (prefers-reduced-motion: reduce) { .hall-title, .hall-tile, .hall-names li { transition: none !important; } .hall-title, .hall-names li { opacity: 1 !important; filter: none !important; transform: none !important; } }
 
   /* The old home now sits at the foot of the white page */
@@ -3299,7 +3299,8 @@
   #view-project-hall .hall-back:hover, #view-project-hall .hall-back:focus-visible { border-color: rgba(26,22,18,0.32); color: #1a1612; outline: none; }
   #view-project-hall .hall-back:active { transform: scale(.97); }
   #view-project-hall .hall-head .hall-tagline { position: absolute; right: 16px; top: calc(16px + env(safe-area-inset-top) + 22px); transform: translateY(-50%); margin: 0 !important; min-height: 0; }
-  #view-project-hall .hall-title { margin-bottom: 8px; }
+  #view-project-hall .hall-title { margin-bottom: 0; }
+  #view-project-hall .hall-desc { margin-top: -4px; }   /* the line sits closer under the title (Emmanuel, 27 Nov; was an 8px gap) */
   #view-project-hall .hall-title:has(+ .hall-desc:empty) { margin-bottom: 24px; }
   .hall-desc { flex: none; margin: 0 0 24px; padding: 0 8px; text-align: center; text-wrap: balance; font: 200 16px/1.5 'Helvetica Neue', Helvetica, Arial, sans-serif; color: rgba(26,22,18,0.72);
     opacity: 0; filter: blur(6px); transition: opacity 1.1s cubic-bezier(.22,1,.36,1) .25s, filter 1.1s cubic-bezier(.22,1,.36,1) .25s; }
@@ -3310,6 +3311,12 @@
   #view-project-hall .dv-yah { color: #5a2390; background-image: linear-gradient(100deg, #5a2390 0%, #9c1b22 14%, #c8862a 28%, #2a8a6e 42%, #2f5fb8 56%, #8a3fc0 70%, #d23c6a 84%, #5a2390 100%); }   /* the day colours: this page is white */
   #view-project-hall .hall-ball { width: min(44vw, 72cqh, 400px); }   /* 24 Nov: a little smaller now the card shows more, so the ball keeps clear of the left edge */
   @media (prefers-reduced-motion: reduce) { .hall-desc { transition: none; opacity: 1; filter: none; } }
+  /* Arrival order (Emmanuel, 27 Nov): the tag is already there while the particle ball forms; then the tiles slide in from the
+     right (hall-formed, 1.9 s); then the title fades in, then the line under it, then the names one by one */
+  #view-project-hall .hall-head .hall-tagline { opacity: 1; transform: translate(0, -50%); transition: opacity .4s ease, filter .4s ease; }
+  #view-project-hall.hall-on .hall-title, #view-project-hall.hall-on .hall-desc { opacity: 0; filter: blur(6px); }
+  #view-project-hall.hall-on.hall-formed .hall-title { opacity: 1; filter: none; transition-delay: 1.6s; }   /* 27 Nov: the slide is slower (2.8 s), so the words wait a little longer */
+  #view-project-hall.hall-on.hall-formed .hall-desc { opacity: 1; filter: none; transition-delay: 2.2s; }
   /* A card carried into the top half (24 Nov) */
   .hall-open { position: fixed; inset: 0; z-index: 2; pointer-events: none; visibility: hidden; }
   .hall-open.on { visibility: visible; }
@@ -8564,7 +8571,7 @@ Lord you are Holy, Holy, Holy</p>
   var cdFrom = null, cdBusy = false, cdAudio = null, cdRaf = 0, cdTracks = [];
   function cdPlace(r) { cdDisc.style.left = r.left + 'px'; cdDisc.style.top = r.top + 'px'; cdDisc.style.width = r.width + 'px'; cdDisc.style.height = r.height + 'px'; }
   function cdTarget() {
-    var W = window.innerWidth, H = window.innerHeight, size = Math.round(Math.min(W * 0.44, H * 0.24, 190));
+    var W = window.innerWidth, H = window.innerHeight, size = Math.round(Math.min(W * 0.19, H * 0.1, 84));   /* smaller still (Emmanuel, 27 Nov; was 28% / 15% / 120px, before that 44% / 24% / 190px) */
     return { left: Math.round((W - size) / 2), top: (window.__safeTop || 0) + 40, width: size, height: size };
   }
   var esc = function (t) { return String(t).replace(/[&<>"]/g, function (ch) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]; }); };
@@ -8751,7 +8758,7 @@ Lord you are Holy, Holy, Holy</p>
     var now = hall.classList.contains('active');
     if (now && !was) { was = true; if (hall.classList.contains('hall-on')) hall.classList.remove('hall-on'); if (hall.classList.contains('hall-formed')) hall.classList.remove('hall-formed'); hall.scrollTop = 0; setTimeout(function () { hall.classList.add('hall-on'); }, 350);
       /* the particle ball forms first, then the Music tile and the names fade in (Emmanuel, 26 Nov) — the dots take ~1.8 s to gather */
-      clearTimeout(formT); formT = setTimeout(function () { if (!hall.classList.contains('active')) return; hall.classList.add('hall-formed', 'hall-arriving'); formT = setTimeout(function () { hall.classList.remove('hall-arriving'); }, 1900); }, reduceM.matches ? 0 : 1900); }
+      clearTimeout(formT); formT = setTimeout(function () { if (!hall.classList.contains('active')) return; hall.classList.add('hall-formed', 'hall-arriving'); formT = setTimeout(function () { hall.classList.remove('hall-arriving'); }, 2900); }, reduceM.matches ? 0 : 1900); }
     if (!now && hall.classList.contains('hall-on')) hall.classList.remove('hall-on');
     if (!now && hall.classList.contains('hall-formed')) { clearTimeout(formT); hall.classList.remove('hall-formed', 'hall-arriving'); }   /* only when needed: removing an absent class still counts as a change and would call this again */
     was = now;
