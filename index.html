@@ -3402,18 +3402,14 @@
   .hall-open-cds .cdx > .cdx-btn { width: 24px; height: 24px; }
   /* 27 Nov, later (Emmanuel: 'don't let it move like a wave … let it pulse like it's alive, like a heartbeat, but slowly'): all the
      names beat together — a soft double beat (lub-dub), then a long rest — once every 3.6 s */
-  .hall-open-cds .cdx-name { display: inline-block; transform-origin: left center; animation: cdxPulse 5s ease-in-out infinite; }
-  /* 27 Nov, later still (Emmanuel: 'don't let the list all pulse at the same time … pulse at different times'): each name keeps its own
-     heartbeat — its own start and a slightly different pace, out of order, so they never line up into a wave */
-  .hall-open-cds .cdx:nth-child(5n+1) .cdx-name { animation-duration: 5s; animation-delay: -1.2s; }
-  .hall-open-cds .cdx:nth-child(5n+2) .cdx-name { animation-duration: 6s; animation-delay: -4.1s; }
-  .hall-open-cds .cdx:nth-child(5n+3) .cdx-name { animation-duration: 4.6s; animation-delay: -2.7s; }
-  .hall-open-cds .cdx:nth-child(5n+4) .cdx-name { animation-duration: 5.6s; animation-delay: -.4s; }
-  .hall-open-cds .cdx:nth-child(5n+5) .cdx-name { animation-duration: 5.3s; animation-delay: -3.5s; }
+  .hall-open-cds .cdx-name { display: inline-block; transform-origin: left center; animation: cdxPulse 10s ease-in-out infinite backwards; }   /* 27 Nov (Emmanuel: 'finish fading 1 in and out before moving to the next and start from the top in order'): one name at a time, a full 2 s gentle fade in and out, then the next; backwards = each waits dim until its turn */
+  .hall-open-cds .cdx:nth-child(5n+1) .cdx-name { animation-delay: 0s; }
+  .hall-open-cds .cdx:nth-child(5n+2) .cdx-name { animation-delay: 2s; }
+  .hall-open-cds .cdx:nth-child(5n+3) .cdx-name { animation-delay: 4s; }
+  .hall-open-cds .cdx:nth-child(5n+4) .cdx-name { animation-delay: 6s; }
+  .hall-open-cds .cdx:nth-child(5n+5) .cdx-name { animation-delay: 8s; }
   .hall-open-cds.has-pick .cdx-name, .hall-open-cds .cdx-label:active .cdx-name { animation: none; }
-  /* a gentle fade in and out (Emmanuel, 27 Nov: 'not flickering like that — like a gentle fade in and out'); each row on its own
-     slow clock, so they rise and fall at different moments */
-  @keyframes cdxPulse { 0%, 100% { opacity: .4; } 50% { opacity: 1; } }
+  @keyframes cdxPulse { 0% { opacity: .4; } 10% { opacity: 1; } 20%, 100% { opacity: .4; } }
   @media (prefers-reduced-motion: reduce) { .hall-open-cds .cdx-name { animation: none; } }   /* upright: no backward tilt (it read as leaning, 24 Nov) */
   /* A CD opened (Emmanuel, 24 Nov: 'when you click on a CD take it to the top of the screen, blur everything —
      then have the written by, produced by, performed by and also waveforms that will play the actual music').
